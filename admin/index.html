@@ -8,19 +8,19 @@
     <script>
       window.CMS_MANUAL_INIT = true;
 
-      window.onload = function () {
-NetlifyCmsApp.init({
-  configPath: "/admin/config.yml",
-});
-
-        });
+           window.onload = function () {
+        try {
+          NetlifyCmsApp.init({
+            configPath: "/admin/config.yml",
+          });
+          console.log("✅ CMS iniciado correctamente.");
+        } catch (error) {
+          document.body.innerHTML +=
+            "<p style='color:red; text-align:center; margin-top:20px;'>❌ Error al iniciar el CMS: " +
+            error.message +
+            "</p>";
+          console.error("Error al iniciar el CMS:", error);
+        }
       };
-    </script>
-  </head>
-  <body>
-    <h2 style="text-align:center; margin-top:20%;">
-      Cargando panel de administración...
-    </h2>
-  </body>
-</html>
+
 
