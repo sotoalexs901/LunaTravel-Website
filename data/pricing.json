@@ -3,14 +3,14 @@
     {
       "name_es": "Renovación de pasaporte (asesoría)",
       "name_en": "Passport renewal (advisory)",
-      "price": "$120",
+      "price": "$250",
       "desc_es": "Asistencia con requisitos, formularios y cita consular.",
       "desc_en": "Assistance with requirements, forms and consular appointment."
     },
     {
       "name_es": "Envíos de paquetería",
       "name_en": "Package shipping",
-      "price": "Desde $25",
+      "price": "Desde $3.99",
       "desc_es": "Tarifas por peso o volumen, con rastreo y entrega en destino.",
       "desc_en": "Rates by weight/volume, tracking and delivery."
     },
