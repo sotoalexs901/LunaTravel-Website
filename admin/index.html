@@ -4,11 +4,18 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Luna Travel CMS</title>
-    <script src="https://unpkg.com/netlify-cms-app@^2.0.0/dist/netlify-cms.js"></script>
+  </head>
+  <body>
+    <h2 style="text-align:center; margin-top:20%;">
+      Cargando panel de administración...
+    </h2>
+
+    <!-- Carga estable de Netlify CMS -->
+    <script src="https://cdn.jsdelivr.net/npm/netlify-cms-app@2.15.72/dist/netlify-cms.js"></script>
+
     <script>
       window.CMS_MANUAL_INIT = true;
-
-           window.onload = function () {
+      window.onload = function () {
         try {
           NetlifyCmsApp.init({
             configPath: "/admin/config.yml",
@@ -22,5 +29,8 @@
           console.error("Error al iniciar el CMS:", error);
         }
       };
+    </script>
+  </body>
+</html>
 
 
