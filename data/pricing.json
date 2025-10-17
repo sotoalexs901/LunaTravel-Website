@@ -1,0 +1,46 @@
+{
+  "servicios": [
+    {
+      "name_es": "Renovación de pasaporte (asesoría)",
+      "name_en": "Passport renewal (advisory)",
+      "price": "$120",
+      "desc_es": "Asistencia con requisitos, formularios y cita consular.",
+      "desc_en": "Assistance with requirements, forms and consular appointment."
+    },
+    {
+      "name_es": "Envíos de paquetería",
+      "name_en": "Package shipping",
+      "price": "Desde $25",
+      "desc_es": "Tarifas por peso o volumen, con rastreo y entrega en destino.",
+      "desc_en": "Rates by weight/volume, tracking and delivery."
+    },
+    {
+      "name_es": "Tickets de vuelos",
+      "name_en": "Flight tickets",
+      "price": "Variable",
+      "desc_es": "Búsqueda multi-aerolínea con mejores tarifas.",
+      "desc_en": "Multi-airline search with best fares."
+    },
+    {
+      "name_es": "Renta de carros",
+      "name_en": "Car rentals",
+      "price": "Consultar",
+      "desc_es": "Renta de vehículos con socios confiables.",
+      "desc_en": "Car rentals with trusted partners."
+    },
+    {
+      "name_es": "Traducción de documentos",
+      "name_en": "Document translation",
+      "price": "Desde $30",
+      "desc_es": "Traducciones certificadas y revisión lingüística.",
+      "desc_en": "Certified translations and language review."
+    },
+    {
+      "name_es": "Notarizaciones",
+      "name_en": "Notarizations",
+      "price": "Desde $20",
+      "desc_es": "Gestión de notarizaciones y autenticaciones.",
+      "desc_en": "Notarization and authentication coordination."
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+
+backend:
+  name: github
+  repo: sotoalexs90/LunaTravel-Website
+  branch: main
+
+media_folder: "uploads"
+public_folder: "/uploads"
+
+site_url: https://www.lunatravel25.com
+
+collections:
+  - name: "pricing"
+    label: "Precios y Servicios"
+    file: "data/pricing.json"
+    fields:
+      - label: "Servicios"
+        name: "servicios"
+        widget: "list"
+        fields:
+          - { label: "Nombre (ES)", name: "name_es", widget: "string" }
+          - { label: "Nombre (EN)", name: "name_en", widget: "string" }
+          - { label: "Precio", name: "price", widget: "string" }
+          - { label: "Descripción (ES)", name: "desc_es", widget: "text", required: false }
+          - { label: "Descripción (EN)", name: "desc_en", widget: "text", required: false }
+
+  - name: "contact"
+    label: "Contacto"
+    file: "data/contact.json"
+    fields:
+      - { label: "Correo electrónico", name: "email", widget: "string" }
+      - { label: "Teléfono", name: "phone", widget: "string" }
+      - { label: "WhatsApp", name: "whatsapp", widget: "string" }
+      - { label: "Dirección", name: "address", widget: "string" }
+
+  - name: "gallery"
+    label: "Galería de Fotos"
+    file: "data/gallery.json"
+    fields:
+      - label: "Imágenes"
+        name: "images"
+        widget: "list"
+        field:
+          label: "Imagen"
+          name: "image"
+          widget: "image"
+
+  - name: "testimonials"
+    label: "Testimonios"
+    file: "data/testimonials.json"
+    fields:
+      - label: "Items"
+        name: "items"
+        widget: "list"
+        fields:
+          - { label: "Primer nombre", name: "first_name", widget: "string" }
+          - { label: "Comentario", name: "comment", widget: "text" }

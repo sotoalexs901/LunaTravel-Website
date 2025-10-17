@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Luna Travel</title>
+  <meta name="description" content="Luna Travel - Trámites consulares, viajes, paquetería, traducciones y más." />
+  <link rel="icon" href="/images/luna-logo.jpeg" />
+  <link rel="stylesheet" href="/styles.css" />
+  <script type="text/javascript">
+    window.$crisp=[];
+    window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
+    (function(){
+      var d=document;s=d.createElement("script");
+      s.src="https://client.crisp.chat/l.js";
+      s.async=1;d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+  </script>
+</head>
+<body>
+  <div class="app-overlay">
+    <header class="header">
+      <div class="container header-inner">
+        <a href="#" class="brand">
+          <img src="/images/luna-logo.jpeg" alt="Luna Travel" />
+          <span>Luna Travel</span>
+        </a>
+        <nav class="nav">
+          <a href="#services" data-i18n="nav_services">Servicios</a>
+          <a href="#pricing" data-i18n="nav_prices">Precios</a>
+          <a href="#form" data-i18n="nav_request">Solicitud</a>
+          <a href="#contact" data-i18n="nav_contact">Contacto</a>
+          <a href="#gallery" data-i18n="nav_gallery">Galería</a>
+        </nav>
+        <div class="cta-row">
+          <a class="btn" id="contactBtn" href="mailto:lunatravel25@yahoo.com?subject=Consulta%20Luna%20Travel" data-i18n="btn_contact">Contáctanos</a>
+          <button class="btn btn-ghost" id="langToggle" title="EN / ES">🇪🇸 / 🇺🇸</button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero">
+      <div class="container fade">
+        <div class="hero-grid">
+          <div>
+            <h1 data-i18n="hero_title">Viaja y gestiona tus trámites con <span style='color: var(--blue)'>Luna Travel</span></h1>
+            <p class="lead" data-i18n="hero_sub">Asesoría confiable para trámites consulares cubanos, venta de pasajes a todo el mundo, envío de paquetería, renta de autos, traducciones y notarizaciones.</p>
+            <div class="cta">
+              <a class="btn" href="#form" data-i18n="hero_cta_fill">Llenar solicitud</a>
+              <a class="btn" style="background:#0f172a" href="#pricing" data-i18n="hero_cta_prices">Ver precios</a>
+            </div>
+            <p class="smallnote" data-i18n="hero_note">💬 Chat en vivo activo (Crisp) abajo a la derecha.</p>
+          </div>
+          <div class="card fade">
+            <div class="card-header"><h3 data-i18n="hero_card_title">Chat en vivo</h3></div>
+            <div class="card-body" data-i18n="hero_card_body">
+              <p>Chatea con nosotros en tiempo real. Si escribes fuera de horario, te respondemos por correo.</p>
+              <ul>
+                <li>Burbujita de chat siempre visible</li>
+                <li>Mensajes automáticos de bienvenida</li>
+                <li>Captura de nombre y correo</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="container" style="padding-bottom: 40px;">
+      <section id="services" class="section fade">
+        <h2 data-i18n="services_title">Servicios</h2>
+        <div id="servicesGrid" class="grid cols-3"></div>
+      </section>
+
+      <section id="pricing" class="section fade">
+        <h2 data-i18n="prices_title">Precios</h2>
+        <p style="color:#64748b; font-size:14px; margin-top:-6px" data-i18n="prices_note">*Precios referenciales. Editables desde el panel /admin.</p>
+        <div id="pricingGrid" class="grid cols-3"></div>
+      </section>
+
+      <section id="form" class="section fade">
+        <div class="grid cols-2">
+          <div class="card">
+            <div class="card-header"><h3 data-i18n="form_title">Solicitud de Servicio (Asesoría)</h3></div>
+            <div class="card-body">
+              <form id="requestForm">
+                <div class="row cols-4">
+                  <div><label data-i18n="form_service">Servicio</label><select name="servicio" id="servicioSelect"></select></div>
+                  <div><label data-i18n="form_date_req">Fecha de solicitud</label><input type="date" name="fechaSolicitud" /></div>
+                  <div><label data-i18n="form_passport">Número de pasaporte</label><input name="numeroPasaporte" /></div>
+                  <div><label data-i18n="form_id">Carné de identidad</label><input name="carneIdentidad" /></div>
+                </div>
+
+                <div class="row cols-4" style="margin-top:12px">
+                  <div><label data-i18n="form_lastname1">Primer apellido *</label><input required name="primerApellido" /></div>
+                  <div><label data-i18n="form_lastname2">Segundo apellido</label><input name="segundoApellido" /></div>
+                  <div><label data-i18n="form_name1">Primer nombre *</label><input required name="primerNombre" /></div>
+                  <div><label data-i18n="form_name2">Segundo nombre</label><input name="segundoNombre" /></div>
+                </div>
+
+                <div class="row cols-5" style="margin-top:12px">
+                  <div><label data-i18n="form_gender">Sexo</label><select name="sexo"><option></option><option>Masc.</option><option>Fem.</option></select></div>
+                  <div><label data-i18n="form_height">Estatura (cm)</label><input name="estatura" /></div>
+                  <div><label data-i18n="form_eyes">Color de ojos</label><select name="colorOjos"><option></option><option>Claros</option><option>Negros</option><option>Pardos</option></select></div>
+                  <div><label data-i18n="form_skin">Color de piel</label><select name="colorPiel"><option></option><option>Blanca</option><option>Mestiza</option><option>Negra</option><option>Albina</option><option>Amarilla</option></select></div>
+                  <div><label data-i18n="form_hair">Color de cabello</label><select name="colorCabello"><option></option><option>Canoso</option><option>Castaño</option><option>Negro</option><option>Rojo</option><option>Rubio</option><option>Otros</option></select></div>
+                </div>
+
+                <div class="row cols-4" style="margin-top:12px">
+                  <div><label data-i18n="form_birthdate">Fecha de nacimiento</label><input type="date" name="fechaNacimiento" /></div>
+                  <div><label data-i18n="form_birthcountry">País de nacimiento</label><input name="lugarNacimientoPais" /></div>
+                  <div><label data-i18n="form_birthprov">Provincia</label><input name="lugarNacimientoProvincia" /></div>
+                  <div><label data-i18n="form_birthcity">Municipio / Ciudad</label><input name="lugarNacimientoMunicipio" /></div>
+                </div>
+
+                <div class="row" style="margin-top:12px">
+                  <div><label data-i18n="form_address">Dirección (calle, nr., apto, entre calles)</label><input name="direccion" /></div>
+                </div>
+                <div class="row cols-4" style="margin-top:12px">
+                  <div><label data-i18n="form_zip">Código postal</label><input name="postal" /></div>
+                  <div><label data-i18n="form_state">Provincia / Estado / Región</label><input name="provinciaRegion" /></div>
+                  <div><label data-i18n="form_country">País</label><input name="pais" /></div>
+                  <div><label data-i18n="form_phone">Teléfono</label><input name="telefono" /></div>
+                </div>
+                <div class="row cols-2" style="margin-top:12px">
+                  <div><label data-i18n="form_email">E-mail *</label><input type="email" required name="email" /></div>
+                  <div><label data-i18n="form_work">Centro de trabajo / estudio</label><input name="centroTrabajo" /></div>
+                </div>
+                <div class="row cols-2" style="margin-top:12px">
+                  <div><label data-i18n="form_job">Ocupación / Profesión</label><input name="ocupacion" /></div>
+                  <div><label data-i18n="form_exit">Fecha de salida de Cuba</label><input type="date" name="fechaSalida" /></div>
+                </div>
+
+                <div style="margin-top:12px">
+                  <label data-i18n="form_obs">Observaciones</label>
+                  <textarea rows="4" name="observaciones"></textarea>
+                </div>
+
+                <div class="form-footer">
+                  <p style="font-size:12px; color:#64748b" data-i18n="form_legal">Al enviar, autorizas a Luna Travel a contactarte para continuar el trámite.</p>
+                  <button class="btn" type="submit" data-i18n="form_submit">Enviar solicitud</button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+          <div id="contact" class="card fade">
+            <div class="card-header"><h3 data-i18n="contact_title">Contacto</h3></div>
+            <div class="card-body">
+              <p data-i18n="contact_text">¿Tienes dudas? Escríbenos y te contactaremos.</p>
+              <p><strong>Email:</strong> <a id="contactEmail" href="mailto:lunatravel25@yahoo.com">lunatravel25@yahoo.com</a></p>
+              <p><strong data-i18n="contact_phone_label">Teléfono:</strong> <a id="contactPhone" href="tel:18138768151">813-876-8151</a></p>
+              <p><strong>WhatsApp:</strong> <a id="contactWhats" href="https://wa.me/13088508798" target="_blank" rel="noopener">308-850-8798</a></p>
+              <p><strong data-i18n="contact_address_label">Dirección:</strong> <span id="contactAddress">6916 Hanley Rd, Tampa FL 33634</span></p>
+              <div class="hours">
+                <p><strong data-i18n="contact_hours">Horarios:</strong></p>
+                <ul>
+                  <li data-i18n="hours_monfri">Lunes a Viernes: 09:00am a 06:00pm</li>
+                  <li data-i18n="hours_sat">Sábado: 08:00am a 05:00pm</li>
+                  <li data-i18n="hours_sun">Domingo: 09:00am a 02:00pm</li>
+                </ul>
+              </div>
+              <p class="smallnote" data-i18n="contact_note">También puedes escribirnos por el chat (abajo a la derecha).</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="gallery" class="section fade">
+        <h2 data-i18n="gallery_title">Galería</h2>
+        <div id="galleryGrid" class="grid cols-3"></div>
+      </section>
+
+      <section id="testimonials" class="section fade">
+        <h2 data-i18n="testimonials_title">Lo que dicen nuestros clientes</h2>
+        <div id="testimonialsGrid" class="grid cols-3"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container" style="display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap">
+        <span>© 2025 Luna Travel. Todos los derechos reservados.</span>
+        <a href="#">Política de privacidad</a>
+      </div>
+    </footer>
+  </div>
+  <script src="/assets/app.js"></script>
+</body>
+</html>
