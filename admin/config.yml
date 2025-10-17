@@ -4,7 +4,7 @@ backend:
   branch: main
   base_url: https://api.netlify.com
   auth_type: pkce
- 
+
 media_folder: "uploads"
 public_folder: "/uploads"
 
@@ -13,21 +13,21 @@ site_url: https://www.lunatravel25.com
 collections:
   - name: "pricing"
     label: "Precios y Servicios"
-    file: "data/pricing.json"
+    folder: "data/pricing"
+    create: true
+    extension: "json"
     fields:
-      - label: "Servicios"
-        name: "servicios"
-        widget: "list"
-        fields:
-          - { label: "Nombre (ES)", name: "name_es", widget: "string" }
-          - { label: "Nombre (EN)", name: "name_en", widget: "string" }
-          - { label: "Precio", name: "price", widget: "string" }
-          - { label: "Descripción (ES)", name: "desc_es", widget: "text", required: false }
-          - { label: "Descripción (EN)", name: "desc_en", widget: "text", required: false }
+      - { label: "Nombre (ES)", name: "name_es", widget: "string" }
+      - { label: "Nombre (EN)", name: "name_en", widget: "string" }
+      - { label: "Precio", name: "price", widget: "string" }
+      - { label: "Descripción (ES)", name: "desc_es", widget: "text" }
+      - { label: "Descripción (EN)", name: "desc_en", widget: "text" }
 
   - name: "contact"
     label: "Contacto"
-    file: "data/contact.json"
+    folder: "data/contact"
+    create: true
+    extension: "json"
     fields:
       - { label: "Correo electrónico", name: "email", widget: "string" }
       - { label: "Teléfono", name: "phone", widget: "string" }
@@ -35,24 +35,19 @@ collections:
       - { label: "Dirección", name: "address", widget: "string" }
 
   - name: "gallery"
-    label: "Galería de Fotos"
-    file: "data/gallery.json"
+    label: "Galería"
+    folder: "data/gallery"
+    create: true
+    extension: "json"
     fields:
-      - label: "Imágenes"
-        name: "images"
-        widget: "list"
-        field:
-          label: "Imagen"
-          name: "image"
-          widget: "image"
+      - { label: "Título", name: "title", widget: "string" }
+      - { label: "Imagen", name: "image", widget: "image" }
 
   - name: "testimonials"
     label: "Testimonios"
-    file: "data/testimonials.json"
+    folder: "data/testimonials"
+    create: true
+    extension: "json"
     fields:
-      - label: "Items"
-        name: "items"
-        widget: "list"
-        fields:
-          - { label: "Primer nombre", name: "first_name", widget: "string" }
-          - { label: "Comentario", name: "comment", widget: "text" }
+      - { label: "Nombre", name: "name", widget: "string" }
+      - { label: "Comentario", name: "comment", widget: "text" }
