@@ -1,8 +1,11 @@
 
 backend:
   name: github
-  repo: sotoalexs90/LunaTravel-Website
+  repo: sotoalexs901/LunaTravel-Website
   branch: main
+  base_url: https://api.netlify.com
+  auth_type: implicit
+
 
 media_folder: "uploads"
 public_folder: "/uploads"
