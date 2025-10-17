@@ -1,12 +1,11 @@
-yaml
 backend:
   name: github
   repo: sotoalexs901/LunaTravel-Website
   branch: main
   auth_type: implicit
+  app_id: Ov23li0EIJCP6JWDnXyW
   base_url: https://api.netlify.com
-  cms_label_prefix: "LunaTravelCMS"
-  site_domain: https://www.lunatravel25.com
+
 
 
 
