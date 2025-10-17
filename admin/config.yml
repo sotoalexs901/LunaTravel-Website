@@ -2,7 +2,8 @@ backend:
   name: github
   repo: sotoalexs901/LunaTravel-Website
   branch: main
-  auth_type: implicit
+  base_url: https://api.netlify.com
+  auth_type: pkce
   app_id: Ov23li0EIJCP6JWDnXyW
   base_url: https://api.netlify.com
 
