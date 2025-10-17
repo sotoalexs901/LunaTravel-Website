@@ -4,18 +4,20 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Luna Travel CMS</title>
-    <script src="https://unpkg.com/netlify-cms-app@^2.15.72/dist/netlify-cms-app.js"></script>
   </head>
   <body>
     <h2 style="text-align:center; margin-top:20%;">
       Cargando panel de administración...
     </h2>
 
+    <!-- Carga oficial de Netlify CMS -->
+    <script src="https://unpkg.com/netlify-cms@^2.10.192/dist/netlify-cms.js"></script>
+
     <script>
       window.CMS_MANUAL_INIT = true;
       window.onload = function () {
         try {
-          NetlifyCmsApp.init({
+          CMS.init({
             configPath: "/admin/config.yml",
           });
           console.log("✅ CMS iniciado correctamente.");
@@ -30,5 +32,6 @@
     </script>
   </body>
 </html>
+
 
 
