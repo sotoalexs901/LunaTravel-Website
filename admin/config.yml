@@ -5,8 +5,9 @@ backend:
   base_url: https://api.netlify.com
   auth_type: pkce
 
-media_folder: "uploads"
-public_folder: "/uploads"
+publish_mode: editorial_workflow
+deploy_url: "https://api.netlify.com/build_hooks/66fa35ccda111b723cbb2222"
+
 
 site_url: https://www.lunatravel25.com
 
