@@ -78,10 +78,12 @@
       background: #007bff;
       color: white;
       padding: 10px 15px;
-      margin-top: 20px;
+      margin: 10px;
       border-radius: 8px;
       text-decoration: none;
       transition: 0.3s;
+      border: none;
+      cursor: pointer;
     }
 
     .edit-btn:hover {
@@ -98,20 +100,6 @@
     .contact-info {
       font-size: 0.95rem;
       line-height: 1.6;
-    }
-
-    .status-box {
-      position: fixed;
-      top: 15px;
-      right: 15px;
-      background: #222;
-      color: #fff;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-size: 14px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-      z-index: 9999;
-      display: none;
     }
 
     .toast {
@@ -146,48 +134,32 @@
   <section id="services">
     <h2>Servicios y Precios</h2>
     <div id="services-container">Cargando servicios...</div>
-    <a href="https://www.lunatravel25.com/admin/#/collections/pricing"
-       class="edit-btn"
-       target="_blank"
-       onclick="showToast('Abriendo panel de administración...')">
-       🛠 Editar Precios y Servicios
-    </a>
   </section>
 
   <!-- SECCIÓN GALERÍA -->
   <section id="gallery">
     <h2>Galería de Fotos</h2>
     <div id="gallery-container" class="gallery">Cargando fotos...</div>
-    <a href="https://www.lunatravel25.com/admin/#/collections/gallery"
-       class="edit-btn"
-       target="_blank"
-       onclick="showToast('Abriendo panel de fotos...')">
-       📸 Subir / Editar Fotos
-    </a>
   </section>
 
   <!-- SECCIÓN TESTIMONIOS -->
   <section id="testimonials">
     <h2>Lo que dicen nuestros clientes</h2>
     <div id="testimonials-container">Cargando testimonios...</div>
-    <a href="https://www.lunatravel25.com/admin/#/collections/testimonials"
-       class="edit-btn"
-       target="_blank"
-       onclick="showToast('Abriendo testimonios...')">
-       💬 Editar Testimonios
-    </a>
   </section>
+
+  <!-- BOTONES DE EDICIÓN -->
+  <div style="margin-top: 30px;">
+    <button class="edit-btn" onclick="openCMS('pricing')">🛠 Editar Precios y Servicios</button>
+    <button class="edit-btn" onclick="openCMS('gallery')">📸 Subir / Editar Fotos</button>
+    <button class="edit-btn" onclick="openCMS('testimonials')">💬 Editar Testimonios</button>
+    <button class="edit-btn" onclick="openCMS('contact')">📞 Editar Contacto</button>
+  </div>
 
   <!-- SECCIÓN CONTACTO -->
   <footer>
     <h3>Contacto</h3>
     <div class="contact-info" id="contact-container">Cargando datos...</div>
-    <a href="https://www.lunatravel25.com/admin/#/collections/contact"
-       class="edit-btn"
-       target="_blank"
-       onclick="showToast('Abriendo contacto...')">
-       📞 Editar Contacto
-    </a>
     <p>© 2025 Luna Travel. Todos los derechos reservados.</p>
   </footer>
 
@@ -263,43 +235,14 @@
     loadSiteData();
   </script>
 
-  <!-- SCRIPT: DEPLOY AUTOMÁTICO -->
+  <!-- SCRIPT: ABRIR CMS EN NUEVA PESTAÑA -->
   <script>
-    document.addEventListener("DOMContentLoaded", function () {
-      if (window.CMS) {
-        const statusBox = document.createElement("div");
-        statusBox.className = "status-box";
-        document.body.appendChild(statusBox);
+    function openCMS(section) {
+      const url = `https://www.lunatravel25.com/admin/#/collections/${section}`;
+      showToast("Abriendo panel de administración...");
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
 
-        function showStatus(text, color = "#2196f3") {
-          statusBox.style.display = "block";
-          statusBox.style.background = color;
-          statusBox.textContent = text;
-          setTimeout(() => (statusBox.style.display = "none"), 8000);
-        }
-
-        window.CMS.registerEventListener({
-          name: "postSave",
-          handler: async () => {
-            try {
-              const hookURL = "https://api.netlify.com/build_hooks/68f385ceb6df808073f90acd";
-              showStatus("🟡 Publicando cambios...", "#f9a825");
-              const res = await fetch(hookURL, { method: "POST" });
-              res.ok
-                ? showStatus("🟢 Sitio actualizado correctamente ✅", "#43a047")
-                : showStatus("🔴 Error al actualizar sitio ❌", "#e53935");
-            } catch (err) {
-              console.error(err);
-              showStatus("⚠️ No se pudo activar el deploy automático", "#e53935");
-            }
-          },
-        });
-      }
-    });
-  </script>
-
-  <!-- SCRIPT: TOAST CONFIRMACIÓN -->
-  <script>
     function showToast(message) {
       const toast = document.createElement('div');
       toast.className = 'toast';
@@ -312,5 +255,26 @@
       }, 3000);
     }
   </script>
+
+  <!-- SCRIPT: DEPLOY AUTOMÁTICO -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.CMS) {
+        window.CMS.registerEventListener({
+          name: "postSave",
+          handler: async () => {
+            try {
+              const hookURL = "https://api.netlify.com/build_hooks/68f385ceb6df808073f90acd";
+              await fetch(hookURL, { method: "POST" });
+              showToast("🟢 Sitio actualizado correctamente ✅");
+            } catch (err) {
+              showToast("⚠️ Error al desplegar automáticamente");
+            }
+          },
+        });
+      }
+    });
+  </script>
 </body>
 </html>
+
