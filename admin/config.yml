@@ -1,10 +1,9 @@
 backend:
-  name: github
-  repo: sotoalexs901/LunaTravel-Website
-  branch: main
-  base_url: https://dev-fu7ju2qp5x2aibyo.us.auth0.com
-  auth_endpoint: /authorize
-  auth_type: implicit
+  name: auth0
+  label: "Auth0"
+  domain: dev-fu7ju2qp5x2aibyo.us.auth0.com
+  client_id: uThgjHy6pU27FPpyOLMkSLjFv2TGGso8
+  redirect_uri: https://www.lunatravel25.com/admin/callback
 
 media_folder: "uploads"
 public_folder: "/uploads"
