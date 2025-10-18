@@ -6,8 +6,11 @@ backend:
   auth_type: pkce
 
 publish_mode: editorial_workflow
-deploy_url: "https://api.netlify.com/build_hooks/66fa35ccda111b723cbb2222"
 
+# URL del Hook de Netlify (Auto-Deploy)
+deploy_url: https://api.netlify.com/build_hooks/68f385ceb6df808073f90acd
+media_folder: "uploads"
+public_folder: "/uploads"
 
 site_url: https://www.lunatravel25.com
 
@@ -51,6 +54,9 @@ collections:
     create: true
     extension: "json"
     fields:
+      - { label: "Nombre", name: "name", widget: "string" }
+      - { label: "Comentario", name: "comment", widget: "text" }
+
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Comentario", name: "comment", widget: "text" }
 
