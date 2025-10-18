@@ -113,6 +113,26 @@
       z-index: 9999;
       display: none;
     }
+
+    .toast {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background: #007bff;
+      color: white;
+      padding: 12px 20px;
+      border-radius: 6px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+      opacity: 0;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+      z-index: 99999;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
   </style>
 </head>
 
@@ -126,28 +146,48 @@
   <section id="services">
     <h2>Servicios y Precios</h2>
     <div id="services-container">Cargando servicios...</div>
-    <a href="/admin/#/collections/pricing" class="edit-btn" target="_blank">🛠 Editar Precios y Servicios</a>
+    <a href="https://www.lunatravel25.com/admin/#/collections/pricing"
+       class="edit-btn"
+       target="_blank"
+       onclick="showToast('Abriendo panel de administración...')">
+       🛠 Editar Precios y Servicios
+    </a>
   </section>
 
   <!-- SECCIÓN GALERÍA -->
   <section id="gallery">
     <h2>Galería de Fotos</h2>
     <div id="gallery-container" class="gallery">Cargando fotos...</div>
-    <a href="/admin/#/collections/gallery" class="edit-btn" target="_blank">📸 Subir / Editar Fotos</a>
+    <a href="https://www.lunatravel25.com/admin/#/collections/gallery"
+       class="edit-btn"
+       target="_blank"
+       onclick="showToast('Abriendo panel de fotos...')">
+       📸 Subir / Editar Fotos
+    </a>
   </section>
 
   <!-- SECCIÓN TESTIMONIOS -->
   <section id="testimonials">
     <h2>Lo que dicen nuestros clientes</h2>
     <div id="testimonials-container">Cargando testimonios...</div>
-    <a href="/admin/#/collections/testimonials" class="edit-btn" target="_blank">💬 Editar Testimonios</a>
+    <a href="https://www.lunatravel25.com/admin/#/collections/testimonials"
+       class="edit-btn"
+       target="_blank"
+       onclick="showToast('Abriendo testimonios...')">
+       💬 Editar Testimonios
+    </a>
   </section>
 
   <!-- SECCIÓN CONTACTO -->
   <footer>
     <h3>Contacto</h3>
     <div class="contact-info" id="contact-container">Cargando datos...</div>
-    <a href="/admin/#/collections/contact" class="edit-btn" target="_blank">📞 Editar Contacto</a>
+    <a href="https://www.lunatravel25.com/admin/#/collections/contact"
+       class="edit-btn"
+       target="_blank"
+       onclick="showToast('Abriendo contacto...')">
+       📞 Editar Contacto
+    </a>
     <p>© 2025 Luna Travel. Todos los derechos reservados.</p>
   </footer>
 
@@ -257,10 +297,20 @@
       }
     });
   </script>
+
+  <!-- SCRIPT: TOAST CONFIRMACIÓN -->
+  <script>
+    function showToast(message) {
+      const toast = document.createElement('div');
+      toast.className = 'toast';
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.classList.add('show'), 100);
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+  </script>
 </body>
 </html>
-
- 
-
-
-
