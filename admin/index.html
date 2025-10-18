@@ -3,29 +3,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Luna Travel - Servicios de Viaje y Trámites</title>
+  <title>Luna Travel - Administración y Servicios</title>
 
   <style>
     body {
       margin: 0;
       font-family: 'Poppins', sans-serif;
-      background-color: #f8f8f8;
-      color: #222;
+      background-color: #f7f7f7;
       text-align: center;
-      background-image: url('/images/luna-logo.jpeg');
-      background-size: contain;
-      background-repeat: no-repeat;
-      background-position: top center;
+      color: #222;
     }
 
     header {
-      background-color: rgba(0, 0, 0, 0.75);
+      background-color: #111;
       color: white;
-      padding: 1rem 0;
-      font-size: 1.4rem;
+      padding: 1rem;
+      font-size: 1.5rem;
       font-weight: bold;
       letter-spacing: 1px;
-      border-bottom: 3px solid #d4af37;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
     }
 
     section {
@@ -58,10 +63,9 @@
 
     .gallery img {
       width: 250px;
-      height: auto;
       border-radius: 10px;
       margin: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
       transition: transform 0.2s ease;
     }
 
@@ -69,8 +73,23 @@
       transform: scale(1.05);
     }
 
+    .edit-btn {
+      display: inline-block;
+      background: #007bff;
+      color: white;
+      padding: 10px 15px;
+      margin-top: 20px;
+      border-radius: 8px;
+      text-decoration: none;
+      transition: 0.3s;
+    }
+
+    .edit-btn:hover {
+      background: #0056b3;
+    }
+
     footer {
-      background-color: #111;
+      background: #111;
       color: white;
       padding: 20px;
       margin-top: 40px;
@@ -99,35 +118,40 @@
 
 <body>
   <header>
-    ✈️ Luna Travel - Tu agencia de confianza 🌙
+    <img src="/images/luna-logo.jpeg" alt="Luna Travel Logo" />
+    Luna Travel 🌙
   </header>
 
   <!-- SECCIÓN SERVICIOS -->
   <section id="services">
     <h2>Servicios y Precios</h2>
     <div id="services-container">Cargando servicios...</div>
+    <a href="/admin/#/collections/pricing" class="edit-btn" target="_blank">🛠 Editar Precios y Servicios</a>
   </section>
 
   <!-- SECCIÓN GALERÍA -->
   <section id="gallery">
     <h2>Galería de Fotos</h2>
     <div id="gallery-container" class="gallery">Cargando fotos...</div>
+    <a href="/admin/#/collections/gallery" class="edit-btn" target="_blank">📸 Subir / Editar Fotos</a>
   </section>
 
   <!-- SECCIÓN TESTIMONIOS -->
   <section id="testimonials">
     <h2>Lo que dicen nuestros clientes</h2>
     <div id="testimonials-container">Cargando testimonios...</div>
+    <a href="/admin/#/collections/testimonials" class="edit-btn" target="_blank">💬 Editar Testimonios</a>
   </section>
 
   <!-- SECCIÓN CONTACTO -->
   <footer>
     <h3>Contacto</h3>
     <div class="contact-info" id="contact-container">Cargando datos...</div>
+    <a href="/admin/#/collections/contact" class="edit-btn" target="_blank">📞 Editar Contacto</a>
     <p>© 2025 Luna Travel. Todos los derechos reservados.</p>
   </footer>
 
-  <!-- SCRIPT: CARGAR DATOS -->
+  <!-- SCRIPT: CARGA DE DATOS -->
   <script>
     async function loadJSON(url) {
       try {
@@ -147,21 +171,16 @@
       servicesData.servicios?.forEach(s => {
         const card = document.createElement('div');
         card.className = 'service-card';
-        card.innerHTML = `
-          <h3>${s.name_es}</h3>
-          <p>${s.desc_es}</p>
-          <strong>${s.price}</strong>
-        `;
+        card.innerHTML = `<h3>${s.name_es}</h3><p>${s.desc_es}</p><strong>${s.price}</strong>`;
         servicesDiv.appendChild(card);
       });
 
-      // Galería automática
+      // Galería
       const galleryDiv = document.getElementById('gallery-container');
       galleryDiv.innerHTML = '';
       const galleryFiles = await fetch('/uploads/gallery/')
         .then(r => r.text())
         .then(text => {
-          // Buscar nombres de archivos JSON listados en HTML (Netlify no da API de listado)
           const matches = [...text.matchAll(/href="([^"]+\.json)"/g)].map(m => m[1]);
           return matches;
         })
@@ -197,10 +216,7 @@
       const contactData = await loadJSON('/data/contact.json');
       const c = contactData[0];
       document.getElementById('contact-container').innerHTML = `
-        📧 ${c.email}<br>
-        ☎️ ${c.phone}<br>
-        📍 ${c.address}<br>
-        💬 WhatsApp: ${c.whatsapp}
+        📧 ${c.email}<br>☎️ ${c.phone}<br>📍 ${c.address}<br>💬 WhatsApp: ${c.whatsapp}
       `;
     }
 
