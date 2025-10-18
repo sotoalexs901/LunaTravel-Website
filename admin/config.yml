@@ -52,3 +52,4 @@ collections:
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Comentario", name: "comment", widget: "text" }
+
