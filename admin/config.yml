@@ -57,6 +57,4 @@ collections:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Comentario", name: "comment", widget: "text" }
 
-      - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Comentario", name: "comment", widget: "text" }
 
