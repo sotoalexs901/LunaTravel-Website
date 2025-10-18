@@ -148,13 +148,43 @@
     <div id="testimonials-container">Cargando testimonios...</div>
   </section>
 
-  <!-- BOTONES DE EDICIÓN -->
+<!-- BOTONES DE EDICIÓN -->
 <div style="margin-top: 30px;">
-  <button class="edit-btn" onclick="openCMS('pricing')">🛠 Editar Precios y Servicios</button>
-  <button class="edit-btn" onclick="openCMS('gallery')">📸 Subir / Editar Fotos</button>
-  <button class="edit-btn" onclick="openCMS('testimonials')">💬 Editar Testimonios</button>
-  <button class="edit-btn" onclick="openCMS('contact')">📞 Editar Contacto</button>
+  <button class="edit-btn" onclick="goToCMS('pricing')">🛠 Editar Precios y Servicios</button>
+  <button class="edit-btn" onclick="goToCMS('gallery')">📸 Subir / Editar Fotos</button>
+  <button class="edit-btn" onclick="goToCMS('testimonials')">💬 Editar Testimonios</button>
+  <button class="edit-btn" onclick="goToCMS('contact')">📞 Editar Contacto</button>
 </div>
+
+<script>
+  function goToCMS(section) {
+    const cmsURL = `https://www.lunatravel25.com/admin/#/collections/${section}`;
+
+    showToast("🔑 Abriendo panel de administración...");
+
+    // 🚀 Método que garantiza apertura en nueva pestaña separada
+    const newWindow = window.open('', '_blank');
+    if (newWindow) {
+      newWindow.opener = null; // Desvincula la pestaña del sitio principal
+      newWindow.location.href = cmsURL;
+    } else {
+      alert("Por favor, permite las ventanas emergentes para este sitio.");
+    }
+  }
+
+  function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+      toast.classList.remove('show');
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
+  }
+</script>
+
 
 <script>
   function openCMS(section) {
