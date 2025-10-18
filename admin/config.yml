@@ -34,18 +34,15 @@ collections:
       - { label: "WhatsApp", name: "whatsapp", widget: "string" }
       - { label: "Dirección", name: "address", widget: "string" }
 
-   - name: "gallery"
+  - name: "gallery"
     label: "Galería de Fotos"
     folder: "uploads/gallery"
     create: true
     slug: "{{slug}}"
-    media_folder: ""
-    public_folder: ""
     extension: "json"
     fields:
       - { label: "Título", name: "title", widget: "string" }
-      - { label: "Imagen", name: "image", widget: "image", choose_url: true, media_library: { config: { multiple: false } } }
-
+      - { label: "Imagen", name: "image", widget: "image", choose_url: true }
 
   - name: "testimonials"
     label: "Testimonios"
@@ -55,3 +52,4 @@ collections:
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Comentario", name: "comment", widget: "text" }
+
