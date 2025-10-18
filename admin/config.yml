@@ -1,19 +1,21 @@
 backend:
   name: auth0
   label: "Auth0"
-  domain: dev-fu7ju2qp5x2aibyo.us.auth0.com
-  client_id: uThgjHy6pU27FPpyOLMkSLjFv2TGGso8
+  domain: dev-fu7ju2qbp5x2aibyo.us.auth0.com
+  client_id: ZWqTvQVHLO4jeL1vQ8m6LKHo56Yd0tH2
   redirect_uri: https://www.lunatravel25.com/admin/callback
 
+publish_mode: editorial_workflow
+site_url: https://www.lunatravel25.com
 media_folder: "uploads"
 public_folder: "/uploads"
-
-site_url: https://www.lunatravel25.com
 
 collections:
   - name: "pricing"
     label: "Precios y Servicios"
-    file: "data/pricing.json"
+    folder: "data/pricing"
+    create: true
+    extension: "json"
     fields:
       - { label: "Nombre (ES)", name: "name_es", widget: "string" }
       - { label: "Nombre (EN)", name: "name_en", widget: "string" }
@@ -23,7 +25,9 @@ collections:
 
   - name: "contact"
     label: "Contacto"
-    file: "data/contact.json"
+    folder: "data/contact"
+    create: true
+    extension: "json"
     fields:
       - { label: "Correo electrónico", name: "email", widget: "string" }
       - { label: "Teléfono", name: "phone", widget: "string" }
@@ -38,7 +42,7 @@ collections:
     extension: "json"
     fields:
       - { label: "Título", name: "title", widget: "string" }
-      - { label: "Imagen", name: "image", widget: "image" }
+      - { label: "Imagen", name: "image", widget: "image", choose_url: true }
 
   - name: "testimonials"
     label: "Testimonios"
