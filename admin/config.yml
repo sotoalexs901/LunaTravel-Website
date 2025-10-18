@@ -2,8 +2,9 @@ backend:
   name: github
   repo: sotoalexs901/LunaTravel-Website
   branch: main
-  base_url: https://api.netlify.com
-  auth_type: pkce
+  base_url: https://dev-fu7ju2qp5x2aibyo.us.auth0.com
+  auth_endpoint: /authorize
+  auth_type: implicit
 
 media_folder: "uploads"
 public_folder: "/uploads"
