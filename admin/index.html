@@ -1,36 +1,246 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Luna Travel CMS</title>
-  </head>
-  <body>
-    <h2 style="text-align:center; margin-top:20%;">
-      Cargando panel de administración...
-    </h2>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luna Travel - Servicios de Viaje y Trámites</title>
 
-    <!-- Carga oficial de Netlify CMS -->
-    <script src="https://unpkg.com/netlify-cms@^2.10.192/dist/netlify-cms.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #f8f8f8;
+      color: #222;
+      text-align: center;
+      background-image: url('/images/luna-logo.jpeg');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: top center;
+    }
 
-    <script>
-      window.CMS_MANUAL_INIT = true;
-      window.onload = function () {
-        try {
-          CMS.init({
-            configPath: "/admin/config.yml",
-          });
-          console.log("✅ CMS iniciado correctamente.");
-        } catch (error) {
-          document.body.innerHTML +=
-            "<p style='color:red; text-align:center; margin-top:20px;'>❌ Error al iniciar el CMS: " +
-            error.message +
-            "</p>";
-          console.error("Error al iniciar el CMS:", error);
+    header {
+      background-color: rgba(0, 0, 0, 0.75);
+      color: white;
+      padding: 1rem 0;
+      font-size: 1.4rem;
+      font-weight: bold;
+      letter-spacing: 1px;
+      border-bottom: 3px solid #d4af37;
+    }
+
+    section {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h2 {
+      color: #111;
+      margin-bottom: 15px;
+    }
+
+    .service-card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 15px;
+      margin: 10px;
+      display: inline-block;
+      width: 250px;
+      vertical-align: top;
+    }
+
+    .gallery {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .gallery img {
+      width: 250px;
+      height: auto;
+      border-radius: 10px;
+      margin: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    .gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    footer {
+      background-color: #111;
+      color: white;
+      padding: 20px;
+      margin-top: 40px;
+    }
+
+    .contact-info {
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+
+    .status-box {
+      position: fixed;
+      top: 15px;
+      right: 15px;
+      background: #222;
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 9999;
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    ✈️ Luna Travel - Tu agencia de confianza 🌙
+  </header>
+
+  <!-- SECCIÓN SERVICIOS -->
+  <section id="services">
+    <h2>Servicios y Precios</h2>
+    <div id="services-container">Cargando servicios...</div>
+  </section>
+
+  <!-- SECCIÓN GALERÍA -->
+  <section id="gallery">
+    <h2>Galería de Fotos</h2>
+    <div id="gallery-container" class="gallery">Cargando fotos...</div>
+  </section>
+
+  <!-- SECCIÓN TESTIMONIOS -->
+  <section id="testimonials">
+    <h2>Lo que dicen nuestros clientes</h2>
+    <div id="testimonials-container">Cargando testimonios...</div>
+  </section>
+
+  <!-- SECCIÓN CONTACTO -->
+  <footer>
+    <h3>Contacto</h3>
+    <div class="contact-info" id="contact-container">Cargando datos...</div>
+    <p>© 2025 Luna Travel. Todos los derechos reservados.</p>
+  </footer>
+
+  <!-- SCRIPT: CARGAR DATOS -->
+  <script>
+    async function loadJSON(url) {
+      try {
+        const res = await fetch(url);
+        return await res.json();
+      } catch (e) {
+        console.error('Error cargando', url, e);
+        return [];
+      }
+    }
+
+    async function loadSiteData() {
+      // Servicios
+      const servicesData = await loadJSON('/data/pricing.json');
+      const servicesDiv = document.getElementById('services-container');
+      servicesDiv.innerHTML = '';
+      servicesData.servicios?.forEach(s => {
+        const card = document.createElement('div');
+        card.className = 'service-card';
+        card.innerHTML = `
+          <h3>${s.name_es}</h3>
+          <p>${s.desc_es}</p>
+          <strong>${s.price}</strong>
+        `;
+        servicesDiv.appendChild(card);
+      });
+
+      // Galería automática
+      const galleryDiv = document.getElementById('gallery-container');
+      galleryDiv.innerHTML = '';
+      const galleryFiles = await fetch('/uploads/gallery/')
+        .then(r => r.text())
+        .then(text => {
+          // Buscar nombres de archivos JSON listados en HTML (Netlify no da API de listado)
+          const matches = [...text.matchAll(/href="([^"]+\.json)"/g)].map(m => m[1]);
+          return matches;
+        })
+        .catch(() => []);
+
+      if (galleryFiles.length === 0) {
+        galleryDiv.textContent = 'No hay fotos aún.';
+      } else {
+        for (const file of galleryFiles) {
+          try {
+            const item = await loadJSON('/uploads/gallery/' + file);
+            if (item.image) {
+              const img = document.createElement('img');
+              img.src = item.image;
+              img.alt = item.title || 'Foto de servicio';
+              galleryDiv.appendChild(img);
+            }
+          } catch {}
         }
-      };
-      ...
-  <script src="/trigger-deploy.js"></script>
+      }
+
+      // Testimonios
+      const testiData = await loadJSON('/data/testimonials.json');
+      const testiDiv = document.getElementById('testimonials-container');
+      testiDiv.innerHTML = '';
+      testiData.forEach(t => {
+        const p = document.createElement('p');
+        p.textContent = `“${t.comment}” — ${t.name}`;
+        testiDiv.appendChild(p);
+      });
+
+      // Contacto
+      const contactData = await loadJSON('/data/contact.json');
+      const c = contactData[0];
+      document.getElementById('contact-container').innerHTML = `
+        📧 ${c.email}<br>
+        ☎️ ${c.phone}<br>
+        📍 ${c.address}<br>
+        💬 WhatsApp: ${c.whatsapp}
+      `;
+    }
+
+    loadSiteData();
+  </script>
+
+  <!-- SCRIPT: DEPLOY AUTOMÁTICO -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      if (window.CMS) {
+        const statusBox = document.createElement("div");
+        statusBox.className = "status-box";
+        document.body.appendChild(statusBox);
+
+        function showStatus(text, color = "#2196f3") {
+          statusBox.style.display = "block";
+          statusBox.style.background = color;
+          statusBox.textContent = text;
+          setTimeout(() => (statusBox.style.display = "none"), 8000);
+        }
+
+        window.CMS.registerEventListener({
+          name: "postSave",
+          handler: async () => {
+            try {
+              const hookURL = "https://api.netlify.com/build_hooks/68f385ceb6df808073f90acd";
+              showStatus("🟡 Publicando cambios...", "#f9a825");
+              const res = await fetch(hookURL, { method: "POST" });
+              res.ok
+                ? showStatus("🟢 Sitio actualizado correctamente ✅", "#43a047")
+                : showStatus("🔴 Error al actualizar sitio ❌", "#e53935");
+            } catch (err) {
+              console.error(err);
+              showStatus("⚠️ No se pudo activar el deploy automático", "#e53935");
+            }
+          },
+        });
+      }
+    });
+  </script>
 </body>
 </html>
 
