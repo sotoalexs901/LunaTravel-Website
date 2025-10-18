@@ -7,9 +7,6 @@ backend:
 
 publish_mode: editorial_workflow
 
-# URL del Hook de Netlify (Auto-Deploy)
-deploy_url: "https://api.netlify.com/build_hooks/68f385ceb6df808073f90acd"
-
 media_folder: "uploads"
 public_folder: "/uploads"
 
@@ -18,21 +15,18 @@ site_url: https://www.lunatravel25.com
 collections:
   - name: "pricing"
     label: "Precios y Servicios"
-    folder: "data/pricing"
-    create: true
-    extension: "json"
+    file: "data/pricing.json"
     fields:
-      - { label: "Nombre (ES)", name: "name_es", widget: "string" }
-      - { label: "Nombre (EN)", name: "name_en", widget: "string" }
-      - { label: "Precio", name: "price", widget: "string" }
-      - { label: "Descripción (ES)", name: "desc_es", widget: "text" }
-      - { label: "Descripción (EN)", name: "desc_en", widget: "text" }
+      - { label: "Servicios", name: "servicios", widget: "list", fields:
+          [
+            { label: "Nombre (ES)", name: "name_es", widget: "string" },
+            { label: "Precio", name: "price", widget: "string" },
+            { label: "Descripción (ES)", name: "desc_es", widget: "text" }
+          ] }
 
   - name: "contact"
     label: "Contacto"
-    folder: "data/contact"
-    create: true
-    extension: "json"
+    file: "data/contact.json"
     fields:
       - { label: "Correo electrónico", name: "email", widget: "string" }
       - { label: "Teléfono", name: "phone", widget: "string" }
@@ -47,15 +41,14 @@ collections:
     extension: "json"
     fields:
       - { label: "Título", name: "title", widget: "string" }
-      - { label: "Imagen", name: "image", widget: "image", choose_url: true }
+      - { label: "Imagen", name: "image", widget: "image" }
 
   - name: "testimonials"
     label: "Testimonios"
-    folder: "data/testimonials"
-    create: true
-    extension: "json"
+    file: "data/testimonials.json"
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Comentario", name: "comment", widget: "text" }
+
 
 
