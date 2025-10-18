@@ -5,8 +5,6 @@ backend:
   base_url: https://api.netlify.com
   auth_type: pkce
 
-publish_mode: editorial_workflow
-
 media_folder: "uploads"
 public_folder: "/uploads"
 
@@ -17,12 +15,11 @@ collections:
     label: "Precios y Servicios"
     file: "data/pricing.json"
     fields:
-      - { label: "Servicios", name: "servicios", widget: "list", fields:
-          [
-            { label: "Nombre (ES)", name: "name_es", widget: "string" },
-            { label: "Precio", name: "price", widget: "string" },
-            { label: "Descripción (ES)", name: "desc_es", widget: "text" }
-          ] }
+      - { label: "Nombre (ES)", name: "name_es", widget: "string" }
+      - { label: "Nombre (EN)", name: "name_en", widget: "string" }
+      - { label: "Precio", name: "price", widget: "string" }
+      - { label: "Descripción (ES)", name: "desc_es", widget: "text" }
+      - { label: "Descripción (EN)", name: "desc_en", widget: "text" }
 
   - name: "contact"
     label: "Contacto"
@@ -45,10 +42,9 @@ collections:
 
   - name: "testimonials"
     label: "Testimonios"
-    file: "data/testimonials.json"
+    folder: "data/testimonials"
+    create: true
+    extension: "json"
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
       - { label: "Comentario", name: "comment", widget: "text" }
-
-
-
