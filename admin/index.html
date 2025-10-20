@@ -7,16 +7,40 @@
 
     <!-- Cargar Netlify CMS -->
     <script src="https://unpkg.com/netlify-cms-app@^2.10.192/dist/netlify-cms.js"></script>
+
+    <!-- Estilos simples mientras carga -->
+    <style>
+      body {
+        font-family: "Segoe UI", Arial, sans-serif;
+        background-color: #f4f6f8;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .loading {
+        text-align: center;
+      }
+      .loading h2 {
+        color: #004aad;
+        font-weight: 600;
+      }
+    </style>
   </head>
+
   <body>
-    <h2 style="text-align:center; margin-top:20%;">Cargando panel de administración...</h2>
+    <div class="loading">
+      <h2>Cargando panel de administración...</h2>
+      <p>Por favor, espera un momento.</p>
+    </div>
 
     <script>
-      // Inicializar Netlify CMS con Auth0
+      // Inicializar Netlify CMS y vincular con tu configuración
       NetlifyCmsApp.init({
-        configPath: "/admin/config.yml",
+        configPath: "/admin/config.yml"
       });
     </script>
   </body>
 </html>
-
