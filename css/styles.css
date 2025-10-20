@@ -1,3 +1,325 @@
+/* === VARIABLES DE COLOR Y BASE === */
+:root {
+  --bg: #f7f7f4;
+  --bg-soft: #f0f3f6;
+  --brand: #2b5ea8;
+  --brand-2: #98b7e1;
+  --ink: #1c2430;
+  --muted: #5c6b7a;
+  --card: #ffffff;
+  --ring: rgba(43, 94, 168, .25);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  color: var(--ink);
+  background: var(--bg);
+  line-height: 1.6;
+}
+
+/* === CONTENEDOR GENERAL === */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* === HEADER Y NAVEGACIÓN === */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(255, 255, 255, .85);
+  backdrop-filter: saturate(180%) blur(8px);
+  border-bottom: 1px solid #e6ecf2;
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+}
+
+.brand-logo {
+  width: 38px;
+  height: 38px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 1px solid #e2e8f0;
+}
+
+.brand-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.menu a {
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.menu a:hover {
+  color: var(--brand);
+}
+
+.menu a.active {
+  color: var(--brand);
+  font-weight: 700;
+}
+
+/* === BOTONES === */
+.btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 999px;
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: .2s;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: #fff;
+  border-color: var(--brand);
+}
+
+.btn-primary:hover {
+  filter: brightness(.95);
+}
+
+.btn-soft {
+  background: #fff;
+  color: var(--brand);
+  border-color: #dbe6f3;
+}
+
+.btn-soft:hover {
+  background: #f5f9ff;
+}
+
+/* === HERO CON IMAGEN DEL LOCAL === */
+.hero-local {
+  position: relative;
+  background: url("../images/gallery9.jpg") center/cover no-repeat;
+  color: #fff;
+  padding: 120px 20px;
+  text-align: center;
+  min-height: 75vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-local .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(20, 50, 90, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.hero-content {
+  position: relative;
+  max-width: 700px;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 2.3rem;
+  line-height: 1.2;
+  margin-bottom: .5rem;
+}
+
+.hero-sub {
+  color: #dbe6f3;
+  font-size: 1.05rem;
+  margin-bottom: 1.2rem;
+}
+
+.hero-content .btn {
+  margin: 0 .3rem;
+}
+
+/* === SECCIONES GENERALES === */
+.section {
+  padding: 60px 0;
+}
+
+.section-title {
+  text-align: center;
+  font-size: 1.8rem;
+  margin-bottom: 1.5rem;
+  color: var(--brand);
+}
+
+/* === GRID Y TARJETAS === */
+.grid {
+  display: grid;
+  gap: 20px;
+}
+
+.grid.cards {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid #e6ecf2;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 4px 16px rgba(16, 24, 40, .04);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 22px rgba(16, 24, 40, .08);
+}
+
+.card h4 {
+  margin-top: 0;
+  color: var(--brand);
+}
+
+/* === SECCIÓN DE PRECIOS === */
+.bg-soft {
+  background: #f6f8fb;
+}
+
+.price-cards {
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.price {
+  text-align: center;
+}
+
+.price h3 {
+  font-size: 1.1rem;
+  color: var(--ink);
+}
+
+.price .amount {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--brand);
+  margin-top: 0.5rem;
+}
+
+/* === CONTACTO DIRECTO === */
+.contact-info {
+  background: linear-gradient(180deg, #f9fafb 0%, #e8eef6 100%);
+}
+
+.contact-grid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  text-align: center;
+}
+
+.contact-card {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #dbe3ee;
+  padding: 20px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  transition: transform .2s, box-shadow .2s;
+}
+
+.contact-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+}
+
+.contact-card h3 {
+  color: var(--brand);
+  margin-bottom: 6px;
+}
+
+.contact-card a {
+  color: #1f4d91;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.contact-card a:hover {
+  text-decoration: underline;
+}
+
+/* === FOOTER === */
+.site-footer {
+  border-top: 1px solid #e6ecf2;
+  background: #fff;
+}
+
+.site-footer .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 18px 20px;
+}
+
+.site-footer small {
+  color: #607086;
+}
+
+/* === ANIMACIONES === */
+.fade-in {
+  animation: fadeIn .6s ease both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 900px) {
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .menu a:not(.btn) {
+    display: none; /* Oculta enlaces en móvil */
+  }
+
+  .site-footer .container {
+    flex-direction: column;
+    text-align: center;
+  }
+}
 /* === HERO CON IMAGEN DEL LOCAL Y ANIMACIÓN === */
 .hero-local {
   position: relative;
