@@ -4,33 +4,50 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>¡Gracias! — Luna Travel</title>
-  <link rel="stylesheet" href="css/styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --brand: #2b5ea8;
+      --bg: linear-gradient(180deg, #f8f9fb 0%, #e3ecf6 100%);
+      --text: #0b3052;
+      --muted: #4b5b6a;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --brand: #88b1ff;
+        --bg: linear-gradient(180deg, #111827 0%, #1e293b 100%);
+        --text: #f3f4f6;
+        --muted: #cbd5e1;
+      }
+    }
+
     body {
-      background: linear-gradient(180deg, #f8f9fb 0%, #e3ecf6 100%);
-      text-align: center;
-      color: #0b3052;
+      margin: 0;
       font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       justify-content: center;
       align-items: center;
+      text-align: center;
+      padding: 2rem;
     }
 
     h1 {
       font-size: 2.5rem;
+      color: var(--brand);
       margin-bottom: 0.5rem;
-      color: #2b5ea8;
       animation: fadeInDown 1s ease forwards;
     }
 
     p {
       font-size: 1.1rem;
-      color: #34495e;
+      color: var(--muted);
       margin-bottom: 1.5rem;
-      animation: fadeInUp 1.5s ease forwards;
+      animation: fadeInUp 1.3s ease forwards;
     }
 
     .gif {
@@ -42,14 +59,14 @@
     }
 
     .btn {
-      background: #2b5ea8;
+      background: var(--brand);
       color: #fff;
       text-decoration: none;
       padding: 12px 24px;
       border-radius: 8px;
       font-weight: 600;
       transition: all 0.3s ease;
-      animation: fadeInUp 2.5s ease;
+      animation: fadeInUp 1.8s ease;
     }
 
     .btn:hover {
@@ -57,11 +74,22 @@
       transform: translateY(-2px);
     }
 
+    .info {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.95rem;
+      animation: fadeInUp 2.2s ease;
+    }
+
+    .info strong {
+      color: var(--brand);
+    }
+
     footer {
-      position: absolute;
-      bottom: 20px;
-      font-size: 0.9rem;
-      color: #607086;
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      animation: fadeInUp 2.4s ease;
     }
 
     @keyframes fadeInDown {
@@ -84,12 +112,22 @@
 </head>
 
 <body>
-  <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Mickey Mouse Gracias" class="gif" />
+  <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Mickey Mouse agradeciendo" class="gif" />
+
   <h1>¡Gracias por contactarnos! 🎉</h1>
-  <p>Tu mensaje fue enviado con éxito. <br>Nos pondremos en contacto contigo muy pronto.</p>
+  <p>Tu mensaje fue enviado con éxito.<br>Nos pondremos en contacto contigo muy pronto.</p>
+
   <a href="index.html" class="btn">Volver al inicio</a>
 
-  <footer>Este website está siendo manejado por Optima Service</footer>
+  <div class="info">
+    <p><strong>📍 Dirección:</strong> Av. Internacional #102, Miami, FL 33172</p>
+    <p><strong>📞 Teléfono:</strong> <a href="tel:+17861234567" style="color:inherit;text-decoration:none;">+1 (786) 123-4567</a></p>
+    <p><strong>🕓 Horarios:</strong> Lunes a Viernes 9:00 am – 6:00 pm · Sábados 9:00 am – 1:00 pm</p>
+  </div>
+
+  <footer>
+    Este website está siendo manejado por Optima Service
+  </footer>
 
   <!-- Chat Crisp -->
   <script type="text/javascript">
