@@ -1,4 +1,4 @@
-<<!doctype html>
+<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-  <!-- Header -->
+  <!-- HEADER -->
   <header class="site-header">
     <div class="container nav">
       <a href="index.html" class="brand">
@@ -24,63 +24,80 @@
     </div>
   </header>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container hero-grid">
-      <div class="hero-copy">
-        <h1 class="hero-title">Viaja y gestiona tus trámites con <span class="accent">Luna Travel</span></h1>
-        <p class="hero-sub">Asesoría confiable para trámites consulares cubanos (formularios y requisitos), venta de pasajes a todo el mundo, envío de paquetería, renta de autos, traducciones y notarizaciones.</p>
-        <div class="hero-cta">
-          <a href="contacto.html#formulario" class="btn btn-primary">Llenar solicitud</a>
-          <a href="precios.html" class="btn btn-soft">Ver precios</a>
-        </div>
-        <p class="chat-note">💬 Chat en vivo (Crisp) abajo a la derecha.</p>
+  <!-- HERO -->
+  <section class="hero hero-local">
+    <div class="overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">Viaja y gestiona tus trámites con <span class="accent">Luna Travel</span></h1>
+      <p class="hero-sub">
+        Asesoría confiable para trámites consulares, venta de boletos, envío de paquetería, traducciones y más.
+      </p>
+      <div class="hero-cta">
+        <a href="contacto.html#formulario" class="btn btn-primary">Llenar solicitud</a>
+        <a href="#precios" class="btn btn-soft">Ver precios</a>
       </div>
-
-      <aside class="card hero-chat fade-in">
-        <h3>Chat en vivo</h3>
-        <ul>
-          <li>Burbuja siempre visible</li>
-          <li>Mensaje automático de bienvenida</li>
-          <li>Captura de nombre y correo</li>
-        </ul>
-      </aside>
     </div>
   </section>
 
-  <!-- Servicios destacados (atajos) -->
+  <!-- SERVICIOS -->
   <section class="section">
     <div class="container">
-      <h2 class="section-title">Servicios</h2>
+      <h2 class="section-title">Nuestros Servicios</h2>
       <div class="grid cards fade-in">
-        <a class="card link" href="servicios.html#pasaporte">
-          <h4>Renovación de pasaporte</h4>
-          <p>Asistencia con formularios oficiales y requisitos.</p>
-        </a>
-        <a class="card link" href="servicios.html#paqueteria">
-          <h4>Envíos de paquetería</h4>
-          <p>Económico y express a Cuba y resto del mundo.</p>
-        </a>
-        <a class="card link" href="servicios.html#tickets">
-          <h4>Venta de tickets de vuelo</h4>
-          <p>Múltiples aerolíneas y destinos.</p>
-        </a>
-        <a class="card link" href="servicios.html#autos">
-          <h4>Renta de autos</h4>
-          <p>Reserva con socios confiables.</p>
-        </a>
-        <a class="card link" href="servicios.html#traducciones">
-          <h4>Traducción de documentos</h4>
-          <p>Traducciones certificadas.</p>
-        </a>
-        <a class="card link" href="servicios.html#notarizaciones">
-          <h4>Notarizaciones</h4>
-          <p>Coordinación y legalizaciones.</p>
-        </a>
+        <div class="card"><h4>Renovación de pasaporte cubano</h4><p>Gestión completa de tu trámite consular.</p></div>
+        <div class="card"><h4>Envío de paquetería</h4><p>A Cuba y a todo el mundo, rápido y seguro.</p></div>
+        <div class="card"><h4>Traducciones</h4><p>Certificadas y revisadas por expertos.</p></div>
+        <div class="card"><h4>Venta de boletos</h4><p>Vuelos internacionales con múltiples aerolíneas.</p></div>
+        <div class="card"><h4>Trámites migratorios</h4><p>Asesoría personalizada según tu caso.</p></div>
+        <div class="card"><h4>Notarizaciones</h4><p>Coordinación y legalización de documentos.</p></div>
       </div>
     </div>
   </section>
 
+  <!-- PRECIOS -->
+  <section class="section bg-soft" id="precios">
+    <div class="container">
+      <h2 class="section-title">Precios</h2>
+      <div class="grid price-cards">
+        <article class="card price"><h3>Renovación de pasaporte cubano</h3><p class="amount">$250</p></article>
+        <article class="card price"><h3>Envío de paquetería a Cuba</h3><p class="amount">Desde $3.99 por libra</p></article>
+        <article class="card price"><h3>Traducción de documentos</h3><p class="amount">$25 por página</p></article>
+        <article class="card price"><h3>Venta de tickets de vuelo</h3><p class="amount">Variable según destino</p></article>
+        <article class="card price"><h3>Trámite migratorio</h3><p class="amount">Consultar según caso</p></article>
+        <article class="card price"><h3>Notarizaciones</h3><p class="amount">Desde $30</p></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO DIRECTO -->
+  <section class="section contact-info">
+    <div class="container grid contact-grid">
+      <div class="contact-card fade-in">
+        <h3>📍 Dirección</h3>
+        <p>Av. Internacional #102, Miami, FL 33172</p>
+      </div>
+      <div class="contact-card fade-in">
+        <h3>📞 Teléfono</h3>
+        <p><a href="tel:+18138768151">813-876-8151</a></p>
+      </div>
+      <div class="contact-card fade-in">
+        <h3>💬 WhatsApp</h3>
+        <p><a href="https://wa.me/13088508798" target="_blank">308-850-8798</a></p>
+      </div>
+      <div class="contact-card fade-in">
+        <h3>📧 Email</h3>
+        <p><a href="mailto:lunatravel25@yahoo.com">lunatravel25@yahoo.com</a></p>
+      </div>
+      <div class="contact-card fade-in">
+        <h3>🕓 Horarios</h3>
+        <p>Lunes a Viernes: 9:00am – 6:00pm<br>
+           Sábado: 8:00am – 5:00pm<br>
+           Domingo: 9:00am – 2:00pm</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer class="site-footer">
     <div class="container">
       <p>© <span id="y"></span> Luna Travel</p>
@@ -90,7 +107,7 @@
 
   <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
 
-  <!-- Crisp -->
+  <!-- CRISP -->
   <script type="text/javascript">
     window.$crisp=[]; window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
     (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
