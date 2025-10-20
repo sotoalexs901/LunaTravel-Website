@@ -1,1 +1,240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luna Travel</title>
+
+  <!-- Meta -->
+  <meta name="description" content="Luna Travel: Tu agencia de viajes de confianza. Disfruta experiencias inolvidables con nuestros paquetes turísticos y servicios personalizados." />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css" />
+
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.6;
+      background-color: #fafafa;
+      color: #222;
+    }
+    header {
+      background: #004aad;
+      color: #fff;
+      padding: 20px 0;
+      text-align: center;
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2rem;
+      letter-spacing: 1px;
+    }
+    nav {
+      background: #003580;
+      padding: 10px 0;
+      text-align: center;
+    }
+    nav a {
+      color: #fff;
+      margin: 0 15px;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    section {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    section h2 {
+      text-align: center;
+      color: #004aad;
+      margin-bottom: 10px;
+    }
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+    .service-card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    footer {
+      background: #004aad;
+      color: #fff;
+      text-align: center;
+      padding: 20px;
+      margin-top: 60px;
+    }
+
+    /* Formulario */
+    .contact-section {
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      padding: 30px;
+    }
+    form {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      background: #004aad;
+      color: #fff;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    button:hover {
+      background: #003580;
+    }
+    #form-status {
+      margin-top: 10px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header>
+    <h1>Luna Travel</h1>
+    <p>Tu próximo destino comienza aquí ✈️</p>
+  </header>
+
+  <!-- NAVBAR -->
+  <nav>
+    <a href="#inicio">Inicio</a>
+    <a href="#servicios">Servicios</a>
+    <a href="#contacto">Contacto</a>
+  </nav>
+
+  <!-- SECCIÓN PRINCIPAL -->
+  <section id="inicio">
+    <h2>Bienvenido a Luna Travel</h2>
+    <p style="text-align:center;max-width:800px;margin:auto;">
+      Somos tu agencia de viajes ideal. Organizamos experiencias únicas para que disfrutes de cada destino sin preocupaciones.
+    </p>
+  </section>
+
+  <!-- SERVICIOS -->
+  <section id="servicios">
+    <h2>Nuestros Servicios</h2>
+    <div class="services">
+      <div class="service-card">
+        <h3>Paquetes Turísticos</h3>
+        <p>Explora destinos increíbles con todo incluido.</p>
+      </div>
+      <div class="service-card">
+        <h3>Reservas de Vuelos</h3>
+        <p>Te conseguimos las mejores tarifas aéreas.</p>
+      </div>
+      <div class="service-card">
+        <h3>Hoteles y Transporte</h3>
+        <p>Hospédate y muévete con comodidad y confianza.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACTO -->
+  <section id="contacto" class="contact-section">
+    <h2>Contáctanos</h2>
+    <p>Completa el formulario y te responderemos pronto.</p>
+
+    <form id="contact-form"
+          name="contact"
+          method="POST"
+          data-netlify="true"
+          netlify-honeypot="bot-field">
+
+      <input type="hidden" name="form-name" value="contact" />
+      <p style="display:none;">
+        <label>No llenar si eres humano: <input name="bot-field" /></label>
+      </p>
+
+      <label>Nombre:</label>
+      <input type="text" name="name" required placeholder="Tu nombre">
+
+      <label>Email:</label>
+      <input type="email" name="email" required placeholder="tucorreo@ejemplo.com">
+
+      <label>Teléfono (opcional):</label>
+      <input type="tel" name="phone" placeholder="+1 (___) ___-____">
+
+      <label>Mensaje:</label>
+      <textarea name="message" rows="5" required placeholder="Cuéntanos qué necesitas…"></textarea>
+
+      <button id="submit-btn" type="submit">Enviar</button>
+      <p id="form-status" style="display:none;"></p>
+    </form>
+
+    <script>
+      (function () {
+        const form = document.getElementById('contact-form');
+        const btn  = document.getElementById('submit-btn');
+        const msg  = document.getElementById('form-status');
+
+        function encode(data) {
+          return Object.keys(data)
+            .map(key => encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
+            .join('&');
+        }
+
+        form.addEventListener('submit', async (e) => {
+          e.preventDefault();
+          msg.style.display = 'block';
+          msg.textContent = 'Enviando...';
+          btn.disabled = true;
+
+          const formData = new FormData(form);
+          const payload = { 'form-name': form.getAttribute('name') };
+          for (const [k, v] of formData.entries()) payload[k] = v;
+
+          try {
+            const res = await fetch('/', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+              body: encode(payload)
+            });
+
+            if (res.ok) {
+              form.reset();
+              msg.textContent = '¡Gracias! Tu mensaje fue enviado correctamente.';
+            } else {
+              msg.textContent = 'Ocurrió un problema al enviar. Intenta de nuevo.';
+            }
+          } catch (err) {
+            msg.textContent = 'Error de conexión. Intenta más tarde.';
+          } finally {
+            btn.disabled = false;
+          }
+        });
+      })();
+    </script>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Luna Travel. Todos los derechos reservados.</p>
+  </footer>
+</body>
+</html>
 
