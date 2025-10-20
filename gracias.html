@@ -2,26 +2,104 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gracias - Luna Travel</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>¡Gracias! — Luna Travel</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(180deg, #f8f9fb 0%, #e3ecf6 100%);
+      text-align: center;
+      color: #0b3052;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      color: #2b5ea8;
+      animation: fadeInDown 1s ease forwards;
+    }
+
+    p {
+      font-size: 1.1rem;
+      color: #34495e;
+      margin-bottom: 1.5rem;
+      animation: fadeInUp 1.5s ease forwards;
+    }
+
+    .gif {
+      width: 280px;
+      height: auto;
+      border-radius: 16px;
+      margin-bottom: 1.5rem;
+      animation: bounceIn 2s ease;
+    }
+
+    .btn {
+      background: #2b5ea8;
+      color: #fff;
+      text-decoration: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      animation: fadeInUp 2.5s ease;
+    }
+
+    .btn:hover {
+      background: #1f4d91;
+      transform: translateY(-2px);
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 0.9rem;
+      color: #607086;
+    }
+
+    @keyframes fadeInDown {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes fadeInUp {
+      from {opacity: 0; transform: translateY(20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    @keyframes bounceIn {
+      0% {opacity: 0; transform: scale(0.3);}
+      50% {opacity: 1; transform: scale(1.05);}
+      70% {transform: scale(0.9);}
+      100% {transform: scale(1);}
+    }
+  </style>
 </head>
+
 <body>
-  <header class="hero">
-    <div class="container">
-      <h1>¡Gracias por tu mensaje!</h1>
-      <p>Hemos recibido tu información y nos pondremos en contacto contigo pronto.</p>
-    </div>
-  </header>
-  <main class="container">
-    <p>Puedes volver al inicio haciendo clic aquí:</p>
-    <p><a href="index.html" class="button">Volver al inicio</a></p>
-  </main>
-  <footer>
-    <div class="container">
-      <p>&copy; Luna Travel</p>
-      <p class="left-foot">Este website está siendo manejado por Optima Service</p>
-    </div>
-  </footer>
+  <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Mickey Mouse Gracias" class="gif" />
+  <h1>¡Gracias por contactarnos! 🎉</h1>
+  <p>Tu mensaje fue enviado con éxito. <br>Nos pondremos en contacto contigo muy pronto.</p>
+  <a href="index.html" class="btn">Volver al inicio</a>
+
+  <footer>Este website está siendo manejado por Optima Service</footer>
+
+  <!-- Chat Crisp -->
+  <script type="text/javascript">
+    window.$crisp=[];window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
+    (function(){
+      d=document;s=d.createElement("script");
+      s.src="https://client.crisp.chat/l.js";
+      s.async=1;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+  </script>
 </body>
 </html>
