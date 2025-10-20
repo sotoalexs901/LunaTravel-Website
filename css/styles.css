@@ -38,10 +38,12 @@
 /* Tipografía general del sitio */
 body {
   font-family: "Poppins", Arial, sans-serif;
-  color: #222;
-  background-color: #fdfdfb;
-  line-height: 1.6;
 }
+
+.tagline {
+  font-family: "Lora", Georgia, serif;
+}
+
 
 /* Títulos de secciones */
 h2 {
