@@ -1,0 +1,24 @@
+# netlify.toml - Configuración de despliegue para Luna Travel
+
+[build]
+  publish = "."
+  command = ""
+
+# Redirección general (sirve index.html para rutas desconocidas)
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Detectar y manejar formularios
+[[plugins]]
+  package = "@netlify/plugin-form-detection"
+
+# Cabeceras de seguridad
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
