@@ -1,97 +1,99 @@
-<!doctype html>
+<<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luna Travel - Tours & Servicios</title>
+  <title>Luna Travel — Inicio</title>
   <link rel="stylesheet" href="css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
- <header class="hero">
-  <div class="container">
-    <img src="images/luna-logo.jpg" alt="Luna Travel Logo" class="logo" />
-    <h1 class="main-title">Luna Travel</h1>
-    <p class="tagline">Explora. Relájate. Viaja con confianza.</p>
-  </div>
-</header>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="container nav">
+      <a href="index.html" class="brand">
+        <img src="images/luna-logo.jpg" alt="Luna Travel" class="brand-logo">
+        <span class="brand-name">Luna Travel</span>
+      </a>
+      <nav class="menu">
+        <a href="servicios.html">Servicios</a>
+        <a href="precios.html">Precios</a>
+        <a href="contacto.html">Contacto</a>
+        <a href="contacto.html" class="btn btn-primary">Contáctanos</a>
+      </nav>
+    </div>
+  </header>
 
-  <main class="container">
-    <!-- SECCIÓN DE SERVICIOS -->
-    <section id="services">
-      <h2>Servicios</h2>
-      <ul>
-        <li>Reservas y boletos</li>
-        <li>Traslados y logística de aeropuerto</li>
-        <li>Paquetes turísticos personalizados</li>
-        <li>Tickets turísticos a Punta Cana</li>
-        <li>Traducciones</li>
-        <li>Trámites de pasaporte cubano</li>
-        <li>Paquetería a cualquier parte del mundo</li>
-        <li>Trámites migratorios</li>
-        <li>Live chat con clientes</li>
-      </ul>
-    </section>
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div class="hero-copy">
+        <h1 class="hero-title">Viaja y gestiona tus trámites con <span class="accent">Luna Travel</span></h1>
+        <p class="hero-sub">Asesoría confiable para trámites consulares cubanos (formularios y requisitos), venta de pasajes a todo el mundo, envío de paquetería, renta de autos, traducciones y notarizaciones.</p>
+        <div class="hero-cta">
+          <a href="contacto.html#formulario" class="btn btn-primary">Llenar solicitud</a>
+          <a href="precios.html" class="btn btn-soft">Ver precios</a>
+        </div>
+        <p class="chat-note">💬 Chat en vivo (Crisp) abajo a la derecha.</p>
+      </div>
 
-    <!-- SECCIÓN DE GALERÍA -->
-   <section id="gallery">
-  <h2>Galería</h2>
-  <div class="grid">
-    <img src="images/gallery1-new.jpg" alt="Foto 1" />
-    <img src="images/gallery2-new.jpg" alt="Foto 2" />
-    <img src="images/gallery3-new.jpg" alt="Foto 3" />
-    <img src="images/gallery4-new.jpg" alt="Foto 4" />
-    <img src="images/gallery5-new.jpg" alt="Foto 5" />
-    <img src="images/gallery6-new.jpg" alt="Foto 6" />
-  </div>
-</section>
+      <aside class="card hero-chat fade-in">
+        <h3>Chat en vivo</h3>
+        <ul>
+          <li>Burbuja siempre visible</li>
+          <li>Mensaje automático de bienvenida</li>
+          <li>Captura de nombre y correo</li>
+        </ul>
+      </aside>
+    </div>
+  </section>
 
-    </section>
-
-    <!-- SECCIÓN DE CONTACTO -->
-    <section id="contact">
-      <h2>Contacto</h2>
-      <form action="https://formsubmit.co/lunatravel25@yahoo.com" method="POST">
-        <label>Nombre<br/><input type="text" name="name" required></label><br/>
-        <label>Email<br/><input type="email" name="email" required></label><br/>
-        <label>Mensaje<br/><textarea name="message" rows="5" required></textarea></label><br/>
-        <input type="hidden" name="_next" value="https://www.lunatravel25.com/gracias.html">
-        <button type="submit">Enviar</button>
-      </form>
-      <p class="small">O envía un correo a: <a href="mailto:lunatravel25@yahoo.com">lunatravel25@yahoo.com</a></p>
-    </section>
-
-    <!-- SECCIÓN DE COMENTARIOS -->
-    <section id="testimonios">
-      <h2>Comentarios de Clientes</h2>
-      <form action="https://formsubmit.co/lunatravel25@yahoo.com" method="POST">
-        <label>Nombre<br/><input type="text" name="nombre" required></label><br/>
-        <label>Comentario<br/><textarea name="comentario" rows="4" required></textarea></label><br/>
-        <input type="hidden" name="_subject" value="Nuevo comentario en Luna Travel">
-        <input type="hidden" name="_next" value="https://www.lunatravel25.com/gracias.html">
-        <button type="submit">Enviar Comentario</button>
-      </form>
-      <p class="small">Gracias por compartir tu experiencia con nosotros.</p>
-    </section>
-  </main>
-
-  <!-- PIE DE PÁGINA -->
-  <footer>
+  <!-- Servicios destacados (atajos) -->
+  <section class="section">
     <div class="container">
-      <p>&copy; Luna Travel</p>
-      <p class="left-foot">Este website está siendo manejado por Optima Service</p>
+      <h2 class="section-title">Servicios</h2>
+      <div class="grid cards fade-in">
+        <a class="card link" href="servicios.html#pasaporte">
+          <h4>Renovación de pasaporte</h4>
+          <p>Asistencia con formularios oficiales y requisitos.</p>
+        </a>
+        <a class="card link" href="servicios.html#paqueteria">
+          <h4>Envíos de paquetería</h4>
+          <p>Económico y express a Cuba y resto del mundo.</p>
+        </a>
+        <a class="card link" href="servicios.html#tickets">
+          <h4>Venta de tickets de vuelo</h4>
+          <p>Múltiples aerolíneas y destinos.</p>
+        </a>
+        <a class="card link" href="servicios.html#autos">
+          <h4>Renta de autos</h4>
+          <p>Reserva con socios confiables.</p>
+        </a>
+        <a class="card link" href="servicios.html#traducciones">
+          <h4>Traducción de documentos</h4>
+          <p>Traducciones certificadas.</p>
+        </a>
+        <a class="card link" href="servicios.html#notarizaciones">
+          <h4>Notarizaciones</h4>
+          <p>Coordinación y legalizaciones.</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="y"></span> Luna Travel</p>
+      <small>Este website está siendo manejado por Optima Service</small>
     </div>
   </footer>
 
-  <!-- CHAT EN VIVO CRISP -->
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+
+  <!-- Crisp -->
   <script type="text/javascript">
-  window.$crisp=[];
-  window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
-  (function(){
-    d=document;s=d.createElement("script");
-    s.src="https://client.crisp.chat/l.js";
-    s.async=1;
-    d.getElementsByTagName("head")[0].appendChild(s);
-  })();
+    window.$crisp=[]; window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
+    (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
   </script>
 </body>
 </html>
