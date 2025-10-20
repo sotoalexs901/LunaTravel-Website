@@ -1,102 +1,102 @@
-/* ====== ESTILO MODERNO PARA LUNA TRAVEL ====== */
-
-/* Fondo degradado inspirado en el logo (azul suave + crema) */
-.hero {
-  background: linear-gradient(135deg, #cfd8dc 0%, #e8f1f2 40%, #8ab6d6 100%);
-  color: #0b3052;
-  text-align: center;
-  padding: 80px 20px;
-  border-bottom: 3px solid #9cc1d9;
+:root{
+  --bg:#f7f7f4;        /* crema muy claro */
+  --bg-soft:#f0f3f6;   /* gris azulado claro */
+  --brand:#2b5ea8;     /* azul suave */
+  --brand-2:#98b7e1;   /* azul pastel */
+  --ink:#1c2430;       /* texto principal */
+  --muted:#5c6b7a;
+  --card:#ffffff;
+  --ring:rgba(43,94,168,.25);
 }
 
-/* Logo centrado y con sombra suave */
-.logo {
-  width: 180px;
-  height: auto;
-  margin-bottom: 15px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family: 'Inter',system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  color:var(--ink); background:var(--bg); line-height:1.6;
 }
 
-/* Título principal */
-.main-title {
-  font-family: "Poppins", Arial, Helvetica, sans-serif;
-  font-size: 2.8rem;
-  font-weight: 700;
-  letter-spacing: 1px;
-  margin: 10px 0;
-  color: #003366;
-}
+/* Container */
+.container{max-width:1100px;margin:0 auto;padding:0 20px}
 
-/* Subtítulo / lema */
-.tagline {
-  font-family: "Lora", Georgia, serif;
-  font-size: 1.2rem;
-  color: #1a3d5d;
+/* Header / Nav */
+.site-header{
+  position:sticky; top:0; z-index:100;
+  background:rgba(255,255,255,.8); backdrop-filter:saturate(180%) blur(8px);
+  border-bottom:1px solid #e6ecf2;
 }
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+.brand-logo{width:34px;height:34px;object-fit:cover;border-radius:50%;border:1px solid #e2e8f0}
+.brand-name{font-weight:700}
+.menu{display:flex;align-items:center;gap:16px}
+.menu a{color:var(--ink);text-decoration:none;font-weight:500}
+.menu a:hover{color:var(--brand)}
+.menu a.active{color:var(--brand);font-weight:700}
+.btn{display:inline-block;padding:10px 16px;border-radius:999px;text-decoration:none;border:1px solid transparent;transition:.2s}
+.btn-primary{background:var(--brand);color:#fff;border-color:var(--brand)}
+.btn-primary:hover{filter:brightness(.95)}
+.btn-soft{background:#fff;color:var(--brand);border-color:#dbe6f3}
+.btn-soft:hover{background:#f5f9ff}
 
-/* Tipografía general del sitio */
-body {
-  font-family: "Poppins", Arial, sans-serif;
+/* Hero (degradado azul-crema) */
+.hero{
+  background: radial-gradient(1200px 500px at -10% -10%, #f7f7f4 0%, #f7f7f4 40%, #eaf0f7 60%, #dbe6f3 75%, #c6dbf2 100%),
+              linear-gradient(90deg, #7fb0e3 0%, #2b5ea8 100%);
+  background-blend-mode: soft-light, normal;
+  color:#0f2746;
+  padding:72px 0 48px;
+  border-bottom:1px solid #e6ecf2;
 }
+.hero-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:24px;align-items:start}
+.hero-title{font-size:36px;line-height:1.15;margin:0 0 8px}
+.accent{color:var(--brand)}
+.hero-sub{color:var(--muted);margin:0 0 16px}
+.hero-cta{display:flex;gap:10px;flex-wrap:wrap}
+.chat-note{margin-top:10px;color:#6b7c8e;font-size:.95rem}
 
-.tagline {
-  font-family: "Lora", Georgia, serif;
-}
+/* Page hero simple */
+.page-hero{background:linear-gradient(180deg,#f5f8fc,#fff);padding:48px 0;border-bottom:1px solid #eef2f7}
+.page-hero h1{margin:0 0 6px}
+.page-hero p{color:var(--muted);margin:0}
 
+/* Sections & cards */
+.section{padding:48px 0}
+.section-title{margin:0 0 16px}
+.grid{display:grid;gap:16px}
+.grid.cards{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.grid.two{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.card{
+  background:var(--card); border:1px solid #e6ecf2; border-radius:14px; padding:18px;
+  box-shadow: 0 4px 16px rgba(16,24,40,.04);
+}
+.card h3,.card h4{margin-top:0}
+.card.link{text-decoration:none;color:inherit}
+.card.link:hover{box-shadow:0 6px 22px rgba(16,24,40,.08); transform:translateY(-1px); transition:.2s}
 
-/* Títulos de secciones */
-h2 {
-  color: #003366;
-  border-bottom: 2px solid #d1e0ee;
-  display: inline-block;
-  padding-bottom: 5px;
-  font-weight: 600;
-  margin-bottom: 15px;
-}
+/* Price cards */
+.price{text-align:left}
+.amount{font-size:28px;font-weight:700;color:var(--brand);margin:.25rem 0 1rem}
+.price ul{margin:0 0 16px 18px}
 
-/* Secciones */
-section {
-  margin-bottom: 50px;
+/* Forms */
+.form label{display:block;margin-bottom:12px;font-weight:600}
+.form input,.form textarea{
+  width:100%; padding:10px 12px; border-radius:10px; border:1px solid #d9e2ec; outline:none;
 }
-
-/* Enlaces */
-a {
-  color: #00509e;
-  text-decoration: none;
-}
-a:hover {
-  text-decoration: underline;
-}
-
-/* Botones */
-button {
-  background: linear-gradient(90deg, #00509e 0%, #007bff 100%);
-  color: white;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-button:hover {
-  background: linear-gradient(90deg, #004080 0%, #0066cc 100%);
-}
+.form input:focus,.form textarea:focus{box-shadow:0 0 0 4px var(--ring);border-color:var(--brand)}
 
 /* Footer */
-footer {
-  background-color: #e8f1f2;
-  text-align: center;
-  padding: 20px 10px;
-  color: #003366;
-  font-size: 0.95rem;
-  border-top: 2px solid #b5d0e0;
+.site-footer{border-top:1px solid #e6ecf2;background:#fff}
+.site-footer .container{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 20px}
+.site-footer small{color:#607086}
+
+/* Animations */
+.fade-in{animation:fadeIn .6s ease both}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .menu a:not(.btn){display:none} /* mantener limpio en móvil */
 }
 
-/* Créditos del footer */
-.left-foot {
-  display: block;
-  margin-top: 5px;
-  font-size: 12px;
-  color: #406080;
-}
