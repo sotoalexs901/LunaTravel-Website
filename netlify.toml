@@ -4,17 +4,11 @@
   publish = "."
   command = ""
 
-# Redirección general (sirve index.html para rutas desconocidas)
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-# Detectar y manejar formularios
-[[plugins]]
-  package = "@netlify/plugin-form-detection"
-
-# Cabeceras de seguridad
 [[headers]]
   for = "/*"
   [headers.values]
