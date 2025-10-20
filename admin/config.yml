@@ -1,54 +1,51 @@
 backend:
-  name: auth0
-  label: "Auth0"
-  domain: dev-fu7ju2qbp5x2aibyo.us.auth0.com
-  client_id: ZWqTvQVHLO4jeL1vQ8m6LKHo56Yd0tH2
-  redirect_uri: https://www.lunatravel25.com/admin/callback
+  name: git-gateway
+  branch: main
 
-publish_mode: editorial_workflow
-site_url: https://www.lunatravel25.com
 media_folder: "uploads"
 public_folder: "/uploads"
 
-collections:
-  - name: "pricing"
-    label: "Precios y Servicios"
-    folder: "data/pricing"
-    create: true
-    extension: "json"
-    fields:
-      - { label: "Nombre (ES)", name: "name_es", widget: "string" }
-      - { label: "Nombre (EN)", name: "name_en", widget: "string" }
-      - { label: "Precio", name: "price", widget: "string" }
-      - { label: "Descripción (ES)", name: "desc_es", widget: "text" }
-      - { label: "Descripción (EN)", name: "desc_en", widget: "text" }
+site_url: "https://www.lunatravel25.com"
 
-  - name: "contact"
-    label: "Contacto"
-    folder: "data/contact"
-    create: true
-    extension: "json"
-    fields:
-      - { label: "Correo electrónico", name: "email", widget: "string" }
-      - { label: "Teléfono", name: "phone", widget: "string" }
-      - { label: "WhatsApp", name: "whatsapp", widget: "string" }
-      - { label: "Dirección", name: "address", widget: "string" }
+collections:
+  - name: "pages"
+    label: "Páginas"
+    files:
+      - label: "Inicio"
+        name: "inicio"
+        file: "data/inicio.json"
+        fields:
+          - { label: "Título principal", name: "main_title", widget: "string" }
+          - { label: "Descripción", name: "description", widget: "text" }
+
+      - label: "Servicios"
+        name: "servicios"
+        file: "data/servicios.json"
+        fields:
+          - { label: "Título de sección", name: "section_title", widget: "string" }
+          - label: "Lista de servicios"
+            name: "items"
+            widget: "list"
+            fields:
+              - { label: "Nombre", name: "title", widget: "string" }
+              - { label: "Descripción", name: "description", widget: "text" }
+              - { label: "Imagen", name: "image", widget: "image", required: false }
 
   - name: "gallery"
-    label: "Galería de Fotos"
-    folder: "uploads/gallery"
+    label: "Galería"
+    folder: "data/gallery"
     create: true
     slug: "{{slug}}"
-    extension: "json"
     fields:
       - { label: "Título", name: "title", widget: "string" }
-      - { label: "Imagen", name: "image", widget: "image", choose_url: true }
+      - { label: "Imagen", name: "image", widget: "image" }
 
   - name: "testimonials"
     label: "Testimonios"
     folder: "data/testimonials"
     create: true
-    extension: "json"
+    slug: "{{slug}}"
     fields:
       - { label: "Nombre", name: "name", widget: "string" }
-      - { label: "Comentario", name: "comment", widget: "text" }
+      - { label: "Comentario", name: "message", widget: "text" }
+      - { label: "Foto (opcional)", name: "photo", widget: "image", required: false }
