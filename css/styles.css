@@ -454,4 +454,55 @@ body {
   background-color: #ffcc00;
   transform: scale(1.05);
 }
+/* 🔹 Estilos mejorados para formulario de suscripción */
+.newsletter-section {
+  background: linear-gradient(120deg, #0078D7, #00AEEF);
+  color: white;
+  text-align: center;
+  padding: 60px 20px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.newsletter-section h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.newsletter-section p {
+  font-size: 1rem;
+  margin-bottom: 25px;
+}
+
+#sib-form {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#sib-form input[type="email"] {
+  padding: 12px 15px;
+  width: 280px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+}
+
+#sib-form button {
+  background-color: #FFD700;
+  color: #003366;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#sib-form button:hover {
+  background-color: #ffcc00;
+  transform: scale(1.05);
+}
 
