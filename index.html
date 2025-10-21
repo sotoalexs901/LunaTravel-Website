@@ -106,24 +106,36 @@
       </div>
     </div>
   </section>
-<!-- 🔹 SECCIÓN DE SUSCRIPCIÓN - LUNA TRAVEL 🔹 -->
+<!-- 🔹 SECCIÓN DE SUSCRIPCIÓN - LUNA TRAVEL (funcional) -->
 <section class="newsletter-section">
   <div class="newsletter-container">
     <h2>✈️ ¡Suscríbete y recibe nuestras ofertas especiales!</h2>
     <p>Déjanos tu correo para recibir precios actualizados y promociones exclusivas de Luna Travel.</p>
     
-    <!-- FORMULARIO BREVO -->
-    <div class="sib-form" id="brevo-subscription">
-      <form id="sib-form" method="POST"
-      action="https://31abab56.sibforms.com/serve/MUIFAO1T4-9q7aPeOnMycPIYk3APd5vFAGnS9qFtPKESgMBtMy-x9SNZ3Osl8u3A_t_-St35ZGLH2D7mlUvdflRKistpVGuCygbNdIbQ7MPxn1qDFKYxpAYFhbru-tJpZdMi7zaAmV2UXLfdWFgUwJNyFOSLyjvnpeI_Ms4x-m9mVbzmWVv19p3GBV5bLYEoxiu2hX0GhSLRDYaS6w=="
-      data-type="subscription">
-        <input type="email" id="EMAIL" name="EMAIL" placeholder="Tu correo electrónico" required>
-        <button type="submit">Suscribirme</button>
-        <input type="hidden" name="locale" value="es">
-      </form>
+    <!-- FORMULARIO BREVO ORIGINAL ADAPTADO -->
+    <div class="sib-form" style="text-align:center;">
+      <div id="sib-container" class="sib-container--large sib-container--vertical" style="text-align:center;">
+        <form id="sib-form" method="POST" 
+          action="https://31abab56.sibforms.com/serve/MUIFAO1T4-9q7aPeOnMycPIYk3APd5vFAGnS9qFtPKESgMBtMy-x9SNZ3Osl8u3A_t_-St35ZGLH2D7mlUvdflRKistpVGuCygbNdIbQ7MPxn1qDFKYxpAYFhbru-tJpZdMi7zaAmV2UXLfdWFgUwJNyFOSLyjvnpeI_Ms4x-m9mVbzmWVv19p3GBV5bLYEoxiu2hX0GhSLRDYaS6w==" 
+          data-type="subscription">
+
+          <input class="input" type="email" id="EMAIL" name="EMAIL" placeholder="Tu correo electrónico" required>
+          <button type="submit" class="sib-form-block__button">Suscribirme</button>
+          <input type="hidden" name="locale" value="es">
+        </form>
+      </div>
+
+      <!-- MENSAJES -->
+      <div id="success-message" class="sib-form-message-panel" style="display:none; color:#085229; background:#e7faf0; border-radius:3px;">
+        ✅ ¡Tu suscripción se ha completado!
+      </div>
+      <div id="error-message" class="sib-form-message-panel" style="display:none; color:#661d1d; background:#ffeded; border-radius:3px;">
+        ❌ Ocurrió un error, intenta nuevamente.
+      </div>
     </div>
   </div>
 </section>
+
 
   <!-- FOOTER -->
   <footer class="site-footer">
