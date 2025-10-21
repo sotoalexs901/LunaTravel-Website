@@ -390,4 +390,17 @@ body {
   50% { opacity: 1; transform: scaleX(1); }
   100% { opacity: 0.6; transform: scaleX(0.6); }
 }
+/* === ÍCONOS EN SERVICIOS === */
+.card.service h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--brand);
+  font-size: 1.1rem;
+  margin-top: 0;
+}
+
+.card.service h4::first-letter {
+  text-transform: capitalize;
+}
 
