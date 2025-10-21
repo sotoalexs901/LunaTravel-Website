@@ -505,4 +505,35 @@ body {
   background-color: #ffcc00;
   transform: scale(1.05);
 }
+#sib-form {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#sib-form input[type="email"] {
+  padding: 12px 15px;
+  width: 280px;
+  border: none;
+  border-radius: 8px;
+  outline: none;
+  font-size: 1rem;
+}
+
+#sib-form button {
+  background-color: #FFD700;
+  color: #003366;
+  font-weight: bold;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+#sib-form button:hover {
+  background-color: #ffcc00;
+  transform: scale(1.05);
+}
 
