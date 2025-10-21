@@ -106,26 +106,34 @@
       </div>
     </div>
   </section>
-<!-- 🔹 SECCIÓN DE SUSCRIPCIÓN FUNCIONAL Y CON ESTILO -->
+<!-- 🔹 SECCIÓN DE SUSCRIPCIÓN - LUNA TRAVEL (FUNCIONAL Y ESTILIZADO) -->
 <section class="newsletter-section">
   <div class="newsletter-container">
     <h2>✈️ ¡Suscríbete y recibe nuestras ofertas especiales!</h2>
     <p>Déjanos tu correo para recibir precios actualizados y promociones exclusivas de Luna Travel.</p>
 
-    <!-- 🔸 FORMULARIO BREVO ORIGINAL (FUNCIONAL) -->
-    <div class="sib-form" data-form-id="brevo-luna" style="text-align:center;">
-      <div id="sib-container" class="sib-container--large sib-container--vertical" style="text-align:center;">
-        <form id="sib-form" method="POST" 
-          action="https://31abab56.sibforms.com/serve/MUIFAO1T4-9q7aPeOnMycPIYk3APd5vFAGnS9qFtPKESgMBtMy-x9SNZ3Osl8u3A_t_-St35ZGLH2D7mlUvdflRKistpVGuCygbNdIbQ7MPxn1qDFKYxpAYFhbru-tJpZdMi7zaAmV2UXLfdWFgUwJNyFOSLyjvnpeI_Ms4x-m9mVbzmWVv19p3GBV5bLYEoxiu2hX0GhSLRDYaS6w=="
-          data-type="subscription">
+    <!-- 🔸 FORMULARIO BREVO ORIGINAL FUNCIONAL -->
+    <div class="sib-form" style="text-align:center;">
+      <div id="sib-form-container" class="sib-form-container">
+        
+        <!-- MENSAJES REQUERIDOS POR BREVO -->
+        <div id="error-message" class="sib-form-message-panel" style="display:none;"></div>
+        <div id="success-message" class="sib-form-message-panel" style="display:none;"></div>
 
-          <div class="sib-input sib-form-block">
-            <div class="form__entry entry_block">
-              <div class="entry__field">
-                <input class="input" type="email" id="EMAIL" name="EMAIL" autocomplete="off" placeholder="Tu correo electrónico" required />
-              </div>
-            </div>
-          </div>
+        <div id="sib-container" class="sib-container--large sib-container--vertical" style="text-align:center;">
+          <form id="sib-form" method="POST" 
+            action="https://31abab56.sibforms.com/serve/MUIFAO1T4-9q7aPeOnMycPIYk3APd5vFAGnS9qFtPKESgMBtMy-x9SNZ3Osl8u3A_t_-St35ZGLH2D7mlUvdflRKistpVGuCygbNdIbQ7MPxn1qDFKYxpAYFhbru-tJpZdMi7zaAmV2UXLfdWFgUwJNyFOSLyjvnpeI_Ms4x-m9mVbzmWVv19p3GBV5bLYEoxiu2hX0GhSLRDYaS6w=="
+            data-type="subscription">
+
+            <input class="input" type="email" id="EMAIL" name="EMAIL" placeholder="Tu correo electrónico" required>
+            <button type="submit">Suscribirme</button>
+            <input type="hidden" name="locale" value="es">
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
           <div style="margin-top:10px;">
             <button class="sib-form-block__button sib-form-block__button-with-loader" style="background-color:#FFD700; color:#003366; font-weight:bold; border:none; border-radius:8px; padding:12px 20px; cursor:pointer;">
