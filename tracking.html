@@ -1,0 +1,24 @@
+<script type="module">
+  import { db } from './firebase.js';
+  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+  async function buscarEquipaje() {
+    const orderId = document.getElementById('orderInput').value.trim();
+    const ref = doc(db, "luggage", orderId);
+    const snap = await getDoc(ref);
+    const result = document.getElementById('resultado');
+
+    if (snap.exists()) {
+      const data = snap.data();
+      result.innerHTML = `
+        <h3>Estado: ${data.status}</h3>
+        <p>Última ubicación: ${data.lastLocation}</p>
+        <p>Actualizado: ${new Date(data.updatedAt).toLocaleString()}</p>
+      `;
+    } else {
+      result.innerHTML = `<p>No se encontró el equipaje con ese número de orden.</p>`;
+    }
+  }
+
+  window.buscarEquipaje = buscarEquipaje;
+</script>
