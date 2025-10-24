@@ -1,12 +1,6 @@
-// ===========================
-// Luna Travel - Firebase Setup
-// ===========================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Importa Firebase desde el CDN oficial (no usa Vite ni Node)
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
-
-// 🔹 Configuración de Firebase para LunaTrack
 const firebaseConfig = {
   apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
   authDomain: "lunatrack-95199.firebaseapp.com",
@@ -17,47 +11,39 @@ const firebaseConfig = {
   measurementId: "G-QCYKV5DXKD"
 };
 
-// Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-console.log("✅ Firebase inicializado correctamente");
+window.buscarEquipaje = async function () {
+  const orderNumber = document.getElementById("orderNumber").value.trim();
+  const resultDiv = document.getElementById("result");
 
-// ==================================
-// Función para buscar equipaje
-// ==================================
-async function buscarEquipaje() {
-  const orderInput = document.getElementById("orderNumber");
-  const resultBox = document.getElementById("resultado");
-
-  const orderId = orderInput.value.trim();
-
-  if (!orderId) {
-    resultBox.innerHTML = "<p style='color:red;'>Por favor ingresa un número de orden.</p>";
+  if (!orderNumber) {
+    resultDiv.innerHTML = `<p style="color:red;">Por favor, ingresa un número de orden.</p>`;
     return;
   }
 
   try {
-    const docRef = doc(db, "equipaje", orderId);
+    const docRef = doc(db, "equipaje", orderNumber); // 👈 Debe coincidir con el nombre de tu colección
     const docSnap = await getDoc(docRef);
 
     if (docSnap.exists()) {
       const data = docSnap.data();
-      resultBox.innerHTML = `
-        <h3>Resultado de búsqueda</h3>
-        <p><strong>Estado:</strong> ${data.estado}</p>
-        <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
-        <p><strong>Última actualización:</strong> ${data.fecha}</p>
+      resultDiv.innerHTML = `
+        <div style="background:#f8f9fa;padding:1rem;border-radius:8px;">
+          <h3>Resultado del rastreo:</h3>
+          <p><strong>Estado:</strong> ${data.estado}</p>
+          <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
+          <p><strong>Última actualización:</strong> ${data.fecha}</p>
+        </div>
       `;
     } else {
-      resultBox.innerHTML = "<p>No se encontró información para este código.</p>";
+      resultDiv.innerHTML = `<p>No se encontró información para ese número de orden.</p>`;
     }
   } catch (error) {
-    console.error("Error al buscar:", error);
-    resultBox.innerHTML = "<p style='color:red;'>Error al conectar con el servidor.</p>";
+    console.error("Firestore error ->", error);
+    resultDiv.innerHTML = `<p style="color:red;">Error conectando con la base de datos: ${error.message}</p>`;
   }
-}
+};
 
-// Exponer la función al HTML
-window.buscarEquipaje = buscarEquipaje;
 
