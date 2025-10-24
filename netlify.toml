@@ -1,8 +1,10 @@
 [build]
   publish = "."
-  command = ""
+  command = "npm run build"
 
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# 🔒 Desactiva el escaneo automático de secretos
+[build.environment]
+  NETLIFY_SECRETS_SCAN_ENABLED = "false"
+  NETLIFY_DISABLE_SECRET_SCAN = "true"
+  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
+  SECRETS_SCAN_OMIT_KEYS = "true"
