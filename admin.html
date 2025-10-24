@@ -10,85 +10,86 @@
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
   <!-- Firebase -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-      authDomain: "lunatrack-95199.firebaseapp.com",
-      projectId: "lunatrack-95199",
-      storageBucket: "lunatrack-95199.firebasestorage.app",
-      messagingSenderId: "82970120947",
-      appId: "1:82970120947:web:2d7b70d052816802c05d86",
-      measurementId: "G-QCYKV5DXKD"
-    };
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+    authDomain: "lunatrack-95199.firebaseapp.com",
+    projectId: "lunatrack-95199",
+    storageBucket: "lunatrack-95199.firebasestorage.app",
+    messagingSenderId: "82970120947",
+    appId: "1:82970120947:web:2d7b70d052816802c05d86",
+    measurementId: "G-QCYKV5DXKD"
+  };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-    // Generar código único
-    window.generarCodigo = function() {
-      const timestamp = Date.now().toString().slice(-6);
-      return "LT-" + timestamp;
+  // Generar código único
+  window.generarCodigo = function() {
+    const timestamp = Date.now().toString().slice(-6);
+    return "LT-" + timestamp;
+  };
+
+  // Enviar datos a Firebase
+  window.registrarEquipaje = async function() {
+    const cliente = document.getElementById("cliente").value.trim();
+    const destino = document.getElementById("destino").value.trim();
+    const estado = document.getElementById("estado").value.trim();
+    const ubicacion = document.getElementById("ubicacion").value.trim();
+
+    if (!cliente || !destino || !estado || !ubicacion) {
+      alert("Por favor completa todos los campos.");
+      return;
     }
 
-    // Enviar datos a Firebase
-    window.registrarEquipaje = async function() {
-      const cliente = document.getElementById("cliente").value.trim();
-      const destino = document.getElementById("destino").value.trim();
-      const estado = document.getElementById("estado").value.trim();
-      const ubicacion = document.getElementById("ubicacion").value.trim();
+    const codigo = generarCodigo();
 
-      if (!cliente || !destino || !estado || !ubicacion) {
-        alert("Por favor completa todos los campos.");
-        return;
-      }
-
-      const codigo = generarCodigo();
-
-      try {
-        await addDoc(collection(db, "equipaje"), {
-          codigo,
-          cliente,
-          destino,
-          estado,
-          ubicacion,
-          fecha: new Date().toLocaleString()
-        });
-
-        mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
-      } catch (error) {
-        console.error("Error al guardar:", error);
-        alert("Hubo un error al registrar el equipaje.");
-      }
-    };
-
-    // Mostrar recibo con código de barras
-    window.mostrarRecibo = function(codigo, cliente, destino, estado, ubicacion) {
-      const reciboDiv = document.getElementById("recibo");
-      reciboDiv.innerHTML = `
-        <h2>Recibo de Envío</h2>
-        <p><strong>Código:</strong> ${codigo}</p>
-        <p><strong>Cliente:</strong> ${cliente}</p>
-        <p><strong>Destino:</strong> ${destino}</p>
-        <p><strong>Estado:</strong> ${estado}</p>
-        <p><strong>Ubicación:</strong> ${ubicacion}</p>
-        <svg id="codigoBarras"></svg>
-        <button onclick="window.print()" class="btn-primary">🖨️ Imprimir Recibo</button>
-      `;
-
-      // Generar el código de barras
-      JsBarcode("#codigoBarras", codigo, {
-        format: "CODE128",
-        width: 2,
-        height: 60,
-        displayValue: true,
-        fontSize: 16,
-        lineColor: "#000000"
+    try {
+      // 🔥 Guardar el documento usando el código como ID
+      await setDoc(doc(db, "equipaje", codigo), {
+        codigo,
+        cliente,
+        destino,
+        estado,
+        ubicacion,
+        fecha: new Date().toLocaleString()
       });
-    };
-  </script>
+
+      mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
+    } catch (error) {
+      console.error("Error al guardar:", error);
+      alert("Hubo un error al registrar el equipaje.");
+    }
+  };
+
+  // Mostrar recibo con código de barras
+  window.mostrarRecibo = function(codigo, cliente, destino, estado, ubicacion) {
+    const reciboDiv = document.getElementById("recibo");
+    reciboDiv.innerHTML = `
+      <h2>Recibo de Envío</h2>
+      <p><strong>Código:</strong> ${codigo}</p>
+      <p><strong>Cliente:</strong> ${cliente}</p>
+      <p><strong>Destino:</strong> ${destino}</p>
+      <p><strong>Estado:</strong> ${estado}</p>
+      <p><strong>Ubicación:</strong> ${ubicacion}</p>
+      <svg id="codigoBarras"></svg>
+      <button onclick="window.print()" class="btn-primary">🖨️ Imprimir Recibo</button>
+    `;
+
+    // Generar el código de barras
+    JsBarcode("#codigoBarras", codigo, {
+      format: "CODE128",
+      width: 2,
+      height: 60,
+      displayValue: true,
+      fontSize: 16,
+      lineColor: "#000000"
+    });
+  };
+</script>
 
   <style>
     body {
