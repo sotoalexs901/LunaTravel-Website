@@ -1,18 +1,127 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel de Administración - Luna Travel</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Registro - Luna Travel</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f7f9fc;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    input, select {
+      padding: 10px;
+      width: 90%;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+    button {
+      background-color: #143c8c;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #0f2f6b;
+    }
+    #tablaEnvios {
+      width: 100%;
+      margin-top: 25px;
+      border-collapse: collapse;
+    }
+    #tablaEnvios th, #tablaEnvios td {
+      border: 1px solid #ccc;
+      padding: 8px;
+    }
+    #tablaEnvios th {
+      background-color: #f2f4f8;
+    }
+    .delete-btn {
+      background-color: #e74c3c;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .delete-btn:hover {
+      background-color: #c0392b;
+    }
+    #login {
+      margin-top: 100px;
+    }
+    .logout-btn {
+      float: right;
+      margin-top: -40px;
+      background-color: #555;
+      padding: 8px 14px;
+      border-radius: 6px;
+    }
+    .logout-btn:hover {
+      background-color: #333;
+    }
+  </style>
+</head>
+<body>
+  <!-- LOGIN -->
+  <div id="login" class="container">
+    <h2>Acceso Administrador</h2>
+    <input type="text" id="usuario" placeholder="Usuario">
+    <input type="password" id="pin" placeholder="PIN">
+    <button onclick="login()">Ingresar</button>
+    <p id="loginError" style="color:red; display:none;">Usuario o PIN incorrectos.</p>
+  </div>
 
-  <!-- Firebase -->
+  <!-- PANEL -->
+  <div id="panel" class="container" style="display:none;">
+    <h2>Panel de Registro - Luna Travel</h2>
+    <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+
+    <input type="text" id="cliente" placeholder="Cliente">
+    <input type="text" id="destino" placeholder="Destino">
+    <input type="text" id="estado" placeholder="Estado">
+    <input type="text" id="ubicacion" placeholder="Ubicación">
+
+    <button onclick="guardarEnvio()">Guardar y generar recibo</button>
+    <div id="recibo"></div>
+
+    <h3>Envíos registrados</h3>
+    <table id="tablaEnvios">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Cliente</th>
+          <th>Destino</th>
+          <th>Estado</th>
+          <th>Ubicación</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody id="tablaBody"></tbody>
+    </table>
+  </div>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc, 
-      collection, getDocs, onSnapshot, query, orderBy 
+      getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot, query, orderBy, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -27,75 +136,49 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-    // 📊 Exportar a Excel
-window.exportarExcel = async function() {
-  const tabla = document.getElementById("tablaEnvios");
-  let csv = [];
-  for (let row of tabla.rows) {
-    let cols = [...row.children].map(td => td.innerText);
-    csv.push(cols.join(","));
-  }
-  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "envios-lunatravel.csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-};
 
-// 📄 Exportar a PDF
-window.exportarPDF = async function() {
-  const tabla = document.getElementById("tablaEnvios").outerHTML;
-  const ventana = window.open("", "", "width=900,height=700");
-  ventana.document.write(`
-    <html><head><title>Reporte de Envíos - Luna Travel</title></head>
-    <body style="font-family:Arial; text-align:center;">
-    <h2>Reporte de Envíos - Luna Travel</h2>
-    ${tabla}
-    </body></html>
-  `);
-  ventana.document.close();
-  ventana.print();
-};
+    // LOGIN
+    window.login = function() {
+      const user = document.getElementById("usuario").value.trim();
+      const pin = document.getElementById("pin").value.trim();
 
-
-    // 🔐 Verificación de login
-    window.onload = function() {
-      if (localStorage.getItem("adminLoggedIn") !== "true") {
-        window.location.href = "admin-login.html";
-      } else {
+      if (user === "luna25" && pin === "2030") {
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
         cargarEnvios();
+      } else {
+        document.getElementById("loginError").style.display = "block";
       }
     };
 
-    // 🚪 Cerrar sesión
-    window.logout = function() {
-      localStorage.removeItem("adminLoggedIn");
-      window.location.href = "admin-login.html";
+    // CERRAR SESIÓN
+    window.cerrarSesion = function() {
+      document.getElementById("panel").style.display = "none";
+      document.getElementById("login").style.display = "block";
+      document.getElementById("usuario").value = "";
+      document.getElementById("pin").value = "";
+      document.getElementById("loginError").style.display = "none";
     };
 
-    // 🆕 Generar código único
-    window.generarCodigo = function() {
-      const timestamp = Date.now().toString().slice(-6);
-      return "LT-" + timestamp;
-    };
+    // GENERAR CÓDIGO
+    function generarCodigo() {
+      const random = Math.floor(100000 + Math.random() * 900000);
+      return `LT-${random}`;
+    }
 
-    // 🧾 Registrar nuevo envío
-    window.registrarEquipaje = async function() {
+    // GUARDAR ENVÍO
+    window.guardarEnvio = async function() {
       const cliente = document.getElementById("cliente").value.trim();
       const destino = document.getElementById("destino").value.trim();
       const estado = document.getElementById("estado").value.trim();
       const ubicacion = document.getElementById("ubicacion").value.trim();
 
       if (!cliente || !destino || !estado || !ubicacion) {
-        alert("Por favor completa todos los campos.");
+        alert("Por favor, completa todos los campos.");
         return;
       }
 
       const codigo = generarCodigo();
-
       try {
         await setDoc(doc(db, "equipaje", codigo), {
           codigo,
@@ -105,168 +188,79 @@ window.exportarPDF = async function() {
           ubicacion,
           fecha: new Date().toLocaleString()
         });
-
         mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
+        cargarEnvios();
         alert("✅ Envío registrado correctamente.");
       } catch (error) {
         console.error("Error al guardar:", error);
-        alert("Hubo un error al registrar el equipaje.");
+        alert("Error al registrar el envío.");
       }
     };
 
-    // 🔄 Actualizar estado escaneando
-    window.actualizarEstado = async function() {
-      const codigo = document.getElementById("codigoEscaneado").value.trim();
-      const nuevoEstado = document.getElementById("nuevoEstado").value.trim();
-      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value.trim();
-
-      if (!codigo || !nuevoEstado) {
-        alert("Por favor ingresa el código y el nuevo estado.");
-        return;
-      }
-
-      try {
-        const docRef = doc(db, "equipaje", codigo);
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-          await updateDoc(docRef, {
-            estado: nuevoEstado,
-            ubicacion: nuevaUbicacion || docSnap.data().ubicacion,
-            fecha: new Date().toLocaleString()
-          });
-          alert(`✅ Estado actualizado para ${codigo}`);
-        } else {
-          alert("No se encontró ningún envío con ese código.");
-        }
-      } catch (error) {
-        console.error("Error al actualizar:", error);
-      }
-    };
-
-    // 🖨️ Mostrar recibo con código de barras
-    window.mostrarRecibo = function(codigo, cliente, destino, estado, ubicacion) {
+    // MOSTRAR RECIBO
+    function mostrarRecibo(codigo, cliente, destino, estado, ubicacion) {
       const reciboDiv = document.getElementById("recibo");
       reciboDiv.innerHTML = `
-        <h2>Recibo de Envío</h2>
-        <p><strong>Código:</strong> ${codigo}</p>
-        <p><strong>Cliente:</strong> ${cliente}</p>
-        <p><strong>Destino:</strong> ${destino}</p>
-        <p><strong>Estado:</strong> ${estado}</p>
-        <p><strong>Ubicación:</strong> ${ubicacion}</p>
-        <svg id="codigoBarras"></svg>
-        <button onclick="window.print()" class="btn-primary">🖨️ Imprimir Recibo</button>
+        <div class="container">
+          <h3>Recibo de Envío</h3>
+          <p><strong>Código:</strong> ${codigo}</p>
+          <p><strong>Cliente:</strong> ${cliente}</p>
+          <p><strong>Destino:</strong> ${destino}</p>
+          <p><strong>Estado:</strong> ${estado}</p>
+          <p><strong>Ubicación:</strong> ${ubicacion}</p>
+          <svg id="codigoBarras"></svg>
+          <p><button onclick="window.print()">🖨️ Imprimir Recibo</button></p>
+        </div>
       `;
       JsBarcode("#codigoBarras", codigo, {
         format: "CODE128",
         width: 2,
         height: 60,
         displayValue: true,
-        fontSize: 16,
-        lineColor: "#000000"
+        fontSize: 16
       });
-    };
+    }
 
-    // 📋 Cargar todos los envíos
+    // CARGAR ENVIOS
     async function cargarEnvios() {
-      const tabla = document.getElementById("tablaEnvios");
-      tabla.innerHTML = "<tr><th>Código</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th></tr>";
-
+      const tabla = document.getElementById("tablaBody");
+      tabla.innerHTML = "";
       const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
-      onSnapshot(q, (snapshot) => {
-        tabla.innerHTML = "<tr><th>Código</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th></tr>";
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-  const fila = `
-  <tr>
-    <td><strong>${data.codigo}</strong></td>
-    <td>${data.cliente}</td>
-    <td>${data.destino}</td>
-    <td>${data.estado}</td>
-    <td>${data.ubicacion}</td>
-    <td>${data.fecha}</td>
-    <td>
-      <button onclick="borrarRegistro('${data.codigo}')" style="background:#c0392b;color:white;border:none;padding:6px 10px;border-radius:5px;cursor:pointer;">🗑️</button>
-    </td>
-  </tr>
-`;
-
-          tabla.innerHTML += fila;
-        });
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((docSnap) => {
+        const data = docSnap.data();
+        const row = `
+          <tr>
+            <td>${data.codigo}</td>
+            <td>${data.cliente}</td>
+            <td>${data.destino}</td>
+            <td>${data.estado}</td>
+            <td>${data.ubicacion}</td>
+            <td>${data.fecha}</td>
+            <td><button class="delete-btn" onclick="eliminarRegistro('${data.codigo}')">🗑️ Eliminar</button></td>
+          </tr>
+        `;
+        tabla.innerHTML += row;
       });
     }
+    window.cargarEnvios = cargarEnvios;
 
-    window.refrescarTabla = cargarEnvios;
-    // 🗑️ Eliminar un registro por código
-window.borrarRegistro = async function(codigo) {
-  if (confirm(`¿Seguro que deseas eliminar el envío ${codigo}? Esta acción no se puede deshacer.`)) {
-    try {
-      await deleteDoc(doc(db, "equipaje", codigo));
-      alert(`✅ Registro ${codigo} eliminado correctamente.`);
-    } catch (error) {
-      console.error("Error al eliminar:", error);
-      alert("❌ Error al eliminar el registro.");
-    }
-  }
-};
+    // ELIMINAR REGISTRO
+    window.eliminarRegistro = async function(codigo) {
+      if (!confirm(`¿Seguro que deseas eliminar el envío ${codigo}?`)) return;
+      try {
+        await deleteDoc(doc(db, "equipaje", codigo));
+        alert(`Registro ${codigo} eliminado correctamente.`);
+        cargarEnvios();
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al intentar eliminar el registro.");
+      }
+    };
 
   </script>
 
-  <style>
-    body { font-family: Arial, sans-serif; background: #f9fbff; color: #222; padding: 20px; text-align:center; }
-    .form-container { max-width: 500px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    input, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; }
-    button { background-color: #1a3d8f; color: white; cursor: pointer; border: none; }
-    button:hover { background-color: #162f70; }
-    #recibo { max-width: 500px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
-    .logout { position: fixed; top: 20px; right: 20px; background-color: #c0392b; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-    th { background-color: #1a3d8f; color: white; }
-    tr:nth-child(even) { background-color: #f2f2f2; }
-    @media print { button, .logout { display: none; } body { background: white; } #recibo { box-shadow: none; } }
-  </style>
-</head>
-
-<body>
-  <button class="logout" onclick="logout()">Cerrar Sesión</button>
-
-  <h1 style="color:#1a3d8f;">Panel Administrativo - Luna Travel</h1>
-
-  <!-- Registro -->
-  <div class="form-container">
-    <h3>Registrar nuevo envío</h3>
-    <input type="text" id="cliente" placeholder="Nombre del cliente" />
-    <input type="text" id="destino" placeholder="Destino" />
-    <input type="text" id="estado" placeholder="Estado (ej. En tránsito)" />
-    <input type="text" id="ubicacion" placeholder="Ubicación (ej. Oficina)" />
-    <button onclick="registrarEquipaje()">Guardar y generar recibo</button>
-  </div>
-
-  <!-- Recibo -->
-  <div id="recibo"></div>
-
-  <!-- Actualizar estado -->
-  <div class="form-container">
-    <h3>Actualizar estado (con escáner o manual)</h3>
-    <input type="text" id="codigoEscaneado" placeholder="Escanear o ingresar código LT-" />
-    <input type="text" id="nuevoEstado" placeholder="Nuevo estado" />
-    <input type="text" id="nuevaUbicacion" placeholder="Nueva ubicación (opcional)" />
-    <button onclick="actualizarEstado()">Actualizar Estado</button>
-  </div>
-
-  <!-- Tabla de control -->
-  <div class="form-container" style="max-width:90%;">
-<h3>📋 Envíos procesados</h3>
-<div style="margin-bottom:10px;">
-  <button onclick="refrescarTabla()">🔄 Refrescar</button>
-  <button onclick="exportarExcel()">📊 Exportar a Excel</button>
-  <button onclick="exportarPDF()">📄 Exportar a PDF</button>
-</div>
-<table id="tablaEnvios">
-
-      <tr><th>Código</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th></tr>
-    </table>
-  </div>
+  <!-- Librería de código de barras -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
