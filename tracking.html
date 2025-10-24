@@ -1,57 +1,142 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Rastreo de Equipaje — Luna Travel</title>
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rastreo | Luna Travel</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background-color: #f8faff;
+      margin: 0;
+      padding: 0;
+      color: #1a2a44;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 3rem;
+      background: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    }
+
+    header h1 {
+      font-size: 1.5rem;
+      color: #0a3475;
+      margin: 0;
+    }
+
+    nav a {
+      color: #0a3475;
+      margin-left: 1.2rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    nav a.active {
+      border-bottom: 2px solid #0a3475;
+      padding-bottom: 3px;
+    }
+
+    main {
+      text-align: center;
+      padding: 4rem 1rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      color: #0a3475;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      padding: 0.6rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      width: 230px;
+    }
+
+    button {
+      padding: 0.6rem 1.5rem;
+      background-color: #0a3475;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    button:hover {
+      background-color: #174b9b;
+    }
+
+    #result {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+      width: 400px;
+      max-width: 90%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .success {
+      color: #0a3475;
+    }
+
+    .error {
+      color: #e63946;
+      font-weight: 600;
+    }
+
+    footer {
+      background-color: #1a3475;
+      color: white;
+      text-align: center;
+      padding: 1rem 0;
+      font-size: 0.9rem;
+      margin-top: 3rem;
+    }
+  </style>
 </head>
 
 <body>
-  <header class="navbar">
-    <div class="container">
-      <a href="/" class="logo">Luna Travel</a>
-      <nav>
-        <ul class="menu">
-          <li><a href="/servicios">Servicios</a></li>
-          <li><a href="/precios">Precios</a></li>
-          <li><a href="/tracking" class="active">Rastreo</a></li>
-          <li><a href="/contacto" class="btn-primary">Contáctanos</a></li>
-          <script type="module" src="./firebase.js"></script>
-
-        </ul>
-      </nav>
-    </div>
+  <header>
+    <h1>Luna Travel</h1>
+    <nav>
+      <a href="index.html">Servicios</a>
+      <a href="pricing.html">Precios</a>
+      <a href="tracking.html" class="active">Rastreo</a>
+      <a href="contact.html">Contáctanos</a>
+    </nav>
   </header>
 
-  <main class="container" style="text-align:center; padding:60px 20px;">
-    <h1 style="color:#1e3a8a; font-weight:700;">Rastrea tu equipaje</h1>
-    <p style="margin-top:10px;">Consulta el estado y ubicación de tu equipaje ingresando el número de orden.</p>
+  <main>
+    <h2>Rastrea tu equipaje</h2>
+    <p>Consulta el estado y ubicación de tu equipaje ingresando el número de orden.</p>
 
-    <div style="margin-top:30px;">
-      <input id="orderNumber" placeholder="Ejemplo: LT-1234"
-             style="padding:10px; border:1px solid #ccc; border-radius:8px; width:250px;">
-      <button id="buscarBtn" style="padding:10px 20px; background:#1e3a8a; color:white; border:none; border-radius:8px; cursor:pointer;">
-        Buscar
-      </button>
+    <div>
+      <input type="text" id="orderNumber" placeholder="LT-1234" />
+      <button onclick="buscarEquipaje()">Buscar</button>
     </div>
 
-    <div id="resultado"
-         style="margin-top:40px; background:#f9fafb; border-radius:12px; padding:20px; max-width:520px; margin-left:auto; margin-right:auto;">
-    </div>
+    <div id="result"></div>
   </main>
 
-  <footer style="text-align:center; padding:30px; background:#1e3a8a; color:white; font-size:14px;">
+  <footer>
     © 2025 Luna Travel — Envíos, boletos y trámites confiables.
   </footer>
 
-  <!-- Firebase SDKs (CDN) -->
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    // ⚠️ CONFIG REAL (copiada de tu consola de Firebase)
     const firebaseConfig = {
       apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
       authDomain: "lunatrack-95199.firebaseapp.com",
@@ -62,48 +147,40 @@
       measurementId: "G-QCYKV5DXKD"
     };
 
-    // Debug: ver en consola qué config se está usando
-    console.log("Firebase config:", firebaseConfig);
-
     const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+    const db = getFirestore(app);
 
-    async function buscarEquipaje() {
-      const orderId   = document.getElementById("orderNumber").value.trim();
-      const resultado = document.getElementById("resultado");
+    window.buscarEquipaje = async function () {
+      const orderNumber = document.getElementById("orderNumber").value.trim();
+      const resultDiv = document.getElementById("result");
 
-      if (!orderId) {
-        resultado.innerHTML = "<p style='color:#b91c1c'>Ingresa un número de orden.</p>";
+      if (!orderNumber) {
+        resultDiv.innerHTML = `<p class="error">Por favor, ingresa un número de orden.</p>`;
         return;
       }
 
-      resultado.innerHTML = "Buscando…";
-
       try {
-        const ref  = doc(db, "luggage", orderId); // colección: luggage | docId: LT-1234
-        const snap = await getDoc(ref);
+        const docRef = doc(db, "equipaje", orderNumber);
+        const docSnap = await getDoc(docRef);
 
-        if (snap.exists()) {
-          const d = snap.data();
-          resultado.innerHTML = `
-            <div style="text-align:left">
-              <h3 style="color:#1e3a8a; margin:0 0 8px">📦 Información del equipaje</h3>
-              <p><b>Estado:</b> ${d.estado ?? "-"}</p>
-              <p><b>Ubicación:</b> ${d.ubicacion ?? "-"}</p>
-              <p><b>Última actualización:</b> ${d.fecha ?? "-"}</p>
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          resultDiv.innerHTML = `
+            <div class="success">
+              <h3>Resultado del rastreo</h3>
+              <p><strong>Estado:</strong> ${data.estado}</p>
+              <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
+              <p><strong>Última actualización:</strong> ${data.fecha}</p>
             </div>
           `;
         } else {
-          resultado.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
+          resultDiv.innerHTML = `<p class="error">No se encontró información para ese número de orden.</p>`;
         }
-      } catch (err) {
-        console.error("Firestore error →", err);
-        resultado.innerHTML = `<p style="color:#b91c1c">Error conectando con la base de datos (revisa consola).<br>
-          <small>${err?.code ?? ""} ${err?.message ?? ""}</small></p>`;
+      } catch (error) {
+        console.error("Firestore error:", error);
+        resultDiv.innerHTML = `<p class="error">Error al conectar con la base de datos: ${error.message}</p>`;
       }
-    }
-
-    document.getElementById("buscarBtn").addEventListener("click", buscarEquipaje);
+    };
   </script>
 </body>
 </html>
