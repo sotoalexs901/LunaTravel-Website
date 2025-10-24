@@ -1,167 +1,107 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Rastrea tu equipaje | Luna Travel</title>
-  <link rel="stylesheet" href="../styles.css" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rastreo de Equipaje — Luna Travel</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
-  <header>
-    <nav>
+  <header class="navbar">
+    <div class="container">
       <a href="/" class="logo">Luna Travel</a>
-      <ul>
-        <li><a href="/#services">Servicios</a></li>
-        <li><a href="/#pricing">Precios</a></li>
-        <li><a href="/tracking.html" class="active">Rastreo</a></li>
-        <li><a href="/#contact">Contáctanos</a></li>
-      </ul>
-    </nav>
+      <nav>
+        <ul class="menu">
+          <li><a href="/servicios">Servicios</a></li>
+          <li><a href="/precios">Precios</a></li>
+          <li><a href="/tracking" class="active">Rastreo</a></li>
+          <li><a href="/contacto" class="btn-primary">Contáctanos</a></li>
+        </ul>
+      </nav>
+    </div>
   </header>
 
-  <main class="tracking-section">
-    <h1>Rastrea tu equipaje</h1>
-    <p>Consulta el estado y ubicación de tu equipaje ingresando el número de orden.</p>
+  <main class="container" style="text-align:center; padding:60px 20px;">
+    <h1 style="color:#1e3a8a; font-weight:700;">Rastrea tu equipaje</h1>
+    <p style="margin-top:10px;">Consulta el estado y ubicación de tu equipaje ingresando el número de orden.</p>
 
-    <div class="tracking-form">
-      <input type="text" id="orderInput" placeholder="LT-1234" />
-      <button id="buscarBtn">Buscar</button>
+    <div style="margin-top:30px;">
+      <input id="orderNumber" placeholder="Ejemplo: LT-1234"
+             style="padding:10px; border:1px solid #ccc; border-radius:8px; width:250px;">
+      <button id="buscarBtn" style="padding:10px 20px; background:#1e3a8a; color:white; border:none; border-radius:8px; cursor:pointer;">
+        Buscar
+      </button>
     </div>
 
-    <div id="resultado" class="tracking-result"></div>
+    <div id="resultado"
+         style="margin-top:40px; background:#f9fafb; border-radius:12px; padding:20px; max-width:520px; margin-left:auto; margin-right:auto;">
+    </div>
   </main>
 
-  <footer>
-    <p>© 2025 Luna Travel — Envíos, boletos y trámites confiables.</p>
+  <footer style="text-align:center; padding:30px; background:#1e3a8a; color:white; font-size:14px;">
+    © 2025 Luna Travel — Envíos, boletos y trámites confiables.
   </footer>
 
+  <!-- Firebase SDKs (CDN) -->
   <script type="module">
-    import { db } from "./firebase.js";
-    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    const input = document.getElementById("orderInput");
-    const btn = document.getElementById("buscarBtn");
-    const resultado = document.getElementById("resultado");
+    // ⚠️ CONFIG REAL (copiada de tu consola de Firebase)
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+      authDomain: "lunatrack-95199.firebaseapp.com",
+      projectId: "lunatrack-95199",
+      storageBucket: "lunatrack-95199.firebasestorage.app",
+      messagingSenderId: "82970120947",
+      appId: "1:82970120947:web:2d7b70d052816802c05d86",
+      measurementId: "G-QCYKV5DXKD"
+    };
 
-    // ✅ Mostrar aviso si Firebase no está bien configurado
-    import.meta.env?.VITE_API_KEY
-      ? console.log("Variables cargadas correctamente.")
-      : console.warn("⚠️ Variables de entorno VITE_* no detectadas. Se usará configuración local.");
+    // Debug: ver en consola qué config se está usando
+    console.log("Firebase config:", firebaseConfig);
 
-    // 🔍 Función de búsqueda
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
     async function buscarEquipaje() {
-      const orderId = input.value.trim();
+      const orderId   = document.getElementById("orderNumber").value.trim();
+      const resultado = document.getElementById("resultado");
+
       if (!orderId) {
-        resultado.textContent = "Por favor, ingresa un número de orden válido.";
+        resultado.innerHTML = "<p style='color:#b91c1c'>Ingresa un número de orden.</p>";
         return;
       }
 
-      resultado.textContent = "Buscando información...";
+      resultado.innerHTML = "Buscando…";
 
       try {
-        const docRef = doc(db, "luggage", orderId);
-        const docSnap = await getDoc(docRef);
+        const ref  = doc(db, "luggage", orderId); // colección: luggage | docId: LT-1234
+        const snap = await getDoc(ref);
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
+        if (snap.exists()) {
+          const d = snap.data();
           resultado.innerHTML = `
-            <h3>Resultado del rastreo:</h3>
-            <p><strong>Estado:</strong> ${data.estado}</p>
-            <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
-            <p><strong>Última actualización:</strong> ${data.fecha}</p>
+            <div style="text-align:left">
+              <h3 style="color:#1e3a8a; margin:0 0 8px">📦 Información del equipaje</h3>
+              <p><b>Estado:</b> ${d.estado ?? "-"}</p>
+              <p><b>Ubicación:</b> ${d.ubicacion ?? "-"}</p>
+              <p><b>Última actualización:</b> ${d.fecha ?? "-"}</p>
+            </div>
           `;
         } else {
-          resultado.textContent = "No se encontró información para ese número de orden.";
+          resultado.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
         }
-      } catch (error) {
-        console.error("Error al consultar Firestore:", error);
-        resultado.textContent = "Error al conectar con el servidor. Revisa la consola.";
+      } catch (err) {
+        console.error("Firestore error →", err);
+        resultado.innerHTML = `<p style="color:#b91c1c">Error conectando con la base de datos (revisa consola).<br>
+          <small>${err?.code ?? ""} ${err?.message ?? ""}</small></p>`;
       }
     }
 
-    btn.addEventListener("click", buscarEquipaje);
+    document.getElementById("buscarBtn").addEventListener("click", buscarEquipaje);
   </script>
-
-  <style>
-    body {
-      font-family: 'Poppins', sans-serif;
-      margin: 0;
-      background-color: #f9fbff;
-    }
-
-    header {
-      background: white;
-      padding: 10px 20px;
-      box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    nav ul {
-      list-style: none;
-      display: flex;
-      gap: 20px;
-      padding: 0;
-    }
-
-    nav a {
-      text-decoration: none;
-      color: #001d4a;
-      font-weight: 500;
-    }
-
-    nav a.active {
-      color: #133e87;
-      font-weight: 600;
-    }
-
-    .tracking-section {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .tracking-form {
-      margin: 20px auto;
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-    }
-
-    .tracking-form input {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      width: 220px;
-    }
-
-    .tracking-form button {
-      padding: 10px 20px;
-      background-color: #133e87;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .tracking-result {
-      margin-top: 30px;
-      font-size: 18px;
-      color: #333;
-    }
-
-    footer {
-      background: #133e87;
-      color: white;
-      text-align: center;
-      padding: 15px 0;
-      margin-top: 60px;
-    }
-  </style>
 </body>
 </html>
