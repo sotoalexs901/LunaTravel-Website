@@ -177,16 +177,20 @@ window.exportarPDF = async function() {
         tabla.innerHTML = "<tr><th>Código</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th></tr>";
         snapshot.forEach((doc) => {
           const data = doc.data();
-          const fila = `
-            <tr>
-              <td><strong>${data.codigo}</strong></td>
-              <td>${data.cliente}</td>
-              <td>${data.destino}</td>
-              <td>${data.estado}</td>
-              <td>${data.ubicacion}</td>
-              <td>${data.fecha}</td>
-            </tr>
-          `;
+  const fila = `
+  <tr>
+    <td><strong>${data.codigo}</strong></td>
+    <td>${data.cliente}</td>
+    <td>${data.destino}</td>
+    <td>${data.estado}</td>
+    <td>${data.ubicacion}</td>
+    <td>${data.fecha}</td>
+    <td>
+      <button onclick="borrarRegistro('${data.codigo}')" style="background:#c0392b;color:white;border:none;padding:6px 10px;border-radius:5px;cursor:pointer;">🗑️</button>
+    </td>
+  </tr>
+`;
+
           tabla.innerHTML += fila;
         });
       });
