@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Rastreo | Luna Travel</title>
+
     <link rel="stylesheet" href="/css/styles.css" />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
@@ -11,6 +12,7 @@
     />
   </head>
   <body>
+    <!-- Encabezado -->
     <header class="navbar">
       <div class="container">
         <a href="/" class="logo">Luna Travel</a>
@@ -25,6 +27,7 @@
       </div>
     </header>
 
+    <!-- Contenido principal -->
     <main class="tracking-container">
       <h1>Rastrea tu equipaje</h1>
       <p>
@@ -44,21 +47,24 @@
       <div id="resultado" class="tracking-result"></div>
     </main>
 
-    <!-- FIREBASE SCRIPT -->
+    <!-- Firebase -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
       import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-      // 🔥 Configuración Firebase (usa tus claves reales)
+      // 🧩 Configuración Firebase usando variables de entorno
       const firebaseConfig = {
-        apiKey: "TU_API_KEY_AQUI",
-        authDomain: "lunatrack-95199.firebaseapp.com",
-        projectId: "lunatrack-95199",
+        apiKey: import.meta.env.VITE_API_KEY,
+        authDomain: import.meta.env.VITE_AUTH_DOMAIN,
+        projectId: import.meta.env.VITE_PROJECT_ID,
+        measurementId: import.meta.env.VITE_MEASUREMENT_ID,
       };
 
+      // Inicializar Firebase y Firestore
       const app = initializeApp(firebaseConfig);
       const db = getFirestore(app);
 
+      // 🔍 Función de búsqueda
       async function buscarEquipaje() {
         const orderId = document.getElementById("orderNumber").value.trim();
         const resultado = document.getElementById("resultado");
@@ -85,12 +91,3 @@
             resultado.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
           }
         } catch (error) {
-          console.error("Error al buscar:", error);
-          resultado.innerHTML = "<p>Error al conectar con la base de datos.</p>";
-        }
-      }
-
-      document.getElementById("buscarBtn").addEventListener("click", buscarEquipaje);
-    </script>
-  </body>
-</html>
