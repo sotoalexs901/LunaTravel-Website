@@ -2,28 +2,20 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Seguimiento de Equipaje | Luna Travel</title>
-
-  <!-- Fuente y estilos del sitio -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     body {
       font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
       margin: 0;
-      background-color: #f9fafb;
       color: #1e293b;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-    }
-
-    header {
-      background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-      padding: 1rem 2rem;
     }
 
     main {
@@ -37,8 +29,8 @@
     }
 
     h1 {
-      font-size: 2rem;
       color: #1e3a8a;
+      font-size: 2rem;
       margin-bottom: 1rem;
     }
 
@@ -53,18 +45,19 @@
       border-radius: 0.5rem;
       width: 250px;
       font-size: 1rem;
+      outline: none;
     }
 
     button {
-      padding: 0.8rem 1.5rem;
-      margin-left: 0.5rem;
       background-color: #1e3a8a;
       color: white;
       border: none;
+      padding: 0.8rem 1.5rem;
+      margin-left: 0.5rem;
       border-radius: 0.5rem;
       cursor: pointer;
       font-weight: 600;
-      transition: background 0.2s ease;
+      transition: 0.2s ease-in-out;
     }
 
     button:hover {
@@ -74,3 +67,127 @@
     #resultado {
       margin-top: 2rem;
       background: white;
+      padding: 2rem;
+      border-radius: 0.75rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    footer {
+      background-color: #1e3a8a;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    header.navbar {
+      background: white;
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .menu {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .menu a {
+      text-decoration: none;
+      color: #1e293b;
+      font-weight: 500;
+    }
+
+    .menu a:hover {
+      color: #1e3a8a;
+    }
+
+    .btn-primary {
+      background-color: #1e3a8a;
+      color: #fff !important;
+      padding: 0.6rem 1rem;
+      border-radius: 0.5rem;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- HEADER -->
+  <header class="navbar">
+    <a href="/" style="text-decoration:none; color:#1e3a8a; font-weight:700; font-size:1.25rem;">Luna Travel</a>
+    <nav>
+      <ul class="menu">
+        <li><a href="/servicios">Servicios</a></li>
+        <li><a href="/precios">Precios</a></li>
+        <li><a href="/tracking" style="font-weight:600; color:#1e3a8a;">Rastreo</a></li>
+        <li><a href="/contacto" class="btn-primary">Contáctanos</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- MAIN CONTENT -->
+  <main>
+    <h1>Rastrea tu equipaje</h1>
+    <p>Consulta el estado y ubicación de tu equipaje ingresando el número de orden.</p>
+
+    <div>
+      <input type="text" id="orderInput" placeholder="Ejemplo: LT-2025-0001" />
+      <button onclick="buscarEquipaje()">Buscar</button>
+    </div>
+
+    <div id="resultado"></div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer>
+    © 2025 Luna Travel — Envíos, boletos y trámites confiables.
+  </footer>
+
+  <!-- FIREBASE SCRIPT -->
+  <script type="module">
+    import { db } from '/src/firebase.js';
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    async function buscarEquipaje() {
+      const orderId = document.getElementById("orderInput").value.trim();
+      const resultDiv = document.getElementById("resultado");
+
+      if (!orderId) {
+        resultDiv.innerHTML = "<p>Por favor, ingrese un número de orden.</p>";
+        return;
+      }
+
+      resultDiv.innerHTML = "<p>Buscando información...</p>";
+
+      try {
+        const ref = doc(db, "luggage", orderId);
+        const snap = await getDoc(ref);
+
+        if (snap.exists()) {
+          const data = snap.data();
+          resultDiv.innerHTML = `
+            <h2>Estado: <span style="color:#1e3a8a;">${data.status}</span></h2>
+            <p><strong>Última ubicación:</strong> ${data.lastLocation}</p>
+            <p><strong>Actualizado:</strong> ${new Date(data.updatedAt).toLocaleString()}</p>
+            <p><strong>Notas:</strong> ${data.notes || "Sin observaciones adicionales."}</p>
+          `;
+        } else {
+          resultDiv.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
+        }
+      } catch (error) {
+        console.error("Error al conectar con Firebase:", error);
+        resultDiv.innerHTML = "<p>Ocurrió un error al obtener los datos. Verifica la conexión.</p>";
+      }
+    }
+
+    window.buscarEquipaje = buscarEquipaje;
+  </script>
+</body>
+</html>
