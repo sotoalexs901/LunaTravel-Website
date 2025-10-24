@@ -207,9 +207,14 @@
 
   <!-- Tabla de control -->
   <div class="form-container" style="max-width:90%;">
-    <h3>📋 Envíos procesados</h3>
-    <button onclick="refrescarTabla()">🔄 Refrescar</button>
-    <table id="tablaEnvios">
+<h3>📋 Envíos procesados</h3>
+<div style="margin-bottom:10px;">
+  <button onclick="refrescarTabla()">🔄 Refrescar</button>
+  <button onclick="exportarExcel()">📊 Exportar a Excel</button>
+  <button onclick="exportarPDF()">📄 Exportar a PDF</button>
+</div>
+<table id="tablaEnvios">
+
       <tr><th>Código</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th></tr>
     </table>
   </div>
