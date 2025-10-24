@@ -1,24 +1,41 @@
-<script type="module">
-  import { db } from './firebase.js';
-  import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Seguimiento de Equipaje | Luna Travel</title>
+</head>
+<body>
+  <h1>Rastrea tu equipaje</h1>
 
-  async function buscarEquipaje() {
-    const orderId = document.getElementById('orderInput').value.trim();
-    const ref = doc(db, "luggage", orderId);
-    const snap = await getDoc(ref);
-    const result = document.getElementById('resultado');
+  <input type="text" id="orderInput" placeholder="Número de orden">
+  <button onclick="buscarEquipaje()">Buscar</button>
 
-    if (snap.exists()) {
-      const data = snap.data();
-      result.innerHTML = `
-        <h3>Estado: ${data.status}</h3>
-        <p>Última ubicación: ${data.lastLocation}</p>
-        <p>Actualizado: ${new Date(data.updatedAt).toLocaleString()}</p>
-      `;
-    } else {
-      result.innerHTML = `<p>No se encontró el equipaje con ese número de orden.</p>`;
+  <div id="resultado"></div>
+
+  <script type="module">
+    import { db } from '/src/firebase.js';
+    import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    async function buscarEquipaje() {
+      const orderId = document.getElementById("orderInput").value.trim();
+      const ref = doc(db, "luggage", orderId);
+      const snap = await getDoc(ref);
+      const resultDiv = document.getElementById("resultado");
+
+      if (snap.exists()) {
+        const data = snap.data();
+        resultDiv.innerHTML = `
+          <h3>Estado: ${data.status}</h3>
+          <p>Última ubicación: ${data.lastLocation}</p>
+          <p>Actualizado: ${new Date(data.updatedAt).toLocaleString()}</p>
+        `;
+      } else {
+        resultDiv.innerHTML = `<p>No se encontró información para la orden <b>${orderId}</b>.</p>`;
+      }
     }
-  }
 
-  window.buscarEquipaje = buscarEquipaje;
-</script>
+    window.buscarEquipaje = buscarEquipaje;
+  </script>
+</body>
+</html>
