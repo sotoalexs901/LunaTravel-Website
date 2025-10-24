@@ -5,158 +5,164 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Administración - Luna Travel</title>
   <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- Librería de códigos de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
   <!-- Firebase -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-    authDomain: "lunatrack-95199.firebaseapp.com",
-    projectId: "lunatrack-95199",
-    storageBucket: "lunatrack-95199.firebasestorage.app",
-    messagingSenderId: "82970120947",
-    appId: "1:82970120947:web:2d7b70d052816802c05d86",
-    measurementId: "G-QCYKV5DXKD"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+      authDomain: "lunatrack-95199.firebaseapp.com",
+      projectId: "lunatrack-95199",
+      storageBucket: "lunatrack-95199.firebasestorage.app",
+      messagingSenderId: "82970120947",
+      appId: "1:82970120947:web:2d7b70d052816802c05d86",
+      measurementId: "G-QCYKV5DXKD"
+    };
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  // Generar código único
-  window.generarCodigo = function() {
-    const timestamp = Date.now().toString().slice(-6);
-    return "LT-" + timestamp;
-  };
+    // Protección de acceso
+    window.onload = function() {
+      if (localStorage.getItem("adminLoggedIn") !== "true") {
+        window.location.href = "admin-login.html";
+      }
+    };
 
-  // Enviar datos a Firebase
-  window.registrarEquipaje = async function() {
-    const cliente = document.getElementById("cliente").value.trim();
-    const destino = document.getElementById("destino").value.trim();
-    const estado = document.getElementById("estado").value.trim();
-    const ubicacion = document.getElementById("ubicacion").value.trim();
+    // Cerrar sesión
+    window.logout = function() {
+      localStorage.removeItem("adminLoggedIn");
+      window.location.href = "admin-login.html";
+    };
 
-    if (!cliente || !destino || !estado || !ubicacion) {
-      alert("Por favor completa todos los campos.");
-      return;
-    }
+    // Generar código único
+    window.generarCodigo = function() {
+      const timestamp = Date.now().toString().slice(-6);
+      return "LT-" + timestamp;
+    };
 
-    const codigo = generarCodigo();
+    // Registrar equipaje
+    window.registrarEquipaje = async function() {
+      const cliente = document.getElementById("cliente").value.trim();
+      const destino = document.getElementById("destino").value.trim();
+      const estado = document.getElementById("estado").value.trim();
+      const ubicacion = document.getElementById("ubicacion").value.trim();
 
-    try {
-      // 🔥 Guardar el documento usando el código como ID
-      await setDoc(doc(db, "equipaje", codigo), {
-        codigo,
-        cliente,
-        destino,
-        estado,
-        ubicacion,
-        fecha: new Date().toLocaleString()
+      if (!cliente || !destino || !estado || !ubicacion) {
+        alert("Por favor completa todos los campos.");
+        return;
+      }
+
+      const codigo = generarCodigo();
+
+      try {
+        await setDoc(doc(db, "equipaje", codigo), {
+          codigo,
+          cliente,
+          destino,
+          estado,
+          ubicacion,
+          fecha: new Date().toLocaleString()
+        });
+
+        mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
+      } catch (error) {
+        console.error("Error al guardar:", error);
+        alert("Hubo un error al registrar el equipaje.");
+      }
+    };
+
+    // Actualizar estado escaneando
+    window.actualizarEstado = async function() {
+      const codigo = document.getElementById("codigoEscaneado").value.trim();
+      const nuevoEstado = document.getElementById("nuevoEstado").value.trim();
+      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value.trim();
+
+      if (!codigo || !nuevoEstado) {
+        alert("Por favor ingresa el código y el nuevo estado.");
+        return;
+      }
+
+      try {
+        const docRef = doc(db, "equipaje", codigo);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          await updateDoc(docRef, {
+            estado: nuevoEstado,
+            ubicacion: nuevaUbicacion || docSnap.data().ubicacion,
+            fecha: new Date().toLocaleString()
+          });
+          alert(`✅ Estado actualizado para ${codigo}`);
+        } else {
+          alert("No se encontró ningún envío con ese código.");
+        }
+      } catch (error) {
+        console.error("Error al actualizar:", error);
+      }
+    };
+
+    // Mostrar recibo
+    window.mostrarRecibo = function(codigo, cliente, destino, estado, ubicacion) {
+      const reciboDiv = document.getElementById("recibo");
+      reciboDiv.innerHTML = `
+        <h2>Recibo de Envío</h2>
+        <p><strong>Código:</strong> ${codigo}</p>
+        <p><strong>Cliente:</strong> ${cliente}</p>
+        <p><strong>Destino:</strong> ${destino}</p>
+        <p><strong>Estado:</strong> ${estado}</p>
+        <p><strong>Ubicación:</strong> ${ubicacion}</p>
+        <svg id="codigoBarras"></svg>
+        <button onclick="window.print()" class="btn-primary">🖨️ Imprimir Recibo</button>
+      `;
+      JsBarcode("#codigoBarras", codigo, {
+        format: "CODE128",
+        width: 2,
+        height: 60,
+        displayValue: true,
+        fontSize: 16,
+        lineColor: "#000000"
       });
-
-      mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
-    } catch (error) {
-      console.error("Error al guardar:", error);
-      alert("Hubo un error al registrar el equipaje.");
-    }
-  };
-
-  // Mostrar recibo con código de barras
-  window.mostrarRecibo = function(codigo, cliente, destino, estado, ubicacion) {
-    const reciboDiv = document.getElementById("recibo");
-    reciboDiv.innerHTML = `
-      <h2>Recibo de Envío</h2>
-      <p><strong>Código:</strong> ${codigo}</p>
-      <p><strong>Cliente:</strong> ${cliente}</p>
-      <p><strong>Destino:</strong> ${destino}</p>
-      <p><strong>Estado:</strong> ${estado}</p>
-      <p><strong>Ubicación:</strong> ${ubicacion}</p>
-      <svg id="codigoBarras"></svg>
-      <button onclick="window.print()" class="btn-primary">🖨️ Imprimir Recibo</button>
-    `;
-
-    // Generar el código de barras
-    JsBarcode("#codigoBarras", codigo, {
-      format: "CODE128",
-      width: 2,
-      height: 60,
-      displayValue: true,
-      fontSize: 16,
-      lineColor: "#000000"
-    });
-  };
-</script>
+    };
+  </script>
 
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f9fbff;
-      color: #222;
-      padding: 20px;
-    }
-
-    .form-container {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-
-    input, select, button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    button {
-      background-color: #1a3d8f;
-      color: white;
-      cursor: pointer;
-      border: none;
-    }
-
-    button:hover {
-      background-color: #162f70;
-    }
-
-    #recibo {
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-    }
-
-    @media print {
-      button { display: none; }
-      body { background: white; }
-      #recibo { box-shadow: none; }
-    }
+    body { font-family: Arial, sans-serif; background: #f9fbff; color: #222; padding: 20px; text-align:center; }
+    .form-container { max-width: 500px; margin: 30px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    input, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 5px; border: 1px solid #ccc; }
+    button { background-color: #1a3d8f; color: white; cursor: pointer; border: none; }
+    button:hover { background-color: #162f70; }
+    #recibo { max-width: 500px; margin: 40px auto; padding: 20px; background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center; }
+    .logout { position: fixed; top: 20px; right: 20px; background-color: #c0392b; }
+    @media print { button, .logout { display: none; } body { background: white; } #recibo { box-shadow: none; } }
   </style>
 </head>
 
 <body>
-  <h1 style="text-align:center; color:#1a3d8f;">Panel de Registro - Luna Travel</h1>
+  <button class="logout" onclick="logout()">Cerrar Sesión</button>
+
+  <h1 style="color:#1a3d8f;">Panel de Registro - Luna Travel</h1>
 
   <div class="form-container">
     <h3>Registrar nuevo envío</h3>
     <input type="text" id="cliente" placeholder="Nombre del cliente" />
     <input type="text" id="destino" placeholder="Destino" />
     <input type="text" id="estado" placeholder="Estado (ej. En tránsito)" />
-    <input type="text" id="ubicacion" placeholder="Ubicación (ej. Cancún)" />
+    <input type="text" id="ubicacion" placeholder="Ubicación (ej. Oficina)" />
     <button onclick="registrarEquipaje()">Guardar y generar recibo</button>
   </div>
 
   <div id="recibo"></div>
+
+  <div class="form-container">
+    <h3>Actualizar estado (con escáner o manual)</h3>
+    <input type="text" id="codigoEscaneado" placeholder="Escanear o ingresar código LT-" />
+    <input type="text" id="nuevoEstado" placeholder="Nuevo estado" />
+    <input type="text" id="nuevaUbicacion" placeholder="Nueva ubicación (opcional)" />
+    <button onclick="actualizarEstado()">Actualizar Estado</button>
+  </div>
 </body>
 </html>
