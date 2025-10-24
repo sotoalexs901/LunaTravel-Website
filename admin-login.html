@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acceso Empleados | Luna Travel</title>
-  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -15,7 +14,6 @@
       height: 100vh;
       margin: 0;
     }
-
     .login-container {
       background: white;
       padding: 2rem;
@@ -25,12 +23,10 @@
       max-width: 350px;
       text-align: center;
     }
-
     h1 {
       color: #0a3475;
       margin-bottom: 1rem;
     }
-
     input {
       width: 85%;
       padding: 0.8rem;
@@ -40,7 +36,6 @@
       font-size: 1rem;
       text-align: center;
     }
-
     button {
       background-color: #0a3475;
       color: white;
@@ -51,25 +46,13 @@
       font-size: 1rem;
       margin-top: 1rem;
     }
-
     button:hover {
       background-color: #174b9b;
     }
-
     .error {
       color: red;
       margin-top: 0.8rem;
       font-weight: 600;
-    }
-
-    footer {
-      position: fixed;
-      bottom: 1rem;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      color: #666;
-      font-size: 0.85rem;
     }
   </style>
 </head>
@@ -83,16 +66,9 @@
     <div id="error" class="error"></div>
   </div>
 
-  <footer>© 2025 Luna Travel — Acceso restringido</footer>
-
   <script>
-    // Lista de empleados autorizados (puedes cambiar los nombres y PINs)
-    const empleados = {
-      "alexs": "2025",
-      "sofia": "1001",
-      "miguel": "4321",
-      "paola": "9999"
-    };
+    const usuarioPermitido = "luna25";
+    const pinPermitido = "2030";
 
     function verificarLogin() {
       const usuario = document.getElementById("user").value.trim().toLowerCase();
@@ -104,8 +80,10 @@
         return;
       }
 
-      if (empleados[usuario] && empleados[usuario] === pin) {
+      if (usuario === usuarioPermitido && pin === pinPermitido) {
+        // Guarda el usuario actual y hora del login
         localStorage.setItem("empleado", usuario);
+        localStorage.setItem("loginTime", new Date().toISOString());
         window.location.href = "admin.html";
       } else {
         errorDiv.textContent = "Usuario o PIN incorrecto.";
