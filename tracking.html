@@ -91,3 +91,13 @@
             resultado.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
           }
         } catch (error) {
+          console.error("Error al buscar:", error);
+          resultado.innerHTML = "<p>Hubo un error al conectar con la base de datos.</p>";
+        }
+      }
+
+      // 🎯 Evento del botón
+      document.getElementById("buscarBtn").addEventListener("click", buscarEquipaje);
+    </script>
+  </body>
+</html>
