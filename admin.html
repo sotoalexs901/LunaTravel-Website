@@ -101,6 +101,11 @@
     <button onclick="guardarEnvio()">Guardar y generar recibo</button>
     <div id="recibo"></div>
 
+    <!-- 🔄 NUEVA SECCIÓN ESCÁNER -->
+    <h3>Actualizar estado con escáner</h3>
+    <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
+    <p style="font-size:13px;color:#555;">(Coloque el cursor aquí y escanee el código de barras)</p>
+
     <h3>Envíos registrados</h3>
     <table id="tablaEnvios">
       <thead>
@@ -121,7 +126,7 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, onSnapshot, query, orderBy, deleteDoc 
+      getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -146,6 +151,7 @@
         document.getElementById("login").style.display = "none";
         document.getElementById("panel").style.display = "block";
         cargarEnvios();
+        document.getElementById("scanInput").focus();
       } else {
         document.getElementById("loginError").style.display = "block";
       }
@@ -245,6 +251,32 @@
     }
     window.cargarEnvios = cargarEnvios;
 
+    // 🆕 ESCÁNER AUTOMÁTICO
+    const scanInput = document.getElementById("scanInput");
+    scanInput.addEventListener("change", async () => {
+      const codigo = scanInput.value.trim();
+      if (!codigo) return;
+
+      const nuevoEstado = prompt("Nuevo estado (ej. Entregado, En tránsito, En espera):");
+      const nuevaUbicacion = prompt("Nueva ubicación (opcional):");
+
+      try {
+        const ref = doc(db, "equipaje", codigo);
+        await updateDoc(ref, {
+          estado: nuevoEstado || "Sin cambios",
+          ubicacion: nuevaUbicacion || "Sin cambios",
+          fecha: new Date().toLocaleString()
+        });
+        alert(`✅ Estado del envío ${codigo} actualizado correctamente.`);
+        cargarEnvios();
+      } catch (error) {
+        alert("❌ Error al actualizar el envío. Verifica el código.");
+      }
+
+      scanInput.value = "";
+      scanInput.focus(); // vuelve a esperar el siguiente escaneo
+    });
+
     // ELIMINAR REGISTRO
     window.eliminarRegistro = async function(codigo) {
       if (!confirm(`¿Seguro que deseas eliminar el envío ${codigo}?`)) return;
@@ -257,7 +289,6 @@
         alert("Error al intentar eliminar el registro.");
       }
     };
-
   </script>
 
   <!-- Librería de código de barras -->
