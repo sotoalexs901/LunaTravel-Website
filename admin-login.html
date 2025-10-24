@@ -3,90 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Acceso Empleados | Luna Travel</title>
+  <title>Acceso Administrativo - Luna Travel</title>
   <style>
     body {
-      font-family: "Poppins", sans-serif;
-      background-color: #f0f4ff;
+      font-family: Arial, sans-serif;
+      background: #f9fbff;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      margin: 0;
     }
-    .login-container {
+    .login-box {
       background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 350px;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       text-align: center;
-    }
-    h1 {
-      color: #0a3475;
-      margin-bottom: 1rem;
+      width: 300px;
     }
     input {
-      width: 85%;
-      padding: 0.8rem;
-      margin: 0.5rem 0;
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
       border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      text-align: center;
+      border-radius: 5px;
     }
     button {
-      background-color: #0a3475;
+      width: 100%;
+      background-color: #1a3d8f;
       color: white;
+      padding: 10px;
       border: none;
-      border-radius: 8px;
-      padding: 0.8rem 1.5rem;
+      border-radius: 5px;
       cursor: pointer;
-      font-size: 1rem;
-      margin-top: 1rem;
     }
     button:hover {
-      background-color: #174b9b;
+      background-color: #162f70;
     }
     .error {
       color: red;
-      margin-top: 0.8rem;
-      font-weight: 600;
+      font-size: 14px;
+      margin-top: 5px;
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h1>Acceso de Empleados</h1>
-    <p>Ingrese su usuario y PIN de acceso.</p>
-    <input type="text" id="user" placeholder="Usuario" autocomplete="off" />
-    <input type="password" id="pin" placeholder="PIN de acceso" maxlength="6" />
-    <button onclick="verificarLogin()">Entrar</button>
-    <div id="error" class="error"></div>
+  <div class="login-box">
+    <h2>Acceso Administrativo</h2>
+    <input type="text" id="usuario" placeholder="Usuario" />
+    <input type="password" id="pin" placeholder="PIN" />
+    <button onclick="login()">Ingresar</button>
+    <p id="error" class="error"></p>
   </div>
 
   <script>
-    const usuarioPermitido = "luna25";
-    const pinPermitido = "2030";
-
-    function verificarLogin() {
-      const usuario = document.getElementById("user").value.trim().toLowerCase();
+    function login() {
+      const usuario = document.getElementById("usuario").value.trim();
       const pin = document.getElementById("pin").value.trim();
-      const errorDiv = document.getElementById("error");
+      const error = document.getElementById("error");
 
-      if (!usuario || !pin) {
-        errorDiv.textContent = "Por favor, completa ambos campos.";
-        return;
-      }
-
-      if (usuario === usuarioPermitido && pin === pinPermitido) {
-        // Guarda el usuario actual y hora del login
-        localStorage.setItem("empleado", usuario);
-        localStorage.setItem("loginTime", new Date().toISOString());
+      if (usuario === "luna25" && pin === "2030") {
+        localStorage.setItem("adminLoggedIn", "true");
         window.location.href = "admin.html";
       } else {
-        errorDiv.textContent = "Usuario o PIN incorrecto.";
+        error.textContent = "Usuario o PIN incorrectos.";
       }
     }
   </script>
