@@ -197,6 +197,19 @@ window.exportarPDF = async function() {
     }
 
     window.refrescarTabla = cargarEnvios;
+    // 🗑️ Eliminar un registro por código
+window.borrarRegistro = async function(codigo) {
+  if (confirm(`¿Seguro que deseas eliminar el envío ${codigo}? Esta acción no se puede deshacer.`)) {
+    try {
+      await deleteDoc(doc(db, "equipaje", codigo));
+      alert(`✅ Registro ${codigo} eliminado correctamente.`);
+    } catch (error) {
+      console.error("Error al eliminar:", error);
+      alert("❌ Error al eliminar el registro.");
+    }
+  }
+};
+
   </script>
 
   <style>
