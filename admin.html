@@ -3,93 +3,169 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Acceso Empleados | Luna Travel</title>
+  <title>Panel de Empleado | Luna Travel</title>
+  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
   <style>
     body {
       font-family: "Poppins", sans-serif;
-      background-color: #f0f4ff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .login-container {
-      background: white;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 350px;
-      text-align: center;
-    }
-    h1 {
+      background-color: #f3f7fb;
       color: #0a3475;
-      margin-bottom: 1rem;
-    }
-    input {
-      width: 85%;
-      padding: 0.8rem;
-      margin: 0.5rem 0;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
+      margin: 0;
       text-align: center;
+    }
+    header {
+      background-color: white;
+      padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    header h1 { margin: 0; font-size: 1.3rem; }
+    main { padding: 2rem 1rem; }
+    input, select {
+      width: 80%; max-width: 300px; padding: 0.8rem;
+      margin: 0.5rem; border: 1px solid #ccc;
+      border-radius: 8px; font-size: 1rem; text-align: center;
     }
     button {
-      background-color: #0a3475;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 0.8rem 1.5rem;
-      cursor: pointer;
-      font-size: 1rem;
-      margin-top: 1rem;
+      background-color: #0a3475; color: white;
+      border: none; border-radius: 8px;
+      padding: 0.8rem 1.5rem; cursor: pointer;
+      font-size: 1rem; margin: 0.5rem;
     }
-    button:hover {
-      background-color: #174b9b;
+    button:hover { background-color: #174b9b; }
+    #qr-reader { width: 280px; margin: 1rem auto; border: 2px solid #ccc; border-radius: 10px; }
+    #result {
+      margin-top: 1rem; padding: 1rem; background: white;
+      border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      width: 85%; margin-left: auto; margin-right: auto;
     }
-    .error {
-      color: red;
-      margin-top: 0.8rem;
-      font-weight: 600;
+    footer {
+      background-color: #0a3475; color: white;
+      padding: 1rem; font-size: 0.9rem;
+      position: fixed; bottom: 0; left: 0; width: 100%;
     }
   </style>
 </head>
 <body>
-  <div class="login-container">
-    <h1>Acceso de Empleados</h1>
-    <p>Ingrese su usuario y PIN de acceso.</p>
-    <input type="text" id="user" placeholder="Usuario" autocomplete="off" />
-    <input type="password" id="pin" placeholder="PIN de acceso" maxlength="6" />
-    <button onclick="verificarLogin()">Entrar</button>
-    <div id="error" class="error"></div>
-  </div>
 
+  <!-- Protección -->
   <script>
-    const usuarioPermitido = "luna25";
-    const pinPermitido = "2030";
+    const empleado = localStorage.getItem("empleado");
+    if (empleado !== "luna25") {
+      alert("⚠️ Acceso denegado. Debes iniciar sesión primero.");
+      window.location.href = "admin-login.html";
+    }
+  </script>
 
-    function verificarLogin() {
-      const usuario = document.getElementById("user").value.trim().toLowerCase();
-      const pin = document.getElementById("pin").value.trim();
-      const errorDiv = document.getElementById("error");
+  <header>
+    <h1>Panel de Empleado - Luna Travel</h1>
+    <p id="welcome" style="margin:0; font-weight:600; color:#174b9b;"></p>
+  </header>
 
-      if (!usuario || !pin) {
-        errorDiv.textContent = "Por favor, completa ambos campos.";
+  <main>
+    <h2>Gestión de Equipajes</h2>
+    <p>Escanea o ingresa el número de orden para ver y actualizar su estado.</p>
+
+    <input type="text" id="orderNumber" placeholder="LT-1234" />
+    <br>
+    <button onclick="buscarEquipaje()">Buscar</button>
+    <button onclick="iniciarEscaneo()">📷 Escanear</button>
+
+    <div id="qr-reader"></div>
+    <div id="result"></div>
+
+    <button onclick="cerrarSesion()" style="background-color:#e63946;">Cerrar sesión</button>
+  </main>
+
+  <footer>© 2025 Luna Travel — Panel interno de gestión.</footer>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+      authDomain: "lunatrack-95199.firebaseapp.com",
+      projectId: "lunatrack-95199",
+      storageBucket: "lunatrack-95199.firebasestorage.app",
+      messagingSenderId: "82970120947",
+      appId: "1:82970120947:web:2d7b70d052816802c05d86",
+      measurementId: "G-QCYKV5DXKD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    document.getElementById("welcome").textContent = `Bienvenido, ${localStorage.getItem("empleado")} 👋`;
+
+    let qrReader;
+    window.iniciarEscaneo = function() {
+      if (!navigator.mediaDevices) {
+        alert("Tu navegador no permite usar la cámara. Usa Chrome o Safari.");
         return;
       }
-
-      if (usuario === usuarioPermitido && pin === pinPermitido) {
-        // Guarda el usuario actual y hora del login
-        localStorage.setItem("empleado", usuario);
-        localStorage.setItem("loginTime", new Date().toISOString());
-        window.location.href = "admin.html";
-      } else {
-        errorDiv.textContent = "Usuario o PIN incorrecto.";
+      if (qrReader) {
+        qrReader.stop().then(() => { document.getElementById("qr-reader").innerHTML = ""; qrReader = null; });
+        return;
       }
-    }
+      qrReader = new Html5Qrcode("qr-reader");
+      qrReader.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
+        (decodedText) => { document.getElementById("orderNumber").value = decodedText; qrReader.stop(); buscarEquipaje(); },
+        () => {}
+      ).catch(err => alert("Error al acceder a la cámara: " + err));
+    };
+
+    window.buscarEquipaje = async function() {
+      const orderNumber = document.getElementById("orderNumber").value.trim();
+      const resultDiv = document.getElementById("result");
+      if (!orderNumber) { resultDiv.innerHTML = `<p style="color:red;">Ingresa un número de orden.</p>`; return; }
+
+      try {
+        const ref = doc(db, "equipaje", orderNumber);
+        const snap = await getDoc(ref);
+        if (snap.exists()) {
+          const data = snap.data();
+          resultDiv.innerHTML = `
+            <h3>Orden: ${orderNumber}</h3>
+            <p><strong>Estado:</strong> ${data.estado}</p>
+            <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
+            <p><strong>Fecha:</strong> ${data.fecha}</p>
+            <h4>Actualizar estado:</h4>
+            <select id="nuevoEstado">
+              <option disabled selected>Seleccionar...</option>
+              <option>Recibido</option><option>En tránsito</option><option>Llegando</option><option>Entregado</option>
+            </select><br>
+            <button onclick="actualizarEstado('${orderNumber}')">Actualizar</button>`;
+        } else {
+          resultDiv.innerHTML = `<p>No se encontró el equipaje.</p><button onclick="crearEquipaje('${orderNumber}')">Crear registro</button>`;
+        }
+      } catch (e) {
+        console.error(e);
+        resultDiv.innerHTML = `<p style="color:red;">Error al conectar con Firebase.</p>`;
+      }
+    };
+
+    window.actualizarEstado = async function(orderNumber) {
+      const nuevoEstado = document.getElementById("nuevoEstado").value;
+      const resultDiv = document.getElementById("result");
+      if (!nuevoEstado) { alert("Selecciona un estado antes de actualizar."); return; }
+      try {
+        const ref = doc(db, "equipaje", orderNumber);
+        const fecha = new Date().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" });
+        await updateDoc(ref, { estado: nuevoEstado, fecha });
+        resultDiv.innerHTML = `<p style="color:green;">✅ Estado actualizado a <strong>${nuevoEstado}</strong></p>`;
+      } catch (e) { console.error(e); }
+    };
+
+    window.crearEquipaje = async function(orderNumber) {
+      const ref = doc(db, "equipaje", orderNumber);
+      await setDoc(ref, { estado: "Recibido", ubicacion: "Oficina Central", fecha: new Date().toLocaleString("es-MX") });
+      alert("Equipaje creado como 'Recibido'."); buscarEquipaje();
+    };
+
+    window.cerrarSesion = function() {
+      localStorage.removeItem("empleado");
+      window.location.href = "admin-login.html";
+    };
   </script>
 </body>
 </html>
-
