@@ -1,8 +1,7 @@
 [build]
   publish = "."
-  command = "npm run build"
+  command = ""
 
-# 🔒 Desactiva el escaneo automático de secretos
 [build.environment]
   NETLIFY_SECRETS_SCAN_ENABLED = "false"
   NETLIFY_DISABLE_SECRET_SCAN = "true"
