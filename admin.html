@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Acceso Empleados | Luna Travel</title>
-  <link rel="stylesheet" href="styles.css" />
   <style>
     body {
       font-family: "Poppins", sans-serif;
@@ -15,7 +14,6 @@
       height: 100vh;
       margin: 0;
     }
-
     .login-container {
       background: white;
       padding: 2rem;
@@ -25,12 +23,10 @@
       max-width: 350px;
       text-align: center;
     }
-
     h1 {
       color: #0a3475;
       margin-bottom: 1rem;
     }
-
     input {
       width: 85%;
       padding: 0.8rem;
@@ -40,7 +36,6 @@
       font-size: 1rem;
       text-align: center;
     }
-
     button {
       background-color: #0a3475;
       color: white;
@@ -51,25 +46,13 @@
       font-size: 1rem;
       margin-top: 1rem;
     }
-
     button:hover {
       background-color: #174b9b;
     }
-
     .error {
       color: red;
       margin-top: 0.8rem;
       font-weight: 600;
-    }
-
-    footer {
-      position: fixed;
-      bottom: 1rem;
-      left: 0;
-      width: 100%;
-      text-align: center;
-      color: #666;
-      font-size: 0.85rem;
     }
   </style>
 </head>
@@ -83,10 +66,7 @@
     <div id="error" class="error"></div>
   </div>
 
-  <footer>© 2025 Luna Travel — Acceso restringido</footer>
-
   <script>
-    // 🔐 Credenciales oficiales
     const usuarioPermitido = "luna25";
     const pinPermitido = "2030";
 
@@ -101,7 +81,9 @@
       }
 
       if (usuario === usuarioPermitido && pin === pinPermitido) {
-        localStorage.setItem("empleado", usuarioPermitido);
+        // Guarda el usuario actual y hora del login
+        localStorage.setItem("empleado", usuario);
+        localStorage.setItem("loginTime", new Date().toISOString());
         window.location.href = "admin.html";
       } else {
         errorDiv.textContent = "Usuario o PIN incorrecto.";
@@ -110,3 +92,4 @@
   </script>
 </body>
 </html>
+
