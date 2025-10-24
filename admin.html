@@ -8,6 +8,14 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     body {
+      <script>
+  const empleado = localStorage.getItem("empleado");
+  if (!empleado) {
+    alert("Acceso denegado. Por favor inicia sesión.");
+    window.location.href = "admin-login.html";
+  }
+</script>
+
       font-family: "Poppins", sans-serif;
       background-color: #f3f7fb;
       color: #0a3475;
