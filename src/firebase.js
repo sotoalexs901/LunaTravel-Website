@@ -1,15 +1,19 @@
+// src/firebase.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// ✅ Config Firebase directamente desde Netlify environment (inyectadas como globales)
+// ✅ Intentar leer variables de entorno (Netlify / Vite)
 const firebaseConfig = {
-  apiKey: window.FIREBASE_API_KEY,
-  authDomain: window.FIREBASE_AUTH_DOMAIN,
-  projectId: window.FIREBASE_PROJECT_ID,
-  measurementId: window.FIREBASE_MEASUREMENT_ID
+  apiKey: import.meta.env?.VITE_API_KEY || "AIzaSyXXXXXXXXXXXX",
+  authDomain: import.meta.env?.VITE_AUTH_DOMAIN || "lunatrack-95199.firebaseapp.com",
+  projectId: import.meta.env?.VITE_PROJECT_ID || "lunatrack-95199",
+  measurementId: import.meta.env?.VITE_MEASUREMENT_ID || ""
 };
 
-// Inicializa Firebase
+// 🔍 Mostrar en consola para debug
+console.log("Firebase config usada:", firebaseConfig);
+
+// ✅ Inicializar Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
