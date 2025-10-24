@@ -1,103 +1,113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rastreo | Luna Travel</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Rastreo de Equipaje — Luna Travel</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
 
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-  </head>
-  <body>
-    <!-- Encabezado -->
-    <header class="navbar">
-      <div class="container">
-        <a href="/" class="logo">Luna Travel</a>
-        <nav>
-          <ul class="menu">
-            <li><a href="/servicios">Servicios</a></li>
-            <li><a href="/precios">Precios</a></li>
-            <li><a href="/tracking" class="active">Rastreo</a></li>
-            <li><a href="/contacto">Contáctanos</a></li>
-          </ul>
-        </nav>
-      </div>
-    </header>
+<body>
+  <!-- 🔹 NAVBAR -->
+  <header class="navbar">
+    <div class="container">
+      <a href="/" class="logo">Luna Travel</a>
+      <nav>
+        <ul class="menu">
+          <li><a href="/servicios">Servicios</a></li>
+          <li><a href="/precios">Precios</a></li>
+          <li><a href="/tracking" class="active">Rastreo</a></li>
+          <li><a href="/contacto" class="btn-primary">Contáctanos</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
 
-    <!-- Contenido principal -->
-    <main class="tracking-container">
-      <h1>Rastrea tu equipaje</h1>
-      <p>
-        Consulta el estado y ubicación de tu equipaje ingresando el número de orden.
-      </p>
+  <!-- 🔹 SECCIÓN PRINCIPAL -->
+  <main class="container" style="text-align:center; padding:60px 20px;">
+    <h1 style="color:#1e3a8a; font-weight:700;">Rastrea tu equipaje</h1>
+    <p style="margin-top:10px;">Consulta el estado y ubicación de tu equipaje ingresando el número de orden.</p>
 
-      <div class="tracking-form">
-        <input
-          type="text"
-          id="orderNumber"
-          placeholder="Ejemplo: LT-1234"
-          required
-        />
-        <button id="buscarBtn">Buscar</button>
-      </div>
+    <div style="margin-top:30px;">
+      <input type="text" id="orderNumber" placeholder="Ejemplo: LT-1234"
+             style="padding:10px; border:1px solid #ccc; border-radius:8px; width:250px;">
+      <button id="buscarBtn" style="padding:10px 20px; background:#1e3a8a; color:white; border:none; border-radius:8px; cursor:pointer;">
+        Buscar
+      </button>
+    </div>
 
-      <div id="resultado" class="tracking-result"></div>
-    </main>
+    <!-- 🔹 RESULTADO -->
+    <div id="resultado"
+         style="margin-top:40px; background:#f9fafb; border-radius:12px; padding:20px; max-width:500px; margin-left:auto; margin-right:auto;">
+    </div>
+  </main>
 
-    <!-- Firebase -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-      import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <!-- 🔹 FOOTER -->
+  <footer style="text-align:center; padding:30px; background:#1e3a8a; color:white; font-size:14px;">
+    © 2025 Luna Travel — Envíos, boletos y trámites confiables.
+  </footer>
 
-      // 🧩 Configuración Firebase usando variables de entorno
-      const firebaseConfig = {
-        apiKey: import.meta.env.VITE_API_KEY,
-        authDomain: import.meta.env.VITE_AUTH_DOMAIN,
-        projectId: import.meta.env.VITE_PROJECT_ID,
-        measurementId: import.meta.env.VITE_MEASUREMENT_ID,
-      };
+  <!-- ========================================================= -->
+  <!-- 🔹 VARIABLES INYECTADAS DESDE NETLIFY -->
+  <script>
+    window.FIREBASE_API_KEY = "{{FIREBASE_API_KEY}}";
+    window.FIREBASE_AUTH_DOMAIN = "{{FIREBASE_AUTH_DOMAIN}}";
+    window.FIREBASE_PROJECT_ID = "{{FIREBASE_PROJECT_ID}}";
+    window.FIREBASE_MEASUREMENT_ID = "{{FIREBASE_MEASUREMENT_ID}}";
+  </script>
 
-      // Inicializar Firebase y Firestore
-      const app = initializeApp(firebaseConfig);
-      const db = getFirestore(app);
+  <!-- ========================================================= -->
+  <!-- 🔹 FIREBASE Y FUNCIONALIDAD -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-      // 🔍 Función de búsqueda
-      async function buscarEquipaje() {
-        const orderId = document.getElementById("orderNumber").value.trim();
-        const resultado = document.getElementById("resultado");
+    // ✅ Configuración Firebase usando variables globales inyectadas desde Netlify
+    const firebaseConfig = {
+      apiKey: window.FIREBASE_API_KEY,
+      authDomain: window.FIREBASE_AUTH_DOMAIN,
+      projectId: window.FIREBASE_PROJECT_ID,
+      measurementId: window.FIREBASE_MEASUREMENT_ID,
+    };
 
-        if (!orderId) {
-          resultado.innerHTML = "<p>Por favor ingresa un número de orden.</p>";
-          return;
-        }
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-        try {
-          const docRef = doc(db, "luggage", orderId);
-          const docSnap = await getDoc(docRef);
+    // 🔍 Función de rastreo
+    async function buscarEquipaje() {
+      const orderId = document.getElementById("orderNumber").value.trim();
+      const resultado = document.getElementById("resultado");
 
-          if (docSnap.exists()) {
-            const data = docSnap.data();
-            resultado.innerHTML = `
-              <div class="card">
-                <p><strong>Estado:</strong> ${data.estado}</p>
-                <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
-                <p><strong>Última actualización:</strong> ${data.fecha}</p>
-              </div>
-            `;
-          } else {
-            resultado.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
-          }
-        } catch (error) {
-          console.error("Error al buscar:", error);
-          resultado.innerHTML = "<p>Hubo un error al conectar con la base de datos.</p>";
-        }
+      if (!orderId) {
+        resultado.innerHTML = "<p style='color:red;'>Por favor ingresa un número de orden.</p>";
+        return;
       }
 
-      // 🎯 Evento del botón
-      document.getElementById("buscarBtn").addEventListener("click", buscarEquipaje);
-    </script>
-  </body>
+      try {
+        const docRef = doc(db, "luggage", orderId);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          resultado.innerHTML = `
+            <div style="text-align:left;">
+              <h3 style="color:#1e3a8a;">📦 Información del equipaje</h3>
+              <p><strong>Estado:</strong> ${data.estado}</p>
+              <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
+              <p><strong>Última actualización:</strong> ${data.fecha}</p>
+            </div>
+          `;
+        } else {
+          resultado.innerHTML = "<p>No se encontró información para ese número de orden.</p>";
+        }
+      } catch (error) {
+        console.error("Error al buscar:", error);
+        resultado.innerHTML = "<p style='color:red;'>Hubo un error al conectar con la base de datos.</p>";
+      }
+    }
+
+    document.getElementById("buscarBtn").addEventListener("click", buscarEquipaje);
+  </script>
+</body>
 </html>
