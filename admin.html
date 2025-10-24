@@ -3,84 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel de Empleado | Luna Travel</title>
-  <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background-color: #f3f7fb;
-      color: #0a3475;
-      margin: 0;
-      text-align: center;
-    }
-    header {
-      background-color: white;
-      padding: 1rem;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    header h1 { margin: 0; font-size: 1.3rem; }
-    main { padding: 2rem 1rem; }
-    input, select {
-      width: 80%; max-width: 300px; padding: 0.8rem;
-      margin: 0.5rem; border: 1px solid #ccc;
-      border-radius: 8px; font-size: 1rem; text-align: center;
-    }
-    button {
-      background-color: #0a3475; color: white;
-      border: none; border-radius: 8px;
-      padding: 0.8rem 1.5rem; cursor: pointer;
-      font-size: 1rem; margin: 0.5rem;
-    }
-    button:hover { background-color: #174b9b; }
-    #qr-reader { width: 280px; margin: 1rem auto; border: 2px solid #ccc; border-radius: 10px; }
-    #result {
-      margin-top: 1rem; padding: 1rem; background: white;
-      border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      width: 85%; margin-left: auto; margin-right: auto;
-    }
-    footer {
-      background-color: #0a3475; color: white;
-      padding: 1rem; font-size: 0.9rem;
-      position: fixed; bottom: 0; left: 0; width: 100%;
-    }
-  </style>
-</head>
-<body>
+  <title>Panel de Administración - Luna Travel</title>
+  <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Protección -->
-  <script>
-    const empleado = localStorage.getItem("empleado");
-    if (empleado !== "luna25") {
-      alert("⚠️ Acceso denegado. Debes iniciar sesión primero.");
-      window.location.href = "admin-login.html";
-    }
-  </script>
+  <!-- Librería de códigos de barras -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 
-  <header>
-    <h1>Panel de Empleado - Luna Travel</h1>
-    <p id="welcome" style="margin:0; font-weight:600; color:#174b9b;"></p>
-  </header>
-
-  <main>
-    <h2>Gestión de Equipajes</h2>
-    <p>Escanea o ingresa el número de orden para ver y actualizar su estado.</p>
-
-    <input type="text" id="orderNumber" placeholder="LT-1234" />
-    <br>
-    <button onclick="buscarEquipaje()">Buscar</button>
-    <button onclick="iniciarEscaneo()">📷 Escanear</button>
-
-    <div id="qr-reader"></div>
-    <div id="result"></div>
-
-    <button onclick="cerrarSesion()" style="background-color:#e63946;">Cerrar sesión</button>
-  </main>
-
-  <footer>© 2025 Luna Travel — Panel interno de gestión.</footer>
-
+  <!-- Firebase -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
@@ -95,77 +27,135 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    document.getElementById("welcome").textContent = `Bienvenido, ${localStorage.getItem("empleado")} 👋`;
+    // Generar código único
+    window.generarCodigo = function() {
+      const timestamp = Date.now().toString().slice(-6);
+      return "LT-" + timestamp;
+    }
 
-    let qrReader;
-    window.iniciarEscaneo = function() {
-      if (!navigator.mediaDevices) {
-        alert("Tu navegador no permite usar la cámara. Usa Chrome o Safari.");
+    // Enviar datos a Firebase
+    window.registrarEquipaje = async function() {
+      const cliente = document.getElementById("cliente").value.trim();
+      const destino = document.getElementById("destino").value.trim();
+      const estado = document.getElementById("estado").value.trim();
+      const ubicacion = document.getElementById("ubicacion").value.trim();
+
+      if (!cliente || !destino || !estado || !ubicacion) {
+        alert("Por favor completa todos los campos.");
         return;
       }
-      if (qrReader) {
-        qrReader.stop().then(() => { document.getElementById("qr-reader").innerHTML = ""; qrReader = null; });
-        return;
-      }
-      qrReader = new Html5Qrcode("qr-reader");
-      qrReader.start({ facingMode: "environment" }, { fps: 10, qrbox: 250 },
-        (decodedText) => { document.getElementById("orderNumber").value = decodedText; qrReader.stop(); buscarEquipaje(); },
-        () => {}
-      ).catch(err => alert("Error al acceder a la cámara: " + err));
-    };
 
-    window.buscarEquipaje = async function() {
-      const orderNumber = document.getElementById("orderNumber").value.trim();
-      const resultDiv = document.getElementById("result");
-      if (!orderNumber) { resultDiv.innerHTML = `<p style="color:red;">Ingresa un número de orden.</p>`; return; }
+      const codigo = generarCodigo();
 
       try {
-        const ref = doc(db, "equipaje", orderNumber);
-        const snap = await getDoc(ref);
-        if (snap.exists()) {
-          const data = snap.data();
-          resultDiv.innerHTML = `
-            <h3>Orden: ${orderNumber}</h3>
-            <p><strong>Estado:</strong> ${data.estado}</p>
-            <p><strong>Ubicación:</strong> ${data.ubicacion}</p>
-            <p><strong>Fecha:</strong> ${data.fecha}</p>
-            <h4>Actualizar estado:</h4>
-            <select id="nuevoEstado">
-              <option disabled selected>Seleccionar...</option>
-              <option>Recibido</option><option>En tránsito</option><option>Llegando</option><option>Entregado</option>
-            </select><br>
-            <button onclick="actualizarEstado('${orderNumber}')">Actualizar</button>`;
-        } else {
-          resultDiv.innerHTML = `<p>No se encontró el equipaje.</p><button onclick="crearEquipaje('${orderNumber}')">Crear registro</button>`;
-        }
-      } catch (e) {
-        console.error(e);
-        resultDiv.innerHTML = `<p style="color:red;">Error al conectar con Firebase.</p>`;
+        await addDoc(collection(db, "equipaje"), {
+          codigo,
+          cliente,
+          destino,
+          estado,
+          ubicacion,
+          fecha: new Date().toLocaleString()
+        });
+
+        mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
+      } catch (error) {
+        console.error("Error al guardar:", error);
+        alert("Hubo un error al registrar el equipaje.");
       }
     };
 
-    window.actualizarEstado = async function(orderNumber) {
-      const nuevoEstado = document.getElementById("nuevoEstado").value;
-      const resultDiv = document.getElementById("result");
-      if (!nuevoEstado) { alert("Selecciona un estado antes de actualizar."); return; }
-      try {
-        const ref = doc(db, "equipaje", orderNumber);
-        const fecha = new Date().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" });
-        await updateDoc(ref, { estado: nuevoEstado, fecha });
-        resultDiv.innerHTML = `<p style="color:green;">✅ Estado actualizado a <strong>${nuevoEstado}</strong></p>`;
-      } catch (e) { console.error(e); }
-    };
+    // Mostrar recibo con código de barras
+    window.mostrarRecibo = function(codigo, cliente, destino, estado, ubicacion) {
+      const reciboDiv = document.getElementById("recibo");
+      reciboDiv.innerHTML = `
+        <h2>Recibo de Envío</h2>
+        <p><strong>Código:</strong> ${codigo}</p>
+        <p><strong>Cliente:</strong> ${cliente}</p>
+        <p><strong>Destino:</strong> ${destino}</p>
+        <p><strong>Estado:</strong> ${estado}</p>
+        <p><strong>Ubicación:</strong> ${ubicacion}</p>
+        <svg id="codigoBarras"></svg>
+        <button onclick="window.print()" class="btn-primary">🖨️ Imprimir Recibo</button>
+      `;
 
-    window.crearEquipaje = async function(orderNumber) {
-      const ref = doc(db, "equipaje", orderNumber);
-      await setDoc(ref, { estado: "Recibido", ubicacion: "Oficina Central", fecha: new Date().toLocaleString("es-MX") });
-      alert("Equipaje creado como 'Recibido'."); buscarEquipaje();
-    };
-
-    window.cerrarSesion = function() {
-      localStorage.removeItem("empleado");
-      window.location.href = "admin-login.html";
+      // Generar el código de barras
+      JsBarcode("#codigoBarras", codigo, {
+        format: "CODE128",
+        width: 2,
+        height: 60,
+        displayValue: true,
+        fontSize: 16,
+        lineColor: "#000000"
+      });
     };
   </script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f9fbff;
+      color: #222;
+      padding: 20px;
+    }
+
+    .form-container {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: #1a3d8f;
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover {
+      background-color: #162f70;
+    }
+
+    #recibo {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    @media print {
+      button { display: none; }
+      body { background: white; }
+      #recibo { box-shadow: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <h1 style="text-align:center; color:#1a3d8f;">Panel de Registro - Luna Travel</h1>
+
+  <div class="form-container">
+    <h3>Registrar nuevo envío</h3>
+    <input type="text" id="cliente" placeholder="Nombre del cliente" />
+    <input type="text" id="destino" placeholder="Destino" />
+    <input type="text" id="estado" placeholder="Estado (ej. En tránsito)" />
+    <input type="text" id="ubicacion" placeholder="Ubicación (ej. Cancún)" />
+    <button onclick="registrarEquipaje()">Guardar y generar recibo</button>
+  </div>
+
+  <div id="recibo"></div>
 </body>
 </html>
