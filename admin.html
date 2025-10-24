@@ -8,10 +8,11 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     body {
-      <script>
+     <script>
+  // Protección del panel de empleados
   const empleado = localStorage.getItem("empleado");
   if (!empleado) {
-    alert("Acceso denegado. Por favor inicia sesión.");
+    alert("⚠️ Acceso denegado. Debes iniciar sesión primero.");
     window.location.href = "admin-login.html";
   }
 </script>
