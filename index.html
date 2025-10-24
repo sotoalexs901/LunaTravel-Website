@@ -1,185 +1,234 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luna Travel — Inicio</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-        <!-- Brevo Styles and Script -->
-<link rel="stylesheet" href="https://sibforms.com/forms/end-form/build/sib-styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Luna Travel — Envíos, boletos y trámites confiables</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="images/logo-luna.png" type="image/png" />
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f8f9fc;
+      color: #0a3475;
+    }
 
+    /* ====== NAVBAR ====== */
+    header {
+      background-color: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.8rem 2rem;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      text-decoration: none;
+    }
+
+    .logo img {
+      height: 50px;
+      margin-right: 8px;
+    }
+
+    .logo span {
+      font-weight: 700;
+      color: #0a3475;
+      font-size: 1.3rem;
+    }
+
+    .menu a {
+      margin: 0 1rem;
+      text-decoration: none;
+      color: #0a3475;
+      font-weight: 500;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .menu a:hover {
+      color: #174b9b;
+    }
+
+    .btn-contact {
+      background-color: #0a3475;
+      color: white !important;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    .btn-contact:hover {
+      background-color: #174b9b;
+    }
+
+    /* ====== HERO ====== */
+    .hero {
+      background: linear-gradient(to bottom, rgba(10, 52, 117, 0.55), rgba(10, 52, 117, 0.55)),
+                  url("images/hero-bg.jpg") center/cover no-repeat;
+      color: white;
+      text-align: center;
+      padding: 6rem 1rem;
+    }
+
+    .hero h1 {
+      font-size: 2.3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .hero .buttons a {
+      background-color: white;
+      color: #0a3475;
+      font-weight: 600;
+      padding: 0.8rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      margin: 0 0.5rem;
+      display: inline-block;
+    }
+
+    .hero .buttons a:hover {
+      background-color: #174b9b;
+      color: white;
+    }
+
+    /* ====== SERVICES ====== */
+    section {
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    section h2 {
+      color: #0a3475;
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+    }
+
+    .services {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .service {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      padding: 2rem;
+      transition: transform 0.2s;
+    }
+
+    .service:hover {
+      transform: translateY(-5px);
+    }
+
+    .service img {
+      height: 80px;
+      margin-bottom: 1rem;
+    }
+
+    .service h3 {
+      margin: 0.5rem 0;
+      color: #0a3475;
+    }
+
+    /* ====== FOOTER ====== */
+    footer {
+      background-color: #0a3475;
+      color: white;
+      text-align: center;
+      padding: 1rem;
+      margin-top: 2rem;
+    }
+
+    footer a {
+      color: #a4c8ff;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      color: white;
+    }
+  </style>
 </head>
+
 <body>
-<!-- HEADER -->
-<header class="navbar">
-  <div class="container" style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 0;">
-    
-    <!-- LOGO -->
-    <a href="/" class="logo" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none; color: #000; font-weight: 700; font-size: 1.25rem;">
-      <img src="/assets/logo.png" alt="Luna Travel" style="height: 40px;">
-      <span>Luna Travel</span>
-    </a>
-
-    <!-- NAVIGATION MENU -->
+  <!-- ====== NAVBAR ====== -->
+  <header>
     <nav>
-      <ul class="menu" style="display: flex; list-style: none; gap: 1.5rem; margin: 0; padding: 0;">
-        <li><a href="/servicios" style="text-decoration: none; color: #1e293b; font-weight: 500;">Servicios</a></li>
-        <li><a href="/precios" style="text-decoration: none; color: #1e293b; font-weight: 500;">Precios</a></li>
-        <li><a href="/tracking" style="text-decoration: none; color: #1e293b; font-weight: 500;">Rastreo</a></li>
-        <li><a href="/contacto" class="btn-primary" style="background-color: #1e3a8a; color: #fff; padding: 0.6rem 1rem; border-radius: 0.5rem; text-decoration: none; font-weight: 600;">Contáctanos</a></li>
-      </ul>
+      <a href="index.html" class="logo">
+        <img src="images/logo-luna.png" alt="Luna Travel" />
+        <span>Luna Travel</span>
+      </a>
+      <div class="menu">
+        <a href="index.html">Servicios</a>
+        <a href="pricing.html">Precios</a>
+        <a href="tracking.html">Rastreo</a>
+        <a href="contact.html" class="btn-contact">Contáctanos</a>
+      </div>
     </nav>
+  </header>
 
-  </div>
-</header>
+  <!-- ====== HERO ====== -->
+  <section class="hero">
+    <h1>Viaja y gestiona tus trámites con Luna Travel</h1>
+    <p>Asesoría confiable para trámites consulares, venta de boletos, envíos de paquetería, traducciones y más.</p>
+    <div class="buttons">
+      <a href="contact.html">Llenar solicitud</a>
+      <a href="pricing.html">Ver precios</a>
+    </div>
+  </section>
 
-
-
-
-  <!-- HERO -->
-  <section class="hero hero-local">
-    <div class="overlay"></div>
-    <div class="container hero-content">
-      <h1 class="hero-title">Viaja y gestiona tus trámites con <span class="accent">Luna Travel</span></h1>
-      <p class="hero-sub">
-        Asesoría confiable para trámites consulares, venta de boletos, envío de paquetería, traducciones y más.
-      </p>
-      <div class="hero-cta">
-        <a href="contacto.html#formulario" class="btn btn-primary">Llenar solicitud</a>
-        <a href="#precios" class="btn btn-soft">Ver precios</a>
+  <!-- ====== SERVICES ====== -->
+  <section>
+    <h2>Nuestros Servicios</h2>
+    <div class="services">
+      <div class="service">
+        <img src="images/plane-icon.png" alt="Boletos" />
+        <h3>Venta de Boletos</h3>
+        <p>Encuentra las mejores tarifas y horarios para tus viajes.</p>
+      </div>
+      <div class="service">
+        <img src="images/package-icon.png" alt="Envíos" />
+        <h3>Envíos y Paquetería</h3>
+        <p>Envía tus paquetes con seguridad y seguimiento confiable.</p>
+      </div>
+      <div class="service">
+        <img src="images/passport-icon.png" alt="Trámites" />
+        <h3>Trámites Consulares</h3>
+        <p>Apoyo completo para documentos, pasaportes y visados.</p>
+      </div>
+      <div class="service">
+        <img src="images/translate-icon.png" alt="Traducciones" />
+        <h3>Traducciones</h3>
+        <p>Traducciones certificadas y oficiales en múltiples idiomas.</p>
       </div>
     </div>
   </section>
 
-  <!-- SERVICIOS -->
-  <section class="section">
-    <div class="container">
-      <h2 class="section-title">Nuestros Servicios</h2>
-      <div class="grid cards fade-in">
-        <div class="card"><h4>Renovación de pasaporte cubano</h4><p>Gestión completa de tu trámite consular.</p></div>
-        <div class="card"><h4>Envío de paquetería</h4><p>A Cuba y a todo el mundo, rápido y seguro.</p></div>
-        <div class="card"><h4>Traducciones</h4><p>Certificadas y revisadas por expertos.</p></div>
-        <div class="card"><h4>Venta de boletos</h4><p>Vuelos internacionales con múltiples aerolíneas.</p></div>
-        <div class="card"><h4>Trámites migratorios</h4><p>Asesoría personalizada según tu caso.</p></div>
-        <div class="card"><h4>Notarizaciones</h4><p>Coordinación y legalización de documentos.</p></div>
-      <!-- NUEVO SERVICIO -->
-<div class="card service highlight">
-  <h4>🧳 Recogemos equipajes a domicilio</h4>
-  <p>¡Olvídate del estrés! Vamos hasta tu casa para recoger tus maletas y entregarlas a tiempo para tu vuelo o envío.</p>
-</div>
-
-    </div>
-  </section>
-
-  <!-- PRECIOS -->
-  <section class="section bg-soft" id="precios">
-    <div class="container">
-      <h2 class="section-title">Precios</h2>
-      <div class="grid price-cards">
-        <article class="card price"><h3>Renovación de pasaporte cubano</h3><p class="amount">$250</p></article>
-        <article class="card price"><h3>Envío de paquetería a Cuba</h3><p class="amount">Desde $3.99 por libra</p></article>
-        <article class="card price"><h3>Traducción de documentos</h3><p class="amount">$25 por página</p></article>
-        <article class="card price"><h3>Venta de tickets de vuelo</h3><p class="amount">Variable según destino</p></article>
-        <article class="card price"><h3>Trámite migratorio</h3><p class="amount">Consultar según caso</p></article>
-        <article class="card price"><h3>Notarizaciones</h3><p class="amount">Desde $30</p></article>
-      </div>
-    </div>
-  </section>
-
-  <!-- CONTACTO DIRECTO -->
-  <section class="section contact-info">
-    <div class="container grid contact-grid">
-      <div class="contact-card fade-in">
-  <h3>📍 Dirección</h3>
-  <p>6916 Hanley Rd, Tampa FL 33634</p>
-</div>
-
-      <div class="contact-card fade-in">
-        <h3>📞 Teléfono</h3>
-        <p><a href="tel:+18138768151">813-876-8151</a></p>
-      </div>
-      <div class="contact-card fade-in">
-        <h3>💬 WhatsApp</h3>
-        <p><a href="https://wa.me/13088508798" target="_blank">308-850-8798</a></p>
-      </div>
-      <div class="contact-card fade-in">
-        <h3>📧 Email</h3>
-        <p><a href="mailto:lunatravel25@yahoo.com">lunatravel25@yahoo.com</a></p>
-      </div>
-      <div class="contact-card fade-in">
-        <h3>🕓 Horarios</h3>
-        <p>Lunes a Viernes: 9:00am – 6:00pm<br>
-           Sábado: 8:00am – 5:00pm<br>
-           Domingo: 9:00am – 2:00pm</p>
-      </div>
-    </div>
-
-<!-- SECCIÓN DE SUSCRIPCIÓN - LUNA TRAVEL -->
-<section class="newsletter-section">
-  <div class="newsletter-container">
-    <h2>✈️ ¡Suscríbete y recibe nuestras ofertas especiales!</h2>
-    <p>Déjanos tu correo para recibir precios actualizados y promociones exclusivas de Luna Travel.</p>
-
-    <form
-  action="https://formsubmit.co/lunatravel25@yahoo.com"
-  method="POST"
-  onsubmit="setTimeout(() => { window.location.href='gracias.html'; }, 1000)"
->
-  <input
-    type="email"
-    name="email"
-    placeholder="Tu correo electrónico"
-    required
-    style="padding: 12px; border: 1px solid #ccc; border-radius: 6px; width: 280px; max-width: 80%;"
-  />
-  <button
-    type="submit"
-    style="background-color: #FFD700; color: #003366; font-weight: bold; border: none; border-radius: 8px; padding: 12px 20px; cursor: pointer;"
-  >
-    Suscribirme
-  </button>
-
-  <!-- Opciones ocultas -->
-  <input type="hidden" name="_next" value="https://lunatravel25.com/gracias.html">
-  <input type="hidden" name="_captcha" value="false">
-  <input type="hidden" name="_subject" value="Nueva suscripción desde Luna Travel">
-</form>
-
-  </div>
-</section>
-
- <footer className="py-10 text-center text-sm text-gray-400 border-t border-white/10">
-  © 2025 Luna Travel. Todos los derechos reservados.
-  <br />
-
-  <a
-    href="https://www.amnssolutions.com"
-    target="_blank"
-    rel="noopener noreferrer"
-    className="inline-flex items-center justify-center gap-2 mt-2 hover:text-cyan-400 transition"
-  >
-  
-    <span className="text-cyan-400 hover:underline">
-      Sitio web creado por AMNS Solutions
-    </span>
-  </a>
-</footer>
-
-
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
-
-  <!-- CRISP -->
-  <script type="text/javascript">
-    window.$crisp=[]; window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
-    (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
-  </script>
-  <!-- AVIONCITO CHAT PROMPT -->
-<div id="plane-chat" onclick="$crisp.push(['do', 'chat:open'])">
-  <div class="plane-emoji">✈️</div>
-  <div class="plane-trail"></div>
-  <div class="plane-text">¿Tienes dudas?<br>¡Chatea con nosotros!</div>
-</div>
-
+  <!-- ====== FOOTER ====== -->
+  <footer>
+    © 2025 Luna Travel — Envíos, boletos y trámites confiables.  
+    <br />
+    <a href="privacy.html">Política de privacidad</a> | 
+    <a href="terms.html">Términos de uso</a>
+  </footer>
 </body>
 </html>
