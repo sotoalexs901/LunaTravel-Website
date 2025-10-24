@@ -27,6 +27,39 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    // 📊 Exportar a Excel
+window.exportarExcel = async function() {
+  const tabla = document.getElementById("tablaEnvios");
+  let csv = [];
+  for (let row of tabla.rows) {
+    let cols = [...row.children].map(td => td.innerText);
+    csv.push(cols.join(","));
+  }
+  const blob = new Blob([csv.join("\n")], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "envios-lunatravel.csv";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+};
+
+// 📄 Exportar a PDF
+window.exportarPDF = async function() {
+  const tabla = document.getElementById("tablaEnvios").outerHTML;
+  const ventana = window.open("", "", "width=900,height=700");
+  ventana.document.write(`
+    <html><head><title>Reporte de Envíos - Luna Travel</title></head>
+    <body style="font-family:Arial; text-align:center;">
+    <h2>Reporte de Envíos - Luna Travel</h2>
+    ${tabla}
+    </body></html>
+  `);
+  ventana.document.close();
+  ventana.print();
+};
+
 
     // 🔐 Verificación de login
     window.onload = function() {
