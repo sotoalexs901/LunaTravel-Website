@@ -6,217 +6,65 @@
   <title>Luna Travel — Envíos, boletos y trámites confiables</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="icon" href="images/logo-luna.png" type="image/png" />
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f8f9fc;
-      color: #0a3475;
-    }
-
-    /* ====== NAVBAR ====== */
-    header {
-      background-color: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-    }
-
-    nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.8rem 2rem;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      text-decoration: none;
-    }
-
-    .logo img {
-      height: 50px;
-      margin-right: 8px;
-    }
-
-    .logo span {
-      font-weight: 700;
-      color: #0a3475;
-      font-size: 1.3rem;
-    }
-
-    .menu a {
-      margin: 0 1rem;
-      text-decoration: none;
-      color: #0a3475;
-      font-weight: 500;
-      transition: color 0.2s ease-in-out;
-    }
-
-    .menu a:hover {
-      color: #174b9b;
-    }
-
-    .btn-contact {
-      background-color: #0a3475;
-      color: white !important;
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-weight: 600;
-    }
-
-    .btn-contact:hover {
-      background-color: #174b9b;
-    }
-
-    /* ====== HERO ====== */
-    .hero {
-      background: linear-gradient(to bottom, rgba(10, 52, 117, 0.55), rgba(10, 52, 117, 0.55)),
-                  url("images/hero-bg.jpg") center/cover no-repeat;
-      color: white;
-      text-align: center;
-      padding: 6rem 1rem;
-    }
-
-    .hero h1 {
-      font-size: 2.3rem;
-      font-weight: 700;
-      margin-bottom: 1rem;
-    }
-
-    .hero p {
-      font-size: 1.1rem;
-      margin-bottom: 2rem;
-    }
-
-    .hero .buttons a {
-      background-color: white;
-      color: #0a3475;
-      font-weight: 600;
-      padding: 0.8rem 1.5rem;
-      border-radius: 8px;
-      text-decoration: none;
-      margin: 0 0.5rem;
-      display: inline-block;
-    }
-
-    .hero .buttons a:hover {
-      background-color: #174b9b;
-      color: white;
-    }
-
-    /* ====== SERVICES ====== */
-    section {
-      padding: 3rem 2rem;
-      text-align: center;
-    }
-
-    section h2 {
-      color: #0a3475;
-      font-size: 1.8rem;
-      margin-bottom: 1rem;
-    }
-
-    .services {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1.5rem;
-      margin-top: 2rem;
-    }
-
-    .service {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      padding: 2rem;
-      transition: transform 0.2s;
-    }
-
-    .service:hover {
-      transform: translateY(-5px);
-    }
-
-    .service img {
-      height: 80px;
-      margin-bottom: 1rem;
-    }
-
-    .service h3 {
-      margin: 0.5rem 0;
-      color: #0a3475;
-    }
-
-    /* ====== FOOTER ====== */
-    footer {
-      background-color: #0a3475;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-      margin-top: 2rem;
-    }
-
-    footer a {
-      color: #a4c8ff;
-      text-decoration: none;
-    }
-
-    footer a:hover {
-      color: white;
-    }
-  </style>
 </head>
 
 <body>
   <!-- ====== NAVBAR ====== -->
   <header>
-    <nav>
-      <a href="index.html" class="logo">
-        <img src="images/logo-luna.png" alt="Luna Travel" />
-        <span>Luna Travel</span>
-      </a>
-      <div class="menu">
-        <a href="index.html">Servicios</a>
-        <a href="pricing.html">Precios</a>
-        <a href="tracking.html">Rastreo</a>
-        <a href="contact.html" class="btn-contact">Contáctanos</a>
+    <nav class="navbar">
+      <div class="navbar-container">
+        <a href="index.html" class="navbar-logo">
+          <img src="images/logo-luna.jpg" alt="Luna Travel" />
+          <span>Luna Travel</span>
+        </a>
+        <ul class="navbar-menu">
+          <li><a href="index.html">Servicios</a></li>
+          <li><a href="pricing.html">Precios</a></li>
+          <li><a href="tracking.html">Rastreo</a></li>
+          <li><a href="contact.html" class="btn-contact">Contáctanos</a></li>
+        </ul>
       </div>
     </nav>
   </header>
 
   <!-- ====== HERO ====== -->
   <section class="hero">
-    <h1>Viaja y gestiona tus trámites con Luna Travel</h1>
-    <p>Asesoría confiable para trámites consulares, venta de boletos, envíos de paquetería, traducciones y más.</p>
-    <div class="buttons">
-      <a href="contact.html">Llenar solicitud</a>
-      <a href="pricing.html">Ver precios</a>
+    <div class="hero-content">
+      <h1>Viaja y gestiona tus trámites con Luna Travel</h1>
+      <p>
+        Asesoría confiable para trámites consulares, venta de boletos, envío de paquetería, traducciones y más.
+      </p>
+      <div class="hero-buttons">
+        <a href="contact.html" class="btn-primary">Llenar solicitud</a>
+        <a href="pricing.html" class="btn-secondary">Ver precios</a>
+      </div>
     </div>
   </section>
 
   <!-- ====== SERVICES ====== -->
-  <section>
+  <section class="services">
     <h2>Nuestros Servicios</h2>
-    <div class="services">
-      <div class="service">
-        <img src="images/plane-icon.png" alt="Boletos" />
+    <div class="services-grid">
+      <div class="service-card">
+        <img src="images/boletos.jpg" alt="Venta de Boletos" />
         <h3>Venta de Boletos</h3>
         <p>Encuentra las mejores tarifas y horarios para tus viajes.</p>
       </div>
-      <div class="service">
-        <img src="images/package-icon.png" alt="Envíos" />
+
+      <div class="service-card">
+        <img src="images/envios.jpg" alt="Envíos y Paquetería" />
         <h3>Envíos y Paquetería</h3>
         <p>Envía tus paquetes con seguridad y seguimiento confiable.</p>
       </div>
-      <div class="service">
-        <img src="images/passport-icon.png" alt="Trámites" />
+
+      <div class="service-card">
+        <img src="images/tramites.jpg" alt="Trámites Consulares" />
         <h3>Trámites Consulares</h3>
         <p>Apoyo completo para documentos, pasaportes y visados.</p>
       </div>
-      <div class="service">
-        <img src="images/translate-icon.png" alt="Traducciones" />
+
+      <div class="service-card">
+        <img src="images/traducciones.jpg" alt="Traducciones" />
         <h3>Traducciones</h3>
         <p>Traducciones certificadas y oficiales en múltiples idiomas.</p>
       </div>
@@ -225,10 +73,7 @@
 
   <!-- ====== FOOTER ====== -->
   <footer>
-    © 2025 Luna Travel — Envíos, boletos y trámites confiables.  
-    <br />
-    <a href="privacy.html">Política de privacidad</a> | 
-    <a href="terms.html">Términos de uso</a>
+    <p>© 2025 Luna Travel — Envíos, boletos y trámites confiables.</p>
   </footer>
 </body>
 </html>
