@@ -8,15 +8,6 @@
   <link rel="stylesheet" href="styles.css" />
   <style>
     body {
-     <script>
-  // Protección del panel de empleados
-  const empleado = localStorage.getItem("empleado");
-  if (!empleado) {
-    alert("⚠️ Acceso denegado. Debes iniciar sesión primero.");
-    window.location.href = "admin-login.html";
-  }
-</script>
-
       font-family: "Poppins", sans-serif;
       background-color: #f3f7fb;
       color: #0a3475;
@@ -111,6 +102,16 @@
   </style>
 </head>
 <body>
+
+  <!-- 🚫 Protección del acceso -->
+  <script>
+    const empleado = localStorage.getItem("empleado");
+    if (empleado !== "luna25") {
+      alert("⚠️ Acceso denegado. Debes iniciar sesión primero.");
+      window.location.href = "admin-login.html";
+    }
+  </script>
+
   <header>
     <h1>Panel de Empleado - Luna Travel</h1>
   </header>
@@ -126,6 +127,8 @@
 
     <div id="qr-reader"></div>
     <div id="result"></div>
+
+    <button onclick="cerrarSesion()" style="background-color:#e63946;">Cerrar sesión</button>
   </main>
 
   <footer>
@@ -148,12 +151,12 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
-
     let qrReader;
 
+    // Escaneo de QR
     window.iniciarEscaneo = function() {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        alert("Tu navegador no permite usar la cámara. Abre este sitio desde Chrome o Safari.");
+        alert("Tu navegador no permite usar la cámara. Usa Chrome o Safari.");
         return;
       }
 
@@ -180,6 +183,7 @@
       });
     };
 
+    // Buscar equipaje
     window.buscarEquipaje = async function() {
       const orderNumber = document.getElementById("orderNumber").value.trim();
       const resultDiv = document.getElementById("result");
@@ -224,6 +228,7 @@
       }
     };
 
+    // Actualizar estado
     window.actualizarEstado = async function(orderNumber) {
       const nuevoEstado = document.getElementById("nuevoEstado").value;
       const resultDiv = document.getElementById("result");
@@ -245,6 +250,7 @@
       }
     };
 
+    // Crear equipaje nuevo
     window.crearEquipaje = async function(orderNumber) {
       const ref = doc(db, "equipaje", orderNumber);
       await setDoc(ref, {
@@ -254,6 +260,12 @@
       });
       alert("Equipaje creado como 'Recibido'.");
       buscarEquipaje();
+    };
+
+    // Cerrar sesión
+    window.cerrarSesion = function() {
+      localStorage.removeItem("empleado");
+      window.location.href = "admin-login.html";
     };
   </script>
 </body>
