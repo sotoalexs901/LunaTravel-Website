@@ -1,149 +1,131 @@
 <!DOCTYPE html>
 <html lang="es">
-  <!-- Librería para exportar a Excel -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel de Registro - Luna Travel</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Panel de Administración | LunaTrack</title>
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Librería para exportar a Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f7f9fc;
+      background-color: #f4f7fc;
       margin: 0;
       padding: 0;
+    }
+    header {
+      background: #213D7A;
+      color: white;
       text-align: center;
+      padding: 15px 0;
+      font-size: 1.2rem;
+      font-weight: bold;
     }
-    .container {
-      max-width: 800px;
-      margin: 40px auto;
+    main {
+      max-width: 1100px;
+      margin: 30px auto;
       background: white;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
     }
-    input, select {
-      padding: 10px;
-      width: 90%;
-      margin: 8px 0;
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .toolbar select, .toolbar button {
+      padding: 8px 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
-      border-radius: 8px;
+      font-size: 0.95rem;
     }
-    button {
-      background-color: #143c8c;
+    .toolbar button {
+      background: #213D7A;
       color: white;
       border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
       cursor: pointer;
-      margin-top: 10px;
+      transition: 0.2s;
     }
-    button:hover {
-      background-color: #0f2f6b;
+    .toolbar button:hover {
+      background: #1a3163;
     }
-    #tablaEnvios {
+    table {
       width: 100%;
-      margin-top: 25px;
       border-collapse: collapse;
+      text-align: left;
     }
-    #tablaEnvios th, #tablaEnvios td {
-      border: 1px solid #ccc;
-      padding: 8px;
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
     }
-    #tablaEnvios th {
-      background-color: #f2f4f8;
+    th {
+      background: #213D7A;
+      color: white;
+    }
+    tr:hover {
+      background: #f1f5ff;
     }
     .delete-btn {
-      background-color: #e74c3c;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 6px;
+      color: #e03131;
       cursor: pointer;
+      font-weight: bold;
     }
-    .delete-btn:hover {
-      background-color: #c0392b;
-    }
-    #login {
-      margin-top: 100px;
-    }
-    .logout-btn {
-      float: right;
-      margin-top: -40px;
-      background-color: #555;
-      padding: 8px 14px;
-      border-radius: 6px;
-    }
-    .logout-btn:hover {
-      background-color: #333;
+    #scanInput {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+      margin-top: 20px;
     }
   </style>
 </head>
-  <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
-  <div>
-    <label for="filterEstado" style="font-weight:bold; color:#213D7A;">Filtrar por estado:</label>
-    <select id="filterEstado" onchange="filtrarEnvios()" style="padding:6px; border-radius:6px;">
-      <option value="todos">Todos</option>
-      <option value="en tránsito">En tránsito</option>
-      <option value="entregado">Entregado</option>
-      <option value="retenido">Retenido</option>
-    </select>
-  </div>
-  <button onclick="exportarExcel()" style="background-color:#213D7A; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">
-    📤 Exportar a Excel
-  </button>
-</div>
+
 <body>
-  <!-- LOGIN -->
-  <div id="login" class="container">
-    <h2>Acceso Administrador</h2>
-    <input type="text" id="usuario" placeholder="Usuario">
-    <input type="password" id="pin" placeholder="PIN">
-    <button onclick="login()">Ingresar</button>
-    <p id="loginError" style="color:red; display:none;">Usuario o PIN incorrectos.</p>
-  </div>
+  <header>📦 Panel de Administración - LunaTrack</header>
 
-  <!-- PANEL -->
-  <div id="panel" class="container" style="display:none;">
-    <h2>Panel de Registro - Luna Travel</h2>
-    <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+  <main>
+    <div class="toolbar">
+      <div>
+        <label for="filterEstado"><strong>Filtrar por estado:</strong></label>
+        <select id="filterEstado" onchange="filtrarEnvios()">
+          <option value="todos">Todos</option>
+          <option value="recibido">Recibido</option>
+          <option value="en tránsito">En Tránsito</option>
+          <option value="entregado">Entregado</option>
+        </select>
+      </div>
 
-    <input type="text" id="cliente" placeholder="Cliente">
-    <input type="text" id="destino" placeholder="Destino">
-    <input type="text" id="estado" placeholder="Estado">
-    <input type="text" id="ubicacion" placeholder="Ubicación">
+      <button onclick="exportarExcel()">📤 Exportar a Excel</button>
+    </div>
 
-    <button onclick="guardarEnvio()">Guardar y generar recibo</button>
-    <div id="recibo"></div>
-
-    <!-- 🔄 NUEVA SECCIÓN ESCÁNER -->
-    <h3>Actualizar estado con escáner</h3>
-    <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
-    <p style="font-size:13px;color:#555;">(Coloque el cursor aquí y escanee el código de barras)</p>
-
-    <h3>Envíos registrados</h3>
     <table id="tablaEnvios">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Cliente</th>
-          <th>Destino</th>
-          <th>Estado</th>
-          <th>Ubicación</th>
-          <th>Fecha</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tablaBody"></tbody>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Destino</th>
+        <th>Estado</th>
+        <th>Fecha</th>
+        <th>Acción</th>
+      </tr>
     </table>
-  </div>
 
+    <input type="text" id="scanInput" placeholder="Escanee el código de equipaje..." autofocus />
+  </main>
+
+  <!-- ======================================================= -->
+  <!-- 🔹 CONFIGURACIÓN FIREBASE -->
+  <!-- ======================================================= -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, deleteDoc 
-    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getFirestore, collection, getDocs, addDoc, deleteDoc, doc } 
+      from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
@@ -158,160 +140,21 @@
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
 
-    // LOGIN
-    window.login = function() {
-      const user = document.getElementById("usuario").value.trim();
-      const pin = document.getElementById("pin").value.trim();
-
-      if (user === "luna25" && pin === "2030") {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        cargarEnvios();
-        document.getElementById("scanInput").focus();
-      } else {
-        document.getElementById("loginError").style.display = "block";
-      }
-    };
-
-    // CERRAR SESIÓN
-    window.cerrarSesion = function() {
-      document.getElementById("panel").style.display = "none";
-      document.getElementById("login").style.display = "block";
-      document.getElementById("usuario").value = "";
-      document.getElementById("pin").value = "";
-      document.getElementById("loginError").style.display = "none";
-    };
-
-    // GENERAR CÓDIGO
-    function generarCodigo() {
-      const random = Math.floor(100000 + Math.random() * 900000);
-      return `LT-${random}`;
-    }
-
-    // GUARDAR ENVÍO
-    window.guardarEnvio = async function() {
-      const cliente = document.getElementById("cliente").value.trim();
-      const destino = document.getElementById("destino").value.trim();
-      const estado = document.getElementById("estado").value.trim();
-      const ubicacion = document.getElementById("ubicacion").value.trim();
-
-      if (!cliente || !destino || !estado || !ubicacion) {
-        alert("Por favor, completa todos los campos.");
-        return;
-      }
-
-      const codigo = generarCodigo();
-      try {
-        await setDoc(doc(db, "equipaje", codigo), {
-          codigo,
-          cliente,
-          destino,
-          estado,
-          ubicacion,
-          fecha: new Date().toLocaleString()
-        });
-        mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
-        cargarEnvios();
-        alert("✅ Envío registrado correctamente.");
-      } catch (error) {
-        console.error("Error al guardar:", error);
-        alert("Error al registrar el envío.");
-      }
-    };
-
-    // MOSTRAR RECIBO
-    function mostrarRecibo(codigo, cliente, destino, estado, ubicacion) {
-      const reciboDiv = document.getElementById("recibo");
-      reciboDiv.innerHTML = `
-        <div class="container">
-          <h3>Recibo de Envío</h3>
-          <p><strong>Código:</strong> ${codigo}</p>
-          <p><strong>Cliente:</strong> ${cliente}</p>
-          <p><strong>Destino:</strong> ${destino}</p>
-          <p><strong>Estado:</strong> ${estado}</p>
-          <p><strong>Ubicación:</strong> ${ubicacion}</p>
-          <svg id="codigoBarras"></svg>
-          <p><button onclick="window.print()">🖨️ Imprimir Recibo</button></p>
-        </div>
-      `;
-      JsBarcode("#codigoBarras", codigo, {
-        format: "CODE128",
-        width: 2,
-        height: 60,
-        displayValue: true,
-        fontSize: 16
-      });
-    }
-
-    // CARGAR ENVIOS
-    async function cargarEnvios() {
-      const tabla = document.getElementById("tablaBody");
-      tabla.innerHTML = "";
-      const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
-      const querySnapshot = await getDocs(q);
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        const row = `
-          <tr>
-            <td>${data.codigo}</td>
-            <td>${data.cliente}</td>
-            <td>${data.destino}</td>
-            <td>${data.estado}</td>
-            <td>${data.ubicacion}</td>
-            <td>${data.fecha}</td>
-            <td><button class="delete-btn" onclick="eliminarRegistro('${data.codigo}')">🗑️ Eliminar</button></td>
-          </tr>
-        `;
-        tabla.innerHTML += row;
-      });
-    }
-    window.cargarEnvios = cargarEnvios;
-
-    // 🆕 ESCÁNER AUTOMÁTICO
-    const scanInput = document.getElementById("scanInput");
-    scanInput.addEventListener("change", async () => {
-      const codigo = scanInput.value.trim();
-      if (!codigo) return;
-
-      const nuevoEstado = prompt("Nuevo estado (ej. Entregado, En tránsito, En espera):");
-      const nuevaUbicacion = prompt("Nueva ubicación (opcional):");
-
-      try {
-        const ref = doc(db, "equipaje", codigo);
-        await updateDoc(ref, {
-          estado: nuevoEstado || "Sin cambios",
-          ubicacion: nuevaUbicacion || "Sin cambios",
-          fecha: new Date().toLocaleString()
-        });
-        alert(`✅ Estado del envío ${codigo} actualizado correctamente.`);
-        cargarEnvios();
-      } catch (error) {
-        alert("❌ Error al actualizar el envío. Verifica el código.");
-      }
-
-      scanInput.value = "";
-      scanInput.focus(); // vuelve a esperar el siguiente escaneo
-    });
-
-    // ELIMINAR REGISTRO
-    window.eliminarRegistro = async function(codigo) {
-      if (!confirm(`¿Seguro que deseas eliminar el envío ${codigo}?`)) return;
-      try {
-        await deleteDoc(doc(db, "equipaje", codigo));
-        alert(`Registro ${codigo} eliminado correctamente.`);
-        cargarEnvios();
-      } catch (error) {
-        console.error("Error al eliminar:", error);
-        alert("Error al intentar eliminar el registro.");
-      }
-    };
+    window.db = db; // expone db al resto del código
+    window.getDocs = getDocs;
+    window.collection = collection;
+    window.addDoc = addDoc;
+    window.deleteDoc = deleteDoc;
+    window.doc = doc;
   </script>
-    </script>
 
-  <!-- 🔹 Bloque para exportar registros a Excel y filtrar por estado -->
+  <!-- ======================================================= -->
+  <!-- 🔹 LÓGICA PRINCIPAL -->
+  <!-- ======================================================= -->
   <script>
     let registrosEnvios = [];
 
+    // Cargar registros desde Firebase
     async function cargarEnvios() {
       const querySnapshot = await getDocs(collection(db, "equipaje"));
       registrosEnvios = [];
@@ -321,57 +164,97 @@
       mostrarEnvios(registrosEnvios);
     }
 
-    function filtrarEnvios() {
-      const estadoSeleccionado = document.getElementById("filterEstado").value;
-      let filtrados = [];
-      if (estadoSeleccionado === "todos") {
-        filtrados = registrosEnvios;
-      } else {
-        filtrados = registrosEnvios.filter(envio => envio.estado?.toLowerCase() === estadoSeleccionado.toLowerCase());
-      }
-      mostrarEnvios(filtrados);
-    }
-
+    // Mostrar los envíos en la tabla
     function mostrarEnvios(lista) {
       const tabla = document.getElementById("tablaEnvios");
       tabla.innerHTML = `
-        <tr style="background:#213D7A; color:white;">
-          <th>ID</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Fecha</th>
+        <tr>
+          <th>ID</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Fecha</th><th>Acción</th>
         </tr>
       `;
       lista.forEach(envio => {
         tabla.innerHTML += `
           <tr>
             <td>${envio.id}</td>
-            <td>${envio.cliente || '—'}</td>
-            <td>${envio.destino || '—'}</td>
-            <td>${envio.estado || 'Sin estado'}</td>
-            <td>${envio.fecha || '—'}</td>
+            <td>${envio.cliente || "—"}</td>
+            <td>${envio.destino || "—"}</td>
+            <td>${envio.estado || "Sin estado"}</td>
+            <td>${envio.fecha || "—"}</td>
+            <td><span class="delete-btn" onclick="eliminarRegistro('${envio.id}')">🗑️</span></td>
           </tr>
         `;
       });
     }
 
+    // Filtrar registros por estado
+    function filtrarEnvios() {
+      const estadoSeleccionado = document.getElementById("filterEstado").value.toLowerCase();
+      if (estadoSeleccionado === "todos") {
+        mostrarEnvios(registrosEnvios);
+      } else {
+        const filtrados = registrosEnvios.filter(e => 
+          e.estado?.toLowerCase() === estadoSeleccionado
+        );
+        mostrarEnvios(filtrados);
+      }
+    }
+
+    // Exportar los registros filtrados a Excel
     function exportarExcel() {
-      if (registrosEnvios.length === 0) {
+      const estadoSeleccionado = document.getElementById("filterEstado").value.toLowerCase();
+      let datos = [];
+
+      if (estadoSeleccionado === "todos") {
+        datos = registrosEnvios;
+      } else {
+        datos = registrosEnvios.filter(e => 
+          e.estado?.toLowerCase() === estadoSeleccionado
+        );
+      }
+
+      if (datos.length === 0) {
         alert("No hay registros para exportar.");
         return;
       }
 
-      const estadoSeleccionado = document.getElementById("filterEstado").value;
-      let datosAExportar = [];
-      if (estadoSeleccionado === "todos") {
-        datosAExportar = registrosEnvios;
-      } else {
-        datosAExportar = registrosEnvios.filter(envio => envio.estado?.toLowerCase() === estadoSeleccionado.toLowerCase());
-      }
-
-      const hoja = XLSX.utils.json_to_sheet(datosAExportar);
+      const hoja = XLSX.utils.json_to_sheet(datos);
       const libro = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      XLSX.writeFile(libro, `LunaTrack_Envios_${estadoSeleccionado}.xlsx`);
+      XLSX.writeFile(libro, `LunaTrack_${estadoSeleccionado || "todos"}.xlsx`);
     }
 
+    // Eliminar registro
+    async function eliminarRegistro(codigo) {
+      if (!confirm(`¿Seguro que deseas eliminar el envío ${codigo}?`)) return;
+      try {
+        await deleteDoc(doc(db, "equipaje", codigo));
+        alert(`Registro ${codigo} eliminado correctamente.`);
+        cargarEnvios();
+      } catch (error) {
+        console.error("Error al eliminar:", error);
+        alert("Error al intentar eliminar el registro.");
+      }
+    }
+
+    // Escáner automático
+    const scanInput = document.getElementById("scanInput");
+    scanInput.addEventListener("change", async () => {
+      const codigo = scanInput.value.trim();
+      if (!codigo) return;
+
+      await addDoc(collection(db, "equipaje"), {
+        codigo,
+        estado: "Recibido",
+        fecha: new Date().toLocaleString(),
+      });
+
+      alert(`Código ${codigo} registrado como "Recibido"`);
+      scanInput.value = "";
+      scanInput.focus();
+      cargarEnvios();
+    });
+
+    // Cargar datos al iniciar
     cargarEnvios();
   </script>
 
