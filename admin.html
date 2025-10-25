@@ -306,6 +306,79 @@
       }
     };
   </script>
+    </script>
+
+  <!-- 🔹 Bloque para exportar registros a Excel y filtrar por estado -->
+  <script>
+    let registrosEnvios = [];
+
+    async function cargarEnvios() {
+      const querySnapshot = await getDocs(collection(db, "equipaje"));
+      registrosEnvios = [];
+      querySnapshot.forEach(doc => {
+        registrosEnvios.push({ id: doc.id, ...doc.data() });
+      });
+      mostrarEnvios(registrosEnvios);
+    }
+
+    function filtrarEnvios() {
+      const estadoSeleccionado = document.getElementById("filterEstado").value;
+      let filtrados = [];
+      if (estadoSeleccionado === "todos") {
+        filtrados = registrosEnvios;
+      } else {
+        filtrados = registrosEnvios.filter(envio => envio.estado?.toLowerCase() === estadoSeleccionado.toLowerCase());
+      }
+      mostrarEnvios(filtrados);
+    }
+
+    function mostrarEnvios(lista) {
+      const tabla = document.getElementById("tablaEnvios");
+      tabla.innerHTML = `
+        <tr style="background:#213D7A; color:white;">
+          <th>ID</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Fecha</th>
+        </tr>
+      `;
+      lista.forEach(envio => {
+        tabla.innerHTML += `
+          <tr>
+            <td>${envio.id}</td>
+            <td>${envio.cliente || '—'}</td>
+            <td>${envio.destino || '—'}</td>
+            <td>${envio.estado || 'Sin estado'}</td>
+            <td>${envio.fecha || '—'}</td>
+          </tr>
+        `;
+      });
+    }
+
+    function exportarExcel() {
+      if (registrosEnvios.length === 0) {
+        alert("No hay registros para exportar.");
+        return;
+      }
+
+      const estadoSeleccionado = document.getElementById("filterEstado").value;
+      let datosAExportar = [];
+      if (estadoSeleccionado === "todos") {
+        datosAExportar = registrosEnvios;
+      } else {
+        datosAExportar = registrosEnvios.filter(envio => envio.estado?.toLowerCase() === estadoSeleccionado.toLowerCase());
+      }
+
+      const hoja = XLSX.utils.json_to_sheet(datosAExportar);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
+      XLSX.writeFile(libro, `LunaTrack_Envios_${estadoSeleccionado}.xlsx`);
+    }
+
+    cargarEnvios();
+  </script>
+
+  <!-- Librería de código de barras -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+</body>
+</html>
 
   <!-- Librería de código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
