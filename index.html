@@ -12,6 +12,37 @@
   <meta name="description" content="Luna Travel ofrece servicios de envío de paquetes, boletos de viaje y trámites consulares con atención confiable." />
   <meta name="keywords" content="Luna Travel, envíos, boletos, trámites, viajes, paquetería" />
 </head>
+<!-- 🔹 Aviso flotante para destacar el Rastreo -->
+<div id="new-feature-alert" style="
+  position: fixed;
+  bottom: 100px;
+  right: 25px;
+  background: #213D7A;
+  color: #fff;
+  padding: 14px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+  z-index: 9999;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  animation: fadein 1.5s ease-in-out;">
+  🚀 <strong>¡Nuevo!</strong> Rastrea tu envío en tiempo real desde 
+  <a href="tracking.html" style="color:#FFEB3B; text-decoration:underline;">aquí</a>.
+</div>
+
+<script>
+  setTimeout(() => {
+    const alert = document.getElementById("new-feature-alert");
+    if (alert) alert.remove();
+  }, 15000); // se oculta después de 15 segundos
+</script>
+
+<style>
+@keyframes fadein {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
 
 <body>
   <!-- HEADER -->
