@@ -231,18 +231,62 @@
       return `LT-${Math.floor(100000 + Math.random() * 900000)}`;
     }
 
-    window.guardarEnvio = async function() {
-      const cliente = document.getElementById("cliente").value.trim();
-      const destino = document.getElementById("destino").value.trim();
-      const estado = document.getElementById("estado").value.trim();
-      const ubicacion = document.getElementById("ubicacion").value.trim();
-      if (!cliente || !destino || !estado || !ubicacion) return alert("Completa todos los campos.");
+ window.guardarEnvio = async function() {
+  const cliente = document.getElementById("cliente").value.trim();
+  const destino = document.getElementById("destino").value.trim();
+  const estado = document.getElementById("estado").value.trim();
+  const ubicacion = document.getElementById("ubicacion").value.trim();
 
-      const codigo = generarCodigo();
-      await setDoc(doc(db, "equipaje", codigo), { codigo, cliente, destino, estado, ubicacion, fecha: new Date().toLocaleString() });
-      alert("✅ Envío registrado correctamente.");
-      cargarEnvios();
-    };
+  if (!cliente || !destino || !estado || !ubicacion) {
+    alert("Por favor, completa todos los campos.");
+    return;
+  }
+
+  const codigo = generarCodigo();
+  const datos = {
+    codigo,
+    cliente,
+    destino,
+    estado,
+    ubicacion,
+    fecha: new Date().toLocaleString()
+  };
+
+  try {
+    await setDoc(doc(db, "equipaje", codigo), datos);
+
+    // ✅ Mostrar recibo con código de barras
+    const reciboDiv = document.getElementById("recibo");
+    reciboDiv.innerHTML = `
+      <div class="container" style="border:1px solid #ccc; padding:20px; margin-top:20px;">
+        <h3 style="color:#213D7A;">Recibo de Envío</h3>
+        <p><strong>Código:</strong> ${codigo}</p>
+        <p><strong>Cliente:</strong> ${cliente}</p>
+        <p><strong>Destino:</strong> ${destino}</p>
+        <p><strong>Estado:</strong> ${estado}</p>
+        <p><strong>Ubicación:</strong> ${ubicacion}</p>
+        <svg id="codigoBarras"></svg>
+        <br>
+        <button onclick="window.print()" style="background:#213D7A; color:white; padding:8px 14px; border:none; border-radius:8px;">🖨️ Imprimir Recibo</button>
+      </div>
+    `;
+
+    JsBarcode("#codigoBarras", codigo, {
+      format: "CODE128",
+      width: 2,
+      height: 60,
+      displayValue: true,
+      fontSize: 16
+    });
+
+    cargarEnvios();
+    alert("✅ Envío registrado correctamente.");
+  } catch (error) {
+    console.error("Error al guardar:", error);
+    alert("Error al registrar el envío.");
+  }
+};
+
 
     // CARGAR ENVIOS
     async function cargarEnvios() {
