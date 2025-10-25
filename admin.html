@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="es">
-  <!-- Librería para exportar a Excel -->
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Registro - Luna Travel</title>
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css" />
+  
+  <!-- Librería para exportar a Excel -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -16,7 +18,7 @@
       text-align: center;
     }
     .container {
-      max-width: 800px;
+      max-width: 850px;
       margin: 40px auto;
       background: white;
       padding: 30px;
@@ -52,7 +54,8 @@
       padding: 8px;
     }
     #tablaEnvios th {
-      background-color: #f2f4f8;
+      background-color: #213D7A;
+      color: white;
     }
     .delete-btn {
       background-color: #e74c3c;
@@ -64,9 +67,6 @@
     }
     .delete-btn:hover {
       background-color: #c0392b;
-    }
-    #login {
-      margin-top: 100px;
     }
     .logout-btn {
       float: right;
@@ -80,20 +80,7 @@
     }
   </style>
 </head>
-  <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
-  <div>
-    <label for="filterEstado" style="font-weight:bold; color:#213D7A;">Filtrar por estado:</label>
-    <select id="filterEstado" onchange="filtrarEnvios()" style="padding:6px; border-radius:6px;">
-      <option value="todos">Todos</option>
-      <option value="en tránsito">En tránsito</option>
-      <option value="entregado">Entregado</option>
-      <option value="retenido">Retenido</option>
-    </select>
-  </div>
-  <button onclick="exportarExcel()" style="background-color:#213D7A; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">
-    📤 Exportar a Excel
-  </button>
-</div>
+
 <body>
   <!-- LOGIN -->
   <div id="login" class="container">
@@ -113,15 +100,33 @@
     <input type="text" id="destino" placeholder="Destino">
     <input type="text" id="estado" placeholder="Estado">
     <input type="text" id="ubicacion" placeholder="Ubicación">
-
     <button onclick="guardarEnvio()">Guardar y generar recibo</button>
+
     <div id="recibo"></div>
 
-    <!-- 🔄 NUEVA SECCIÓN ESCÁNER -->
+    <!-- FILTRO Y EXPORTAR -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
+      <div>
+        <label for="filterEstado" style="font-weight:bold; color:#213D7A;">Filtrar por estado:</label>
+        <select id="filterEstado" onchange="filtrarEnvios()" style="padding:6px; border-radius:6px;">
+          <option value="todos">Todos</option>
+          <option value="recibido">Recibido</option>
+          <option value="en tránsito">En Tránsito</option>
+          <option value="entregado">Entregado</option>
+          <option value="retenido">Retenido</option>
+        </select>
+      </div>
+      <button onclick="exportarExcel()" style="background-color:#213D7A; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">
+        📤 Exportar Excel
+      </button>
+    </div>
+
+    <!-- ESCÁNER -->
     <h3>Actualizar estado con escáner</h3>
     <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
     <p style="font-size:13px;color:#555;">(Coloque el cursor aquí y escanee el código de barras)</p>
 
+    <!-- TABLA -->
     <h3>Envíos registrados</h3>
     <table id="tablaEnvios">
       <thead>
@@ -139,10 +144,11 @@
     </table>
   </div>
 
+  <!-- FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { 
-      getFirestore, doc, setDoc, getDoc, updateDoc, collection, getDocs, query, orderBy, deleteDoc 
+      getFirestore, doc, setDoc, updateDoc, collection, getDocs, query, orderBy, deleteDoc 
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
     const firebaseConfig = {
@@ -203,11 +209,7 @@
       const codigo = generarCodigo();
       try {
         await setDoc(doc(db, "equipaje", codigo), {
-          codigo,
-          cliente,
-          destino,
-          estado,
-          ubicacion,
+          codigo, cliente, destino, estado, ubicacion,
           fecha: new Date().toLocaleString()
         });
         mostrarRecibo(codigo, cliente, destino, estado, ubicacion);
@@ -234,24 +236,23 @@
           <p><button onclick="window.print()">🖨️ Imprimir Recibo</button></p>
         </div>
       `;
-      JsBarcode("#codigoBarras", codigo, {
-        format: "CODE128",
-        width: 2,
-        height: 60,
-        displayValue: true,
-        fontSize: 16
-      });
+      JsBarcode("#codigoBarras", codigo, { format: "CODE128", width: 2, height: 60, displayValue: true });
     }
 
-    // CARGAR ENVIOS
+    // CARGAR ENVIOS (GLOBAL)
+    let registrosEnvios = [];
+
     async function cargarEnvios() {
       const tabla = document.getElementById("tablaBody");
       tabla.innerHTML = "";
       const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
       const querySnapshot = await getDocs(q);
+
+      registrosEnvios = [];
       querySnapshot.forEach((docSnap) => {
         const data = docSnap.data();
-        const row = `
+        registrosEnvios.push(data);
+        tabla.innerHTML += `
           <tr>
             <td>${data.codigo}</td>
             <td>${data.cliente}</td>
@@ -259,21 +260,56 @@
             <td>${data.estado}</td>
             <td>${data.ubicacion}</td>
             <td>${data.fecha}</td>
-            <td><button class="delete-btn" onclick="eliminarRegistro('${data.codigo}')">🗑️ Eliminar</button></td>
-          </tr>
-        `;
-        tabla.innerHTML += row;
+            <td><button class="delete-btn" onclick="eliminarRegistro('${data.codigo}')">🗑️</button></td>
+          </tr>`;
       });
     }
     window.cargarEnvios = cargarEnvios;
 
-    // 🆕 ESCÁNER AUTOMÁTICO
+    // FILTRAR ENVIOS
+    window.filtrarEnvios = function() {
+      const estadoSeleccionado = document.getElementById("filterEstado").value.toLowerCase();
+      const tabla = document.getElementById("tablaBody");
+      tabla.innerHTML = "";
+      const lista = estadoSeleccionado === "todos"
+        ? registrosEnvios
+        : registrosEnvios.filter(e => e.estado?.toLowerCase() === estadoSeleccionado);
+
+      lista.forEach(data => {
+        tabla.innerHTML += `
+          <tr>
+            <td>${data.codigo}</td>
+            <td>${data.cliente}</td>
+            <td>${data.destino}</td>
+            <td>${data.estado}</td>
+            <td>${data.ubicacion}</td>
+            <td>${data.fecha}</td>
+            <td><button class="delete-btn" onclick="eliminarRegistro('${data.codigo}')">🗑️</button></td>
+          </tr>`;
+      });
+    };
+
+    // EXPORTAR EXCEL
+    window.exportarExcel = function() {
+      if (registrosEnvios.length === 0) return alert("No hay registros para exportar.");
+      const estadoSeleccionado = document.getElementById("filterEstado").value.toLowerCase();
+      const datos = estadoSeleccionado === "todos"
+        ? registrosEnvios
+        : registrosEnvios.filter(e => e.estado?.toLowerCase() === estadoSeleccionado);
+      const hoja = XLSX.utils.json_to_sheet(datos);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
+      const fecha = new Date().toISOString().split("T")[0];
+      XLSX.writeFile(libro, `LunaTrack_${estadoSeleccionado}_${fecha}.xlsx`);
+    };
+
+    // ESCÁNER
     const scanInput = document.getElementById("scanInput");
     scanInput.addEventListener("change", async () => {
       const codigo = scanInput.value.trim();
       if (!codigo) return;
 
-      const nuevoEstado = prompt("Nuevo estado (ej. Entregado, En tránsito, En espera):");
+      const nuevoEstado = prompt("Nuevo estado (ej. Entregado, En tránsito, Retenido):");
       const nuevaUbicacion = prompt("Nueva ubicación (opcional):");
 
       try {
@@ -283,99 +319,29 @@
           ubicacion: nuevaUbicacion || "Sin cambios",
           fecha: new Date().toLocaleString()
         });
-        alert(`✅ Estado del envío ${codigo} actualizado correctamente.`);
+        alert(`✅ Estado del envío ${codigo} actualizado.`);
         cargarEnvios();
-      } catch (error) {
+      } catch {
         alert("❌ Error al actualizar el envío. Verifica el código.");
       }
-
       scanInput.value = "";
-      scanInput.focus(); // vuelve a esperar el siguiente escaneo
+      scanInput.focus();
     });
 
     // ELIMINAR REGISTRO
     window.eliminarRegistro = async function(codigo) {
-      if (!confirm(`¿Seguro que deseas eliminar el envío ${codigo}?`)) return;
+      if (!confirm(`¿Eliminar el envío ${codigo}?`)) return;
       try {
         await deleteDoc(doc(db, "equipaje", codigo));
-        alert(`Registro ${codigo} eliminado correctamente.`);
+        alert(`Registro ${codigo} eliminado.`);
         cargarEnvios();
-      } catch (error) {
-        console.error("Error al eliminar:", error);
-        alert("Error al intentar eliminar el registro.");
+      } catch {
+        alert("Error al eliminar el registro.");
       }
     };
   </script>
-    </script>
 
-  <!-- 🔹 Bloque para exportar registros a Excel y filtrar por estado -->
-  <script>
-    let registrosEnvios = [];
-
-    async function cargarEnvios() {
-      const querySnapshot = await getDocs(collection(db, "equipaje"));
-      registrosEnvios = [];
-      querySnapshot.forEach(doc => {
-        registrosEnvios.push({ id: doc.id, ...doc.data() });
-      });
-      mostrarEnvios(registrosEnvios);
-    }
-
-    function filtrarEnvios() {
-      const estadoSeleccionado = document.getElementById("filterEstado").value;
-      let filtrados = [];
-      if (estadoSeleccionado === "todos") {
-        filtrados = registrosEnvios;
-      } else {
-        filtrados = registrosEnvios.filter(envio => envio.estado?.toLowerCase() === estadoSeleccionado.toLowerCase());
-      }
-      mostrarEnvios(filtrados);
-    }
-
-    function mostrarEnvios(lista) {
-      const tabla = document.getElementById("tablaEnvios");
-      tabla.innerHTML = `
-        <tr style="background:#213D7A; color:white;">
-          <th>ID</th><th>Cliente</th><th>Destino</th><th>Estado</th><th>Fecha</th>
-        </tr>
-      `;
-      lista.forEach(envio => {
-        tabla.innerHTML += `
-          <tr>
-            <td>${envio.id}</td>
-            <td>${envio.cliente || '—'}</td>
-            <td>${envio.destino || '—'}</td>
-            <td>${envio.estado || 'Sin estado'}</td>
-            <td>${envio.fecha || '—'}</td>
-          </tr>
-        `;
-      });
-    }
-
-    function exportarExcel() {
-      if (registrosEnvios.length === 0) {
-        alert("No hay registros para exportar.");
-        return;
-      }
-
-      const estadoSeleccionado = document.getElementById("filterEstado").value;
-      let datosAExportar = [];
-      if (estadoSeleccionado === "todos") {
-        datosAExportar = registrosEnvios;
-      } else {
-        datosAExportar = registrosEnvios.filter(envio => envio.estado?.toLowerCase() === estadoSeleccionado.toLowerCase());
-      }
-
-      const hoja = XLSX.utils.json_to_sheet(datosAExportar);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      XLSX.writeFile(libro, `LunaTrack_Envios_${estadoSeleccionado}.xlsx`);
-    }
-
-    cargarEnvios();
-  </script>
-
-  <!-- Librería de código de barras -->
+  <!-- Librería código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
