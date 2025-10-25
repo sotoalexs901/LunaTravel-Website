@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
+  <!-- Librería para exportar a Excel -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -78,6 +80,20 @@
     }
   </style>
 </head>
+  <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
+  <div>
+    <label for="filterEstado" style="font-weight:bold; color:#213D7A;">Filtrar por estado:</label>
+    <select id="filterEstado" onchange="filtrarEnvios()" style="padding:6px; border-radius:6px;">
+      <option value="todos">Todos</option>
+      <option value="en tránsito">En tránsito</option>
+      <option value="entregado">Entregado</option>
+      <option value="retenido">Retenido</option>
+    </select>
+  </div>
+  <button onclick="exportarExcel()" style="background-color:#213D7A; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">
+    📤 Exportar a Excel
+  </button>
+</div>
 <body>
   <!-- LOGIN -->
   <div id="login" class="container">
