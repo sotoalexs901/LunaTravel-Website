@@ -1,74 +1,162 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luna Travel — Precios</title>
-  <link rel="stylesheet" href="css/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Precios | Luna Travel</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #f4f7fc, #ffffff);
+    }
+
+    header {
+      background-color: #123c7b;
+      color: #fff;
+      padding: 12px 0;
+      text-align: center;
+    }
+
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: #ffd700;
+    }
+
+    main {
+      max-width: 1100px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #123c7b;
+      font-size: 2rem;
+      margin-bottom: 25px;
+    }
+
+    .service-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 25px;
+    }
+
+    .card {
+      background: #ffffff;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      text-align: left;
+      transition: all 0.2s ease;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+    }
+
+    .card h3 {
+      color: #0a3770;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+    }
+
+    .card p {
+      color: #333;
+      margin: 5px 0;
+      font-size: 0.95rem;
+    }
+
+    .price {
+      font-weight: bold;
+      color: #0a3a75;
+      font-size: 1rem;
+      margin-top: 10px;
+    }
+
+    footer {
+      background-color: #123c7b;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      margin-top: 40px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+      }
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container nav">
-      <a href="index.html" class="brand">
-        <img src="images/luna-logo.jpg" class="brand-logo" alt="Luna Travel"><span class="brand-name">Luna Travel</span>
-      </a>
-      <nav class="menu">
-        <a href="servicios.html">Servicios</a>
-        <a class="active" href="precios.html">Precios</a>
-        <a href="contacto.html">Contacto</a>
-        <a href="contacto.html" class="btn btn-primary">Contáctanos</a>
-      </nav>
-    </div>
+  <header>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="servicios.html">Servicios</a>
+      <a href="precios.html" class="active">Precios</a>
+      <a href="tracking.html">Rastreo</a>
+      <a href="contacto.html">Contáctanos</a>
+    </nav>
   </header>
 
-  <section class="page-hero">
-    <div class="container"><h1>Precios</h1><p>Paquetes y tarifas orientativas. Solicita tu cotización personalizada.</p></div>
-  </section>
+  <main>
+    <h1>Lista de Servicios y Precios</h1>
+    <p>Consulta las tarifas más recientes de nuestros servicios de trámites, boletos, envíos y asesorías.</p>
 
-  <section class="section">
-    <div class="container grid price-cards">
-      <article class="card price">
-        <h3>Básico</h3>
-        <p class="amount">$ —</p>
-        <ul>
-          <li>Asesoría inicial</li>
-          <li>Revisión de requisitos</li>
-          <li>Soporte por chat</li>
-        </ul>
-        <a href="contacto.html#formulario" class="btn btn-soft">Solicitar</a>
-      </article>
-      <article class="card price">
-        <h3>Estándar</h3>
-        <p class="amount">$ —</p>
-        <ul>
-          <li>Todo lo del plan Básico</li>
-          <li>Gestión de formularios</li>
-          <li>Seguimiento de caso</li>
-        </ul>
-        <a href="contacto.html#formulario" class="btn btn-soft">Solicitar</a>
-      </article>
-      <article class="card price">
-        <h3>Premium</h3>
-        <p class="amount">$ —</p>
-        <ul>
-          <li>Acompañamiento completo</li>
-          <li>Atención prioritaria</li>
-          <li>Actualizaciones por email</li>
-        </ul>
-        <a href="contacto.html#formulario" class="btn btn-soft">Solicitar</a>
-      </article>
+    <div id="serviceList" class="service-grid">
+      <p>Cargando servicios...</p>
     </div>
-  </section>
+  </main>
 
-  <footer class="site-footer">
-    <div class="container"><p>© <span id="y"></span> Luna Travel</p><small>Este website está siendo manejado por Optima Service</small></div>
+  <footer>
+    © 2025 Luna Travel — Envíos, boletos y trámites confiables.
   </footer>
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
 
-  <script type="text/javascript">
-    window.$crisp=[]; window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
-    (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
+  <script>
+    async function cargarPrecios() {
+      try {
+        const response = await fetch('data/pricing.json');
+        const data = await response.json();
+        const contenedor = document.getElementById('serviceList');
+        contenedor.innerHTML = '';
+
+        data.servicios.forEach(servicio => {
+          const card = document.createElement('div');
+          card.classList.add('card');
+          card.innerHTML = `
+            <h3>${servicio.name_es}</h3>
+            <p>${servicio.desc_es}</p>
+            <p class="price">${servicio.price}</p>
+          `;
+          contenedor.appendChild(card);
+        });
+      } catch (error) {
+        console.error('Error al cargar los precios:', error);
+        document.getElementById('serviceList').innerHTML = `
+          <p style="color:red;">Error al cargar la lista de precios. Intenta nuevamente.</p>
+        `;
+      }
+    }
+
+    cargarPrecios();
   </script>
 </body>
 </html>
