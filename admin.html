@@ -6,7 +6,7 @@
   <title>Panel de Registro - Luna Travel</title>
   <link rel="stylesheet" href="css/styles.css" />
 
-  <!-- Librerías necesarias -->
+  <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
@@ -100,31 +100,38 @@
 
     <input type="text" id="cliente" placeholder="Cliente">
     <input type="text" id="destino" placeholder="Destino">
-    <input type="text" id="estado" placeholder="Estado">
+
+    <!-- 🔹 ESTADOS PREDEFINIDOS -->
+    <select id="estado">
+      <option value="">Seleccionar estado...</option>
+      <option value="Recibido en la Oficina">Recibido en la Oficina</option>
+      <option value="En Tránsito">En Tránsito</option>
+      <option value="Procesando para Entrega">Procesando para Entrega</option>
+      <option value="En Reparto">En Reparto</option>
+      <option value="Entregado">Entregado</option>
+    </select>
+
     <input type="text" id="ubicacion" placeholder="Ubicación">
     <button onclick="guardarEnvio()">Guardar y generar recibo</button>
+
     <div id="recibo"></div>
 
-    <!-- FILTRO Y EXPORTAR -->
+    <!-- FILTRO -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
       <div>
         <label for="filterEstado" style="font-weight:bold; color:#213D7A;">Filtrar por estado:</label>
         <select id="filterEstado" onchange="filtrarEnvios()" style="padding:6px; border-radius:6px;">
-  <option value="todos">Todos</option>
-  <option value="recibido">Recibido</option>
-  <option value="procesando para su entrega">Procesando para su entrega</option>
-  <option value="en tránsito">En Tránsito</option>
-  <option value="entregado">Entregado</option>
-  <option value="retenido">Retenido</option>
-</select>
+          <option value="todos">Todos</option>
+          <option value="recibido en la oficina">Recibido en la Oficina</option>
+          <option value="en tránsito">En Tránsito</option>
+          <option value="procesando para entrega">Procesando para Entrega</option>
+          <option value="en reparto">En Reparto</option>
+          <option value="entregado">Entregado</option>
+        </select>
       </div>
       <div>
-        <button onclick="exportarExcel()" style="background-color:#213D7A; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">
-          📤 Exportar Excel
-        </button>
-        <button onclick="exportarPDF()" style="background-color:#c62828; color:white; padding:8px 14px; border:none; border-radius:8px; cursor:pointer;">
-          🧾 Exportar PDF
-        </button>
+        <button onclick="exportarExcel()">📤 Exportar Excel</button>
+        <button onclick="exportarPDF()" style="background:#c62828;">🧾 Exportar PDF</button>
       </div>
     </div>
 
@@ -133,7 +140,7 @@
     <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
     <p style="font-size:13px;color:#555;">(Coloque el cursor aquí y escanee el código de barras)</p>
 
-    <!-- TABLA Y CONTADOR -->
+    <!-- TABLA -->
     <h3>Envíos registrados</h3>
     <p id="contador">📦 0 envíos cargados</p>
     <table id="tablaEnvios">
@@ -194,7 +201,6 @@
       document.getElementById("loginError").style.display = "none";
     };
 
-    // GENERAR CÓDIGO
     function generarCodigo() {
       const random = Math.floor(100000 + Math.random() * 900000);
       return `LT-${random}`;
@@ -208,7 +214,7 @@
       const ubicacion = document.getElementById("ubicacion").value.trim();
 
       if (!cliente || !destino || !estado || !ubicacion) {
-        alert("Por favor completa todos los campos.");
+        alert("Por favor, completa todos los campos.");
         return;
       }
 
@@ -222,7 +228,7 @@
       cargarEnvios();
     };
 
-    // CARGAR ENVÍOS
+    // CARGAR ENVIOS
     async function cargarEnvios() {
       const tabla = document.getElementById("tablaBody");
       const contador = document.getElementById("contador");
@@ -301,7 +307,7 @@
     scanInput.addEventListener("change", async () => {
       const codigo = scanInput.value.trim();
       if (!codigo) return;
-      const nuevoEstado = prompt("Nuevo estado (ej. Entregado, En tránsito, Retenido):");
+      const nuevoEstado = prompt("Nuevo estado (Recibido en la Oficina, En Tránsito, Procesando para Entrega, En Reparto, Entregado):");
       const nuevaUbicacion = prompt("Nueva ubicación (opcional):");
       const ref = doc(db, "equipaje", codigo);
       await updateDoc(ref, {
