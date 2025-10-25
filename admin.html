@@ -5,12 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Registro - Luna Travel</title>
   <link rel="stylesheet" href="css/styles.css" />
-
-  <!-- Librerías -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -80,6 +77,24 @@
       color: #213D7A;
       font-size: 18px;
     }
+    #mensajeConfirmacion {
+      display: none;
+      margin: 15px auto;
+      width: 80%;
+      padding: 12px;
+      background: #e6f9e6;
+      color: #1b5e20;
+      font-weight: 600;
+      border: 1px solid #66bb6a;
+      border-radius: 8px;
+      animation: fadeInOut 4s forwards;
+    }
+    @keyframes fadeInOut {
+      0% { opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { opacity: 0; display: none; }
+    }
   </style>
 </head>
 
@@ -101,7 +116,6 @@
     <input type="text" id="cliente" placeholder="Cliente">
     <input type="text" id="destino" placeholder="Destino">
 
-    <!-- 🔹 ESTADOS PREDEFINIDOS -->
     <select id="estado">
       <option value="">Seleccionar estado...</option>
       <option value="Recibido en la Oficina">Recibido en la Oficina</option>
@@ -116,7 +130,6 @@
 
     <div id="recibo"></div>
 
-    <!-- FILTRO -->
     <div style="display:flex; justify-content:space-between; align-items:center; margin:20px 0;">
       <div>
         <label for="filterEstado" style="font-weight:bold; color:#213D7A;">Filtrar por estado:</label>
@@ -135,12 +148,23 @@
       </div>
     </div>
 
-    <!-- ESCÁNER -->
     <h3>Actualizar estado con escáner</h3>
     <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
-    <p style="font-size:13px;color:#555;">(Coloque el cursor aquí y escanee el código de barras)</p>
+    <div id="actualizarForm" style="display:none; margin-top:10px;">
+      <select id="nuevoEstado">
+        <option value="">Seleccionar nuevo estado...</option>
+        <option value="Recibido en la Oficina">Recibido en la Oficina</option>
+        <option value="En Tránsito">En Tránsito</option>
+        <option value="Procesando para Entrega">Procesando para Entrega</option>
+        <option value="En Reparto">En Reparto</option>
+        <option value="Entregado">Entregado</option>
+      </select>
+      <input type="text" id="nuevaUbicacion" placeholder="Nueva ubicación (opcional)">
+      <button onclick="confirmarActualizacion()">Actualizar</button>
+    </div>
 
-    <!-- TABLA -->
+    <div id="mensajeConfirmacion">✅ Envío actualizado correctamente.</div>
+
     <h3>Envíos registrados</h3>
     <p id="contador">📦 0 envíos cargados</p>
     <table id="tablaEnvios">
@@ -179,6 +203,7 @@
     const db = getFirestore(app);
 
     let registrosEnvios = [];
+    let codigoActual = "";
 
     // LOGIN
     window.login = function() {
@@ -201,29 +226,20 @@
       document.getElementById("loginError").style.display = "none";
     };
 
+    // GUARDAR ENVÍO
     function generarCodigo() {
-      const random = Math.floor(100000 + Math.random() * 900000);
-      return `LT-${random}`;
+      return `LT-${Math.floor(100000 + Math.random() * 900000)}`;
     }
 
-    // GUARDAR ENVÍO
     window.guardarEnvio = async function() {
       const cliente = document.getElementById("cliente").value.trim();
       const destino = document.getElementById("destino").value.trim();
       const estado = document.getElementById("estado").value.trim();
       const ubicacion = document.getElementById("ubicacion").value.trim();
-
-      if (!cliente || !destino || !estado || !ubicacion) {
-        alert("Por favor, completa todos los campos.");
-        return;
-      }
+      if (!cliente || !destino || !estado || !ubicacion) return alert("Completa todos los campos.");
 
       const codigo = generarCodigo();
-      await setDoc(doc(db, "equipaje", codigo), {
-        codigo, cliente, destino, estado, ubicacion,
-        fecha: new Date().toLocaleString()
-      });
-
+      await setDoc(doc(db, "equipaje", codigo), { codigo, cliente, destino, estado, ubicacion, fecha: new Date().toLocaleString() });
       alert("✅ Envío registrado correctamente.");
       cargarEnvios();
     };
@@ -231,24 +247,18 @@
     // CARGAR ENVIOS
     async function cargarEnvios() {
       const tabla = document.getElementById("tablaBody");
-      const contador = document.getElementById("contador");
       tabla.innerHTML = "";
       const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
       const querySnapshot = await getDocs(q);
       registrosEnvios = [];
-      querySnapshot.forEach((docSnap) => {
-        const data = docSnap.data();
-        registrosEnvios.push(data);
-      });
+      querySnapshot.forEach(docSnap => registrosEnvios.push(docSnap.data()));
       mostrarEnvios(registrosEnvios);
-      contador.textContent = `📦 ${registrosEnvios.length} envíos cargados`;
     }
 
     function mostrarEnvios(lista) {
       const tabla = document.getElementById("tablaBody");
-      const contador = document.getElementById("contador");
       tabla.innerHTML = "";
-      lista.forEach((data) => {
+      lista.forEach(data => {
         tabla.innerHTML += `
           <tr>
             <td>${data.codigo}</td>
@@ -260,77 +270,68 @@
             <td><button class="delete-btn" onclick="eliminarRegistro('${data.codigo}')">🗑️</button></td>
           </tr>`;
       });
-      contador.textContent = `📦 ${lista.length} ${lista.length === 1 ? "envío" : "envíos"} ${document.getElementById("filterEstado").value}`;
+      document.getElementById("contador").textContent = `📦 ${lista.length} envíos cargados`;
     }
 
-    // FILTRO
+    // FILTRAR
     window.filtrarEnvios = function() {
       const estado = document.getElementById("filterEstado").value.toLowerCase();
-      const filtrados = estado === "todos"
-        ? registrosEnvios
-        : registrosEnvios.filter(e => e.estado?.toLowerCase() === estado);
+      const filtrados = estado === "todos" ? registrosEnvios : registrosEnvios.filter(e => e.estado?.toLowerCase() === estado);
       mostrarEnvios(filtrados);
     };
 
-    // EXPORTAR EXCEL
+    // EXPORTAR
     window.exportarExcel = function() {
-      const estado = document.getElementById("filterEstado").value.toLowerCase();
-      const datos = estado === "todos" ? registrosEnvios : registrosEnvios.filter(e => e.estado?.toLowerCase() === estado);
-      if (datos.length === 0) return alert("No hay registros para exportar.");
-      const hoja = XLSX.utils.json_to_sheet(datos);
+      const hoja = XLSX.utils.json_to_sheet(registrosEnvios);
       const libro = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      const fecha = new Date().toISOString().split("T")[0];
-      XLSX.writeFile(libro, `LunaTrack_${estado}_${fecha}.xlsx`);
+      XLSX.writeFile(libro, `LunaTrack_${new Date().toISOString().split("T")[0]}.xlsx`);
     };
 
-    // EXPORTAR PDF
     window.exportarPDF = function() {
       const { jsPDF } = window.jspdf;
       const docPDF = new jsPDF();
-      const estado = document.getElementById("filterEstado").value;
-      const datos = estado === "todos" ? registrosEnvios : registrosEnvios.filter(e => e.estado?.toLowerCase() === estado);
-      if (datos.length === 0) return alert("No hay registros para exportar.");
-      docPDF.text(`LunaTrack - Envíos (${estado})`, 14, 15);
-      const filas = datos.map(d => [d.codigo, d.cliente, d.destino, d.estado, d.ubicacion, d.fecha]);
+      docPDF.text("LunaTrack - Envíos", 14, 15);
       docPDF.autoTable({
         head: [["Código", "Cliente", "Destino", "Estado", "Ubicación", "Fecha"]],
-        body: filas,
+        body: registrosEnvios.map(d => [d.codigo, d.cliente, d.destino, d.estado, d.ubicacion, d.fecha]),
         startY: 25,
       });
-      const fecha = new Date().toISOString().split("T")[0];
-      docPDF.save(`LunaTrack_${estado}_${fecha}.pdf`);
+      docPDF.save(`LunaTrack_${new Date().toISOString().split("T")[0]}.pdf`);
     };
 
-    // ESCÁNER
+    // ESCÁNER Y ACTUALIZACIÓN
     const scanInput = document.getElementById("scanInput");
-    scanInput.addEventListener("change", async () => {
-      const codigo = scanInput.value.trim();
-      if (!codigo) return;
-      const nuevoEstado = prompt("Nuevo estado (Recibido en la Oficina, En Tránsito, Procesando para Entrega, En Reparto, Entregado):");
-      const nuevaUbicacion = prompt("Nueva ubicación (opcional):");
-      const ref = doc(db, "equipaje", codigo);
-      await updateDoc(ref, {
-        estado: nuevoEstado || "Sin cambios",
-        ubicacion: nuevaUbicacion || "Sin cambios",
-        fecha: new Date().toLocaleString(),
-      });
-      alert(`✅ Estado del envío ${codigo} actualizado.`);
-      cargarEnvios();
+    scanInput.addEventListener("change", () => {
+      codigoActual = scanInput.value.trim();
+      if (!codigoActual) return;
+      document.getElementById("actualizarForm").style.display = "block";
       scanInput.value = "";
-      scanInput.focus();
     });
 
-    // ELIMINAR
+    window.confirmarActualizacion = async function() {
+      const nuevoEstado = document.getElementById("nuevoEstado").value;
+      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
+      if (!nuevoEstado) return alert("Selecciona un estado.");
+
+      const ref = doc(db, "equipaje", codigoActual);
+      await updateDoc(ref, { estado: nuevoEstado, ubicacion: nuevaUbicacion || "Sin cambios", fecha: new Date().toLocaleString() });
+      document.getElementById("actualizarForm").style.display = "none";
+      mostrarMensaje();
+      cargarEnvios();
+    };
+
+    function mostrarMensaje() {
+      const msg = document.getElementById("mensajeConfirmacion");
+      msg.style.display = "block";
+      setTimeout(() => (msg.style.display = "none"), 3000);
+    }
+
     window.eliminarRegistro = async function(codigo) {
       if (!confirm(`¿Eliminar el envío ${codigo}?`)) return;
       await deleteDoc(doc(db, "equipaje", codigo));
-      alert(`Registro ${codigo} eliminado.`);
       cargarEnvios();
     };
   </script>
-
-  <!-- Código de barras -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
