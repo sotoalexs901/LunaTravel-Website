@@ -95,7 +95,17 @@ window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
   s.async=1;
   d.getElementsByTagName("head")[0].appendChild(s);
 })();
+
+// Mensaje automático para captar atención
+setTimeout(function(){
+  window.$crisp.push(["do", "chat:show"]);
+  window.$crisp.push(["set", "message:text", [
+    "👋 ¡Hola! ¿Necesitas ayuda con tus envíos o trámites?",
+    "✈️ Estamos en línea, ¡escríbenos aquí!"
+  ]]);
+}, 3000);
 </script>
+
 </body>
 </html>
 
