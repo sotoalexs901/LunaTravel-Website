@@ -1,59 +1,127 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Luna Travel — Contacto</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contáctanos | Luna Travel</title>
   <link rel="stylesheet" href="css/styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', Arial, sans-serif;
+      margin: 0;
+      background: linear-gradient(to bottom, #f4f7fc, #ffffff);
+    }
+    header {
+      background-color: #123c7b;
+      color: white;
+      padding: 12px 0;
+      text-align: center;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    nav a:hover,
+    nav a.active {
+      color: #ffd700;
+    }
+    main {
+      max-width: 700px;
+      margin: 40px auto;
+      padding: 20px;
+      text-align: center;
+    }
+    h1 {
+      color: #123c7b;
+      font-size: 2rem;
+    }
+    form {
+      background: #fff;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 5px 12px rgba(0,0,0,0.1);
+      text-align: left;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #123c7b;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
+    }
+    button {
+      background-color: #123c7b;
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+      font-size: 1rem;
+    }
+    button:hover {
+      background-color: #0f3064;
+    }
+    footer {
+      background-color: #123c7b;
+      color: white;
+      text-align: center;
+      padding: 15px 0;
+      margin-top: 40px;
+    }
+  </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container nav">
-      <a href="index.html" class="brand">
-        <img src="images/luna-logo.jpg" class="brand-logo" alt="Luna Travel"><span class="brand-name">Luna Travel</span>
-      </a>
-      <nav class="menu">
-        <a href="servicios.html">Servicios</a>
-        <a href="precios.html">Precios</a>
-        <a class="active" href="contacto.html">Contacto</a>
-        <a href="#formulario" class="btn btn-primary">Contáctanos</a>
-      </nav>
-    </div>
+  <header>
+    <nav>
+      <a href="index.html">Inicio</a>
+      <a href="servicios.html">Servicios</a>
+      <a href="precios.html">Precios</a>
+      <a href="tracking.html">Rastreo</a>
+      <a href="contacto.html" class="active">Contáctanos</a>
+    </nav>
   </header>
 
-  <section class="page-hero">
-    <div class="container"><h1>Contacto</h1><p>Cuéntanos tu caso y te respondemos a la brevedad.</p></div>
-  </section>
+  <main>
+    <h1>Contáctanos</h1>
+    <p>¿Tienes alguna pregunta o solicitud? Completa el formulario y te responderemos pronto.</p>
 
-  <section class="section" id="formulario">
-    <div class="container grid two">
-      <form class="card form" action="https://formsubmit.co/lunatravel25@yahoo.com" method="POST">
-        <h3>Envíanos un mensaje</h3>
-        <label>Nombre<input type="text" name="name" required></label>
-        <label>Email<input type="email" name="email" required></label>
-        <label>Mensaje<textarea name="message" rows="5" required></textarea></label>
-        <input type="hidden" name="_next" value="https://www.lunatravel25.com/gracias.html">
-        <button type="submit" class="btn btn-primary">Enviar</button>
-      </form>
+    <!-- 📨 Formulario conectado a Netlify -->
+    <form name="contacto" method="POST" data-netlify="true">
+      <input type="hidden" name="form-name" value="contacto" />
+      
+      <label for="nombre">Nombre completo:</label>
+      <input type="text" id="nombre" name="nombre" required>
 
-      <aside class="card info">
-        <h3>Información</h3>
-        <p><strong>Email:</strong> <a href="mailto:lunatravel25@yahoo.com">lunatravel25@yahoo.com</a></p>
-        <p><strong>Chat en vivo:</strong> esquina inferior derecha</p>
-        <p><strong>Horarios:</strong> L–V 9:00–18:00, S 9:00–13:00</p>
-      </aside>
-    </div>
-  </section>
+      <label for="email">Correo electrónico:</label>
+      <input type="email" id="email" name="email" required>
 
-  <footer class="site-footer">
-    <div class="container"><p>© <span id="y"></span> Luna Travel</p><small>Este website está siendo manejado por Optima Service</small></div>
+      <label for="mensaje">Mensaje:</label>
+      <textarea id="mensaje" name="mensaje" required></textarea>
+
+      <button type="submit">Enviar mensaje</button>
+    </form>
+  </main>
+
+  <footer>
+    © 2025 Luna Travel — Envíos, boletos y trámites confiables.
   </footer>
-  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
-
-  <script type="text/javascript">
-    window.$crisp=[]; window.CRISP_WEBSITE_ID="b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
-    (function(){d=document;s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();
-  </script>
 </body>
 </html>
