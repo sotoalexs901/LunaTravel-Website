@@ -232,11 +232,14 @@
     let editingDocId = "";  // docId actual (igual al código)
 
     // ------ Login & permisos ------
-    window.login = function(){
-  // ------ Login y permisos ------
+// ----- Login y permisos -----
+let currentUser = null;
+let isAdmin = false;
+
 window.login = function() {
   const u = document.getElementById("usuario").value.trim();
   const p = document.getElementById("pin").value.trim();
+
   const valid = {
     "Alexs": "2036",
     "Mela": "2006",
@@ -246,20 +249,21 @@ window.login = function() {
   };
 
   if (valid[u] && valid[u] === p) {
-    // 🔹 Guarda usuario actual en localStorage para el chat interno
+    // Guardar usuario actual en localStorage para el chat interno
     localStorage.setItem("usuarioActual", u);
     localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
 
     currentUser = u;
     isAdmin = (u === "Alexs");
 
+    // Mostrar panel y ocultar login
     document.getElementById("login").style.display = "none";
     document.getElementById("panel").style.display = "block";
     document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
 
+    // Cargar envíos y chat
     cargarEnvios();
-    Inicializa el chat con el nombre correcto
-
+    initChat(); // 🔹 Inicializa el chat con el nombre del usuario correcto
   } else {
     document.getElementById("loginError").style.display = "block";
   }
