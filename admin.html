@@ -506,12 +506,10 @@
       chatText.value=""; scrollChatBottom();
     };
   </script>
-// === 🔧 BLOQUE DE PRUEBA DEL CHAT INTERNO ===
-
-// Crea la colección si no existe y escucha mensajes en tiempo real
-import {
-  addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+<!-- 🚀 Bloque de prueba del chat interno -->
+<script type="module">
+import { addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where } 
+from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 async function testChatRealtime() {
   const chatBox = document.createElement("div");
@@ -519,7 +517,7 @@ async function testChatRealtime() {
     position:fixed;bottom:10px;right:10px;width:300px;
     background:white;border:1px solid #ccc;padding:10px;
     border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.1);
-    font-family:Inter, sans-serif;z-index:9999
+    font-family:Inter, sans-serif;z-index:9999;
   `;
   chatBox.innerHTML = `
     <h4 style="margin:0 0 6px;color:#143c8c;">💬 Chat del Equipo (Prueba)</h4>
@@ -550,7 +548,7 @@ async function testChatRealtime() {
     const texto = input.value.trim();
     if (!texto) return;
     await addDoc(mensajesRef, {
-      user: currentUser || "Usuario",
+      user: "Administrador",
       text: texto,
       createdAt: Date.now()
     });
@@ -566,6 +564,7 @@ async function testChatRealtime() {
 }
 
 testChatRealtime();
+</script>
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
