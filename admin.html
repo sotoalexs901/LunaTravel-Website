@@ -4,13 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Registro - Luna Travel</title>
+
+  <!-- Fuente -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css" />
-  <!-- Librerías -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+  <!-- Estilos base -->
   <style>
     :root{
       --primary:#213D7A; --primary-dark:#1a3163; --accent:#143c8c;
@@ -18,8 +17,9 @@
       --card:#fff; --border:#e5e7eb; --shadow:0 4px 10px rgba(0,0,0,0.1);
     }
     *{box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:var(--bg);margin:0;color:#111;text-align:center}
-    .container{max-width:980px;margin:32px auto;background:var(--card);padding:28px;border-radius:12px;box-shadow:var(--shadow);text-align:left}
+    html,body{height:100%}
+    body{font-family:'Inter',sans-serif;background:var(--bg);margin:0;color:#111}
+    .container{max-width:980px;margin:32px auto;background:var(--card);padding:28px;border-radius:12px;box-shadow:var(--shadow)}
     h2{margin:0 0 16px;color:var(--primary)}
     input,select,button{font-family:inherit}
     input,select{padding:10px;border:1px solid var(--border);border-radius:8px;width:100%}
@@ -29,24 +29,34 @@
     .btn-danger{background:var(--danger)}
     .btn-muted{background:#6b7280}
     .toolbar{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:16px 0}
+
+    /* Tabla */
     #tablaEnvios{width:100%;border-collapse:collapse;margin-top:12px}
     #tablaEnvios th,#tablaEnvios td{border:1px solid var(--border);padding:8px;text-align:left}
     #tablaEnvios th{background:var(--primary);color:#fff}
-    .logout-btn{float:right;background:#555}
-    .logout-btn:hover{background:#333}
     #contador{margin:8px 0 0;font-weight:700;color:var(--primary)}
+
+    /* Login */
+    #login{text-align:center}
+
+    /* Badge admin */
+    .admin-badge{display:none;margin-left:8px;padding:3px 8px;border-radius:999px;background:#10b981;color:#fff;font-size:12px;font-weight:700}
+
+    /* Toast Ok */
     #mensajeConfirmacion{display:none;margin:15px auto;width:100%;padding:12px;background:var(--green-bg);color:var(--green);font-weight:600;border:1px solid #66bb6a;border-radius:8px;animation:fadeInOut 4s forwards;text-align:center}
     @keyframes fadeInOut{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0}}
-    /* Modal edición (solo Alexs) */
+
+    /* Modal edición */
     .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:9990}
     .modal{position:fixed;right:50%;top:50%;transform:translate(50%,-50%);background:#fff;border-radius:12px;box-shadow:var(--shadow);width:min(640px,95vw);padding:16px;z-index:9991}
     .modal h3{margin:0 0 10px;color:var(--primary)}
     .modal .grid{grid-template-columns:1fr 1fr}
     .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
-    /* Chat Dock */
-    .chat-fab{position:fixed;right:20px;bottom:20px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);cursor:pointer;z-index:9800;font-size:20px}
+
+    /* Chat lateral */
+    .chat-fab{display:none;position:fixed;right:20px;bottom:20px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);cursor:pointer;z-index:9800;font-size:20px}
     .chat-fab .badge{position:absolute;top:6px;right:6px;background:#3b82f6;border-radius:50%;width:10px;height:10px;display:none}
-    .chat-dock{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 16px rgba(0,0,0,.15);z-index:9900;display:flex;flex-direction:column;transition:right .25s ease}
+    .chat-dock{display:none;position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 16px rgba(0,0,0,.15);z-index:9900;flex-direction:column;transition:right .25s ease}
     .chat-dock.open{right:0}
     .chat-header{background:var(--primary);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
     .chat-messages{flex:1;overflow:auto;padding:12px;background:#f8fafc}
@@ -56,15 +66,19 @@
     .msg .meta{font-size:11px;color:#555;margin-top:2px}
     .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
     .chat-input input{flex:1}
-    /* Admin Badge */
-    .admin-badge{display:none;margin-left:8px;padding:3px 8px;border-radius:999px;background:#10b981;color:#fff;font-size:12px;font-weight:700}
+
     @media (max-width:720px){.grid{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:stretch}}
   </style>
+
+  <!-- Librerías de exportación y PDF -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
   <!-- LOGIN -->
-  <div id="login" class="container" style="text-align:center;">
+  <div id="login" class="container">
     <h2>Acceso Administrador</h2>
     <div class="grid" style="max-width:520px;margin:0 auto;">
       <input type="text" id="usuario" placeholder="Usuario (Alexs / Mela / Amisaday / Juan / Ana)">
@@ -78,7 +92,7 @@
   <div id="panel" class="container" style="display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;">
       <h2 style="display:flex;align-items:center;gap:8px;">Panel de Registro - Luna Travel <span id="adminBadge" class="admin-badge">🔑 Modo Administrador Activo</span></h2>
-      <button class="btn logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
+      <button class="btn btn-muted" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
     <!-- Registro -->
@@ -138,7 +152,6 @@
       <button class="btn" onclick="confirmarActualizacion()">Actualizar</button>
     </div>
 
-    <!-- Mensaje -->
     <div id="mensajeConfirmacion">✅ Envío actualizado correctamente.</div>
 
     <!-- Tabla -->
@@ -188,7 +201,7 @@
     </div>
   </div>
 
-  <!-- Chat Dock -->
+  <!-- FAB y Dock del Chat (se muestran después del login) -->
   <button class="chat-fab" id="chatFab">💬<span class="badge" id="chatBadge"></span></button>
   <div class="chat-dock" id="chatDock">
     <div class="chat-header">
@@ -202,8 +215,11 @@
     </div>
   </div>
 
-  <!-- FIREBASE + Lógica -->
+  <!-- Firebase + Lógica -->
   <script type="module">
+    /* ===========================
+       1) Firebase (única instancia)
+       =========================== */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
       getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
@@ -219,97 +235,117 @@
       appId: "1:82970120947:web:2d7b70d052816802c05d86",
       measurementId: "G-QCYKV5DXKD"
     };
-
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    // Estado global
+    /* ===========================
+       2) Estado global
+       =========================== */
     let registrosEnvios = [];
     let registrosFiltrados = [];
     let codigoActual = "";
     let currentUser = "";
     let isAdmin = false;
-    let editingDocId = "";  // docId actual (igual al código)
-<!-- 🔹 Variables globales y login corregido -->
-<script>
-  // --- Variables globales ---
-  window.currentUser = null;
-  window.isAdmin = false;
+    let editingDocId = "";
 
-  // --- Login y permisos ---
-  window.login = function() {
-    const u = document.getElementById("usuario").value.trim();
-    const p = document.getElementById("pin").value.trim();
+    /* ===========================
+       3) Login & permisos
+       =========================== */
+    window.login = function(){
+      const u = document.getElementById("usuario").value.trim();
+      const p = document.getElementById("pin").value.trim();
 
-    const valid = {
-      "Alexs": "2036",
-      "Mela": "2006",
-      "Amisaday": "1994",
-      "Juan": "5304",
-      "Ana": "0503"
+      const valid = {
+        "Alexs": "2036",
+        "Mela": "2006",
+        "Amisaday": "1994",
+        "Juan": "5304",
+        "Ana": "0503"
+      };
+
+      if(valid[u] && valid[u] === p){
+        // Persistimos usuario para chat/reload
+        localStorage.setItem("usuarioActual", u);
+        localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
+
+        currentUser = u;
+        isAdmin     = (u === "Alexs");
+
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+
+        const badge = document.getElementById("adminBadge");
+        if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
+
+        // Mostrar chat
+        document.getElementById("chatFab").style.display  = "flex";
+        document.getElementById("chatDock").style.display = "flex";
+
+        initChat();
+        cargarEnvios();
+      } else {
+        document.getElementById("loginError").style.display = "block";
+      }
     };
 
-    if (valid[u] && valid[u] === p) {
-      // Guardar usuario actual para el chat
-      localStorage.setItem("usuarioActual", u);
-      localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
+    window.cerrarSesion = function(){
+      localStorage.removeItem("usuarioActual");
+      localStorage.removeItem("rolUsuario");
+      currentUser = "";
+      isAdmin = false;
 
-      window.currentUser = u;
-      window.isAdmin = (u === "Alexs");
-
-      // Mostrar panel, ocultar login
-      document.getElementById("login").style.display = "none";
-      document.getElementById("panel").style.display = "block";
-
-      // Mostrar insignia solo si es admin
-      const badge = document.getElementById("adminBadge");
-      if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
-
-      // Iniciar chat y carga
-      if (typeof initChat === "function") initChat();
-      if (typeof cargarEnvios === "function") cargarEnvios();
-
-    } else {
-      document.getElementById("loginError").style.display = "block";
-    }
-  };
-</script>
-
-window.cerrarSesion = function() {
-  // 🔹 Limpia sesión y chat
-  localStorage.removeItem("usuarioActual");
-  localStorage.removeItem("rolUsuario");
-  currentUser = "";
-  isAdmin = false;
-
-  document.getElementById("panel").style.display = "none";
-  document.getElementById("login").style.display = "block";
-};
-
-      currentUser=""; isAdmin=false;
-      document.getElementById("panel").style.display="none";
-      document.getElementById("login").style.display="block";
+      // Ocultar panel y chat
+      document.getElementById("panel").style.display = "none";
+      document.getElementById("login").style.display = "block";
+      document.getElementById("chatFab").style.display  = "none";
+      document.getElementById("chatDock").style.display = "none";
     };
 
-    // ------ Utilidades ------
+    // Si el usuario quedó logueado previamente (refresh)
+    (function autoLoginFromStorage(){
+      const u = localStorage.getItem("usuarioActual");
+      const r = localStorage.getItem("rolUsuario");
+      if(u && r){
+        currentUser = u;
+        isAdmin = (r === "admin");
+        document.getElementById("login").style.display = "none";
+        document.getElementById("panel").style.display = "block";
+        const badge = document.getElementById("adminBadge");
+        if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
+        document.getElementById("chatFab").style.display  = "flex";
+        document.getElementById("chatDock").style.display = "flex";
+        initChat();
+        cargarEnvios();
+      }
+    })();
+
+    /* ===========================
+       4) Utilidades
+       =========================== */
     function generarCodigo(){ return `LT-${Math.floor(100000 + Math.random()*900000)}` }
     function nowStr(){ return new Date().toLocaleString() }
 
-    // ------ Guardar Envío + Recibo con código de barras ------
+    /* ===========================
+       5) CRUD + Recibo con barras
+       =========================== */
     window.guardarEnvio = async function(){
       const cliente = document.getElementById("cliente").value.trim();
       const destinatario = document.getElementById("destinatario").value.trim();
       const destino = document.getElementById("destino").value.trim();
       const estado = document.getElementById("estado").value.trim();
       const ubicacion = document.getElementById("ubicacion").value.trim();
+
       if(!cliente || !destinatario || !destino || !estado || !ubicacion){
         alert("Completa todos los campos."); return;
       }
       const codigo = generarCodigo();
-      const payload = { codigo, cliente, destinatario, destino, estado, ubicacion, fecha: nowStr(), actualizadoPor: currentUser || "Sistema", registradoPor: currentUser || "Sistema" };
+      const payload = {
+        codigo, cliente, destinatario, destino, estado, ubicacion,
+        fecha: nowStr(), actualizadoPor: currentUser || "Sistema", registradoPor: currentUser || "Sistema"
+      };
       await setDoc(doc(db,"equipaje",codigo), payload);
 
-      // Recibo con código de barras
+      // Recibo
       const reciboDiv = document.getElementById("recibo");
       reciboDiv.innerHTML = `
         <div class="container" style="margin-top:16px;border:1px solid var(--border)">
@@ -325,13 +361,11 @@ window.cerrarSesion = function() {
         </div>`;
       JsBarcode("#codigoBarras", codigo, {format:"CODE128", width:2, height:60, displayValue:true, fontSize:16});
 
-      // Limpia formulario y recarga
-      ["cliente","destinatario","destino","estado","ubicacion"].forEach(id=>document.getElementById(id).value="");
+      ["cliente","destinatario","destino","estado","ubicacion"].forEach(id => document.getElementById(id).value = "");
       await cargarEnvios();
       alert("✅ Envío registrado correctamente.");
     };
 
-    // ------ Cargar / Mostrar envíos ------
     async function cargarEnvios(){
       const q = query(collection(db,"equipaje"), orderBy("fecha","desc"));
       const qs = await getDocs(q);
@@ -340,25 +374,26 @@ window.cerrarSesion = function() {
       mostrarEnvios(registrosEnvios);
       document.getElementById("contador").textContent = `📦 ${registrosEnvios.length} envíos cargados`;
     }
-    function renderFila(data){
-      const editBtn = `<button class="btn" onclick="abrirEdicion('${data.codigo}')" title="Editar">✏️</button>`;
-      const delBtn  = `<button class="btn btn-danger" onclick="eliminarRegistro('${data.codigo}')" title="Eliminar">🗑️</button>`;
-      // Edit: solo Alexs, Delete: todos
-      const acciones = (isAdmin ? editBtn : `<button class="btn" onclick="alert('⚠️ No tienes permiso para realizar esta acción.')" title="Editar">✏️</button>`) + " " + delBtn;
 
+    function renderFila(d){
+      const editBtn = isAdmin
+        ? `<button class="btn" onclick="abrirEdicion('${d.codigo}')" title="Editar">✏️</button>`
+        : `<button class="btn" onclick="alert('⚠️ No tienes permiso para realizar esta acción.')" title="Editar">✏️</button>`;
+      const delBtn  = `<button class="btn btn-danger" onclick="eliminarRegistro('${d.codigo}')" title="Eliminar">🗑️</button>`;
       return `
         <tr>
-          <td>${data.codigo}</td>
-          <td>${data.cliente || "—"}</td>
-          <td>${data.destinatario || "—"}</td>
-          <td>${data.destino || "—"}</td>
-          <td>${data.estado || "—"}</td>
-          <td>${data.ubicacion || "—"}</td>
-          <td>${data.fecha || "—"}</td>
-          <td>${data.actualizadoPor || data.registradoPor || "—"}</td>
-          <td>${acciones}</td>
+          <td>${d.codigo}</td>
+          <td>${d.cliente||"—"}</td>
+          <td>${d.destinatario||"—"}</td>
+          <td>${d.destino||"—"}</td>
+          <td>${d.estado||"—"}</td>
+          <td>${d.ubicacion||"—"}</td>
+          <td>${d.fecha||"—"}</td>
+          <td>${d.actualizadoPor||d.registradoPor||"—"}</td>
+          <td>${editBtn} ${delBtn}</td>
         </tr>`;
     }
+
     function mostrarEnvios(lista){
       const body = document.getElementById("tablaBody");
       body.innerHTML = "";
@@ -367,14 +402,97 @@ window.cerrarSesion = function() {
       document.getElementById("contador").textContent = `📦 ${lista.length} envíos cargados`;
     }
 
-    // ------ Filtro ------
     window.filtrarEnvios = function(){
       const e = document.getElementById("filterEstado").value.toLowerCase();
       const lista = (e==="todos") ? registrosEnvios : registrosEnvios.filter(x => (x.estado||"").toLowerCase()===e);
       mostrarEnvios(lista);
     };
 
-    // ------ Exportar ------
+    window.eliminarRegistro = async function(codigo){
+      if(!confirm(`¿Eliminar el envío ${codigo}?`)) return;
+      await deleteDoc(doc(db,"equipaje",codigo));
+      await cargarEnvios();
+    };
+
+    /* ===========================
+       6) Edición (solo Alexs)
+       =========================== */
+    window.abrirEdicion = async function(codigo){
+      if(!isAdmin){ alert("⚠️ No tienes permiso para realizar esta acción."); return; }
+      const ref = doc(db,"equipaje",codigo);
+      const snap = await getDoc(ref);
+      if(!snap.exists()) return alert("Registro no encontrado.");
+      const d = snap.data();
+      editingDocId = codigo;
+      document.getElementById("editCodigo").value = d.codigo||"";
+      document.getElementById("editCliente").value = d.cliente||"";
+      document.getElementById("editDestinatario").value = d.destinatario||"";
+      document.getElementById("editDestino").value = d.destino||"";
+      document.getElementById("editEstado").value = d.estado||"Recibido en la Oficina";
+      document.getElementById("editUbicacion").value = d.ubicacion||"";
+      document.getElementById("editFecha").value = "";
+      document.getElementById("modalBackdrop").style.display="block";
+    };
+    window.cerrarModal = function(){ document.getElementById("modalBackdrop").style.display="none"; };
+    window.guardarEdicion = async function(){
+      if(!isAdmin){ alert("⚠️ No tienes permiso para realizar esta acción."); return; }
+      const newCode = document.getElementById("editCodigo").value.trim();
+      const obj = {
+        codigo:newCode,
+        cliente:document.getElementById("editCliente").value.trim(),
+        destinatario:document.getElementById("editDestinatario").value.trim(),
+        destino:document.getElementById("editDestino").value.trim(),
+        estado:document.getElementById("editEstado").value,
+        ubicacion:document.getElementById("editUbicacion").value.trim(),
+        fecha: (document.getElementById("editFecha").value.trim() || nowStr()),
+        actualizadoPor: currentUser || "Alexs"
+      };
+      if(newCode !== editingDocId){
+        await setDoc(doc(db,"equipaje",newCode), obj);
+        await deleteDoc(doc(db,"equipaje",editingDocId));
+      }else{
+        await updateDoc(doc(db,"equipaje",editingDocId), obj);
+      }
+      cerrarModal();
+      await cargarEnvios();
+    };
+
+    /* ===========================
+       7) Escáner de estado
+       =========================== */
+    const scanInput = document.getElementById("scanInput");
+    scanInput.addEventListener("change", ()=>{
+      codigoActual = scanInput.value.trim();
+      if(!codigoActual) return;
+      document.getElementById("actualizarForm").style.display = "block";
+      scanInput.value="";
+    });
+
+    window.confirmarActualizacion = async function(){
+      const nuevoEstado = document.getElementById("nuevoEstado").value;
+      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
+      if(!codigoActual) return alert("Escanee un código primero.");
+      if(!nuevoEstado) return alert("Selecciona un estado.");
+
+      const ref = doc(db,"equipaje",codigoActual);
+      const exists = await getDoc(ref);
+      if(!exists.exists()) return alert("Código no encontrado.");
+
+      await updateDoc(ref, {
+        estado:nuevoEstado,
+        ubicacion:(nuevaUbicacion||"Sin cambios"),
+        fecha:nowStr(),
+        actualizadoPor:currentUser||"Sistema"
+      });
+      document.getElementById("actualizarForm").style.display="none";
+      const msg = document.getElementById("mensajeConfirmacion");
+      msg.style.display="block"; setTimeout(()=>msg.style.display="none", 3200);
+      cargarEnvios();
+    };
+
+    /* ===========================
+       8) Exportar / Imprimir
+       =========================== */
     window.exportarExcel = function(){
       if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
       const hoja = XLSX.utils.json_to_sheet(registrosFiltrados);
@@ -383,6 +501,7 @@ window.cerrarSesion = function() {
       const fecha = new Date().toISOString().split("T")[0];
       XLSX.writeFile(libro, `LunaTrack_filtrado_${fecha}.xlsx`);
     };
+
     window.exportarPDF = function(){
       if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
       const { jsPDF } = window.jspdf;
@@ -393,6 +512,7 @@ window.cerrarSesion = function() {
       const fecha = new Date().toISOString().split("T")[0];
       docPDF.save(`LunaTrack_filtrado_${fecha}.pdf`);
     };
+
     window.imprimirFiltrado = function(){
       if(registrosFiltrados.length===0) return alert("No hay registros para imprimir.");
       let w = window.open("", "PRINT", "height=650,width=900,top=100,left=150");
@@ -410,84 +530,9 @@ window.cerrarSesion = function() {
       w.document.close(); w.focus(); w.print(); w.close();
     };
 
-    // ------ Escáner actualización ------
-    const scanInput = document.getElementById("scanInput");
-    scanInput.addEventListener("change", ()=>{
-      codigoActual = scanInput.value.trim();
-      if(!codigoActual) return;
-      document.getElementById("actualizarForm").style.display = "block";
-      scanInput.value="";
-    });
-    window.confirmarActualizacion = async function(){
-      const nuevoEstado = document.getElementById("nuevoEstado").value;
-      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
-      if(!codigoActual) return alert("Escanee un código primero.");
-      if(!nuevoEstado) return alert("Selecciona un estado.");
-      const ref = doc(db,"equipaje",codigoActual);
-      const exists = await getDoc(ref);
-      if(!exists.exists()) return alert("Código no encontrado.");
-      await updateDoc(ref, {estado:nuevoEstado, ubicacion:(nuevaUbicacion||"Sin cambios"), fecha:nowStr(), actualizadoPor:currentUser||"Sistema"});
-      document.getElementById("actualizarForm").style.display="none";
-      mostrarMensaje();
-      cargarEnvios();
-    };
-    function mostrarMensaje(){
-      const msg = document.getElementById("mensajeConfirmacion");
-      msg.style.display="block"; setTimeout(()=>msg.style.display="none", 3200);
-    }
-
-    // ------ Eliminar registro (todos pueden) ------
-    window.eliminarRegistro = async function(codigo){
-      if(!confirm(`¿Eliminar el envío ${codigo}?`)) return;
-      await deleteDoc(doc(db,"equipaje",codigo));
-      await cargarEnvios();
-    };
-
-    // ------ Modal de edición (solo Alexs) ------
-    window.abrirEdicion = async function(codigo){
-      if(!isAdmin){ alert("⚠️ No tienes permiso para realizar esta acción."); return; }
-      const ref = doc(db,"equipaje",codigo);
-      const snap = await getDoc(ref);
-      if(!snap.exists()) return alert("Registro no encontrado.");
-      const d = snap.data();
-      editingDocId = codigo;
-      document.getElementById("editCodigo").value = d.codigo||"";
-      document.getElementById("editCliente").value = d.cliente||"";
-      document.getElementById("editDestinatario").value = d.destinatario||"";
-      document.getElementById("editDestino").value = d.destino||"";
-      document.getElementById("editEstado").value = d.estado||"Recibido en la Oficina";
-      document.getElementById("editUbicacion").value = d.ubicacion||"";
-      document.getElementById("editFecha").value = "";
-      document.getElementById("modalBackdrop").style.display="block";
-    };
-    window.cerrarModal = function(){
-      document.getElementById("modalBackdrop").style.display="none";
-    };
-    window.guardarEdicion = async function(){
-      if(!isAdmin){ alert("⚠️ No tienes permiso para realizar esta acción."); return; }
-      const newCode = document.getElementById("editCodigo").value.trim();
-      const obj = {
-        codigo:newCode,
-        cliente:document.getElementById("editCliente").value.trim(),
-        destinatario:document.getElementById("editDestinatario").value.trim(),
-        destino:document.getElementById("editDestino").value.trim(),
-        estado:document.getElementById("editEstado").value,
-        ubicacion:document.getElementById("editUbicacion").value.trim(),
-        fecha: (document.getElementById("editFecha").value.trim() || nowStr()),
-        actualizadoPor: currentUser || "Alexs"
-      };
-      // si cambió el código (doc id), crear nuevo doc y borrar el anterior
-      if(newCode !== editingDocId){
-        await setDoc(doc(db,"equipaje",newCode), obj);
-        await deleteDoc(doc(db,"equipaje",editingDocId));
-      }else{
-        await updateDoc(doc(db,"equipaje",editingDocId), obj);
-      }
-      cerrarModal();
-      await cargarEnvios();
-    };
-
-    // ------ Chat del Equipo ------
+    /* ===========================
+       9) Chat del Equipo (dock)
+       =========================== */
     let chatUnseen = 0;
     let chatOpen = false;
     let lastSeenTs = Date.now();
@@ -498,209 +543,57 @@ window.cerrarSesion = function() {
     const chatMsgs  = document.getElementById("chatMessages");
     const chatText  = document.getElementById("chatText");
 
+    const notifSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c5f0b7edc.mp3?filename=notification-3-156508.mp3");
+
     chatFab.addEventListener("click", toggleChat);
     window.toggleChat = function(){
       chatOpen = !chatOpen;
       chatDock.classList.toggle("open", chatOpen);
-      if(chatOpen){ chatUnseen = 0; chatBadge.style.display="none"; lastSeenTs = Date.now(); scrollChatBottom(); }
+      if(chatOpen){
+        chatUnseen = 0;
+        chatBadge.style.display="none";
+        lastSeenTs = Date.now();
+        scrollChatBottom();
+      }
     };
     function scrollChatBottom(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }
 
     async function initChat(){
-      // Limpieza mensajes >24h
+      // Limpieza >24h
       const cutoff = Date.now() - (24*60*60*1000);
       const qOld = query(collection(db,"chatInterno"), where("createdAt","<", cutoff));
       const snapOld = await getDocs(qOld);
       for(const d of snapOld.docs){ await deleteDoc(d.ref); }
 
-      // Suscripción en tiempo real
+      // Realtime
       const qChat = query(collection(db,"chatInterno"), orderBy("createdAt","asc"));
       onSnapshot(qChat, (snap)=>{
         chatMsgs.innerHTML = "";
+        let lastMsg = null;
         snap.forEach(docSnap=>{
           const m = docSnap.data();
+          lastMsg = m;
           const mine = (m.user===currentUser);
           const div = document.createElement("div");
           div.className = `msg ${mine? 'mine':'theirs'}`;
           div.innerHTML = `<div>${m.text||""}</div><div class="meta">${m.user||"?"} • ${new Date(m.createdAt||Date.now()).toLocaleTimeString()}</div>`;
           chatMsgs.appendChild(div);
-          // indicador si está cerrado y llegan nuevos
-          if(!chatOpen && (m.createdAt || 0) > lastSeenTs){ chatUnseen++; chatBadge.style.display="block"; }
+          if(!chatOpen && (m.createdAt || 0) > lastSeenTs && m.user !== currentUser){
+            chatUnseen++; chatBadge.style.display="block";
+            try{ notifSound.currentTime = 0; notifSound.play(); }catch(e){}
+          }
         });
         if(chatOpen) scrollChatBottom();
       });
     }
+
     window.enviarMensaje = async function(){
       const t = chatText.value.trim();
       if(!t) return;
-      await addDoc(collection(db,"chatInterno"), { user: currentUser||"Usuario", text:t, createdAt: Date.now() });
+      await addDoc(collection(db,"chatInterno"), { user: currentUser||"Invitado", text:t, createdAt: Date.now() });
       chatText.value=""; scrollChatBottom();
     };
   </script>
-<!-- 🔹 CHAT INTERNO DEL EQUIPO - LUNA TRAVEL (versión completa con notificación visual + sonido) -->
-        
-  // --- CONFIGURACIÓN FIREBASE ---
-  const firebaseConfig = {
-    apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-    authDomain: "lunatrack-95199.firebaseapp.com",
-    projectId: "lunatrack-95199",
-    storageBucket: "lunatrack-95199.firebasestorage.app",
-    messagingSenderId: "82970120947",
-    appId: "1:82970120947:web:2d7b70d052816802c05d86",
-    measurementId: "G-QCYKV5DXKD"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // --- VARIABLES ---
-  const currentUser = localStorage.getItem("usuarioActual") || "Invitado";
-  const chatRef = collection(db, "chatInterno");
-  let chatVisible = false;
-
-  // --- AUDIO DE NOTIFICACIÓN ---
-  const notifSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c5f0b7edc.mp3?filename=notification-3-156508.mp3");
-
-  // --- BOTÓN FLOTANTE ---
-  const chatBtn = document.createElement("button");
-  chatBtn.innerHTML = "💬 Chat del Equipo";
-  chatBtn.style.cssText = `
-    position: fixed; bottom: 20px; right: 20px; 
-    background: #143c8c; color: white; font-family: Inter, sans-serif;
-    border: none; border-radius: 40px; padding: 12px 18px; 
-    font-weight: 500; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 9999; transition: 0.3s;
-  `;
-  document.body.appendChild(chatBtn);
-
-  // --- CAJA DE CHAT ---
-  const chatBox = document.createElement("div");
-  chatBox.style.cssText = `
-    position: fixed; bottom: 80px; right: 20px; width: 320px; height: 400px;
-    background: rgba(255,255,255,0.97); backdrop-filter: blur(6px);
-    border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.25);
-    font-family: Inter, sans-serif; display: none; flex-direction: column;
-    overflow: hidden; z-index: 9998;
-  `;
-  chatBox.innerHTML = `
-    <div style="background:#143c8c; color:white; padding:10px; font-weight:600; text-align:center;">
-      Chat del Equipo Luna Travel 🚀
-      <div id="onlineStatus" style="font-size:11px; color:#d3e3ff; margin-top:2px;"></div>
-    </div>
-    <div id="chatMsgs" style="flex:1; padding:10px; overflow-y:auto; font-size:13px;"></div>
-    <div style="padding:8px; background:#f1f3f6;">
-      <input id="chatInput" type="text" placeholder="Escribe un mensaje..." 
-        style="width:75%; padding:6px; border-radius:6px; border:1px solid #ccc; font-family:Inter;">
-      <button id="chatSend" 
-        style="width:20%; padding:6px; background:#143c8c; color:white; border:none; border-radius:6px; cursor:pointer;">
-        Enviar
-      </button>
-    </div>
-  `;
-  document.body.appendChild(chatBox);
-
-  // --- POP-UP DE NUEVO MENSAJE ---
-  const popup = document.createElement("div");
-  popup.style.cssText = `
-    position: fixed; bottom: 90px; right: 25px; background: white;
-    border-radius: 10px; padding: 10px 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    font-family: Inter, sans-serif; font-size: 13px; color: #143c8c;
-    display: none; z-index: 9999;
-  `;
-  document.body.appendChild(popup);
-
-  function showPopup(user, text) {
-    popup.innerHTML = `💬 <b>${user}</b>: ${text}`;
-    popup.style.display = "block";
-    setTimeout(() => popup.style.display = "none", 4000);
-  }
-
-  // --- FUNCIONES ---
-  chatBtn.onclick = () => {
-    chatVisible = !chatVisible;
-    chatBox.style.display = chatVisible ? "flex" : "none";
-    if (chatVisible) {
-      chatBtn.style.animation = "none";
-      chatBtn.style.background = "#143c8c";
-    }
-  };
-
-  // Estado del usuario
-  const onlineStatus = document.getElementById("onlineStatus");
-  onlineStatus.textContent = `🟢 ${currentUser} en línea`;
-
-  // Escuchar mensajes
-  const msgsDiv = chatBox.querySelector("#chatMsgs");
-  const q = query(chatRef, orderBy("createdAt", "asc"));
-  onSnapshot(q, (snapshot) => {
-    msgsDiv.innerHTML = "";
-    let lastMsg;
-    snapshot.forEach((docSnap) => {
-      const msg = docSnap.data();
-      lastMsg = msg;
-      const isMine = msg.user === currentUser;
-      const div = document.createElement("div");
-      div.style.margin = "6px 0";
-      div.style.textAlign = isMine ? "right" : "left";
-      div.innerHTML = `
-        <div style="
-          display:inline-block; padding:6px 10px; border-radius:8px; 
-          background:${isMine ? '#143c8c' : '#e9eef7'}; 
-          color:${isMine ? 'white' : '#000'};
-          max-width:80%; word-wrap:break-word;
-        ">
-          <b style="font-size:11px;">${msg.user}</b><br>${msg.text}
-        </div>
-        <div style="font-size:10px; color:#888;">${new Date(msg.createdAt).toLocaleTimeString()}</div>
-      `;
-      msgsDiv.appendChild(div);
-    });
-    msgsDiv.scrollTop = msgsDiv.scrollHeight;
-
-    // --- Notificación ---
-    if (lastMsg && lastMsg.user !== currentUser && !chatVisible) {
-      notifSound.play();
-      chatBtn.style.animation = "pulse 1.2s infinite";
-      showPopup(lastMsg.user, lastMsg.text);
-    }
-  });
-
-  // Enviar mensaje
-  document.getElementById("chatSend").onclick = async () => {
-    const input = document.getElementById("chatInput");
-    const text = input.value.trim();
-    if (!text) return;
-    await addDoc(chatRef, {
-      user: currentUser,
-      text: text,
-      createdAt: Date.now()
-    });
-    input.value = "";
-  };
-
-  // Borrar mensajes viejos (24h)
-  async function limpiarMensajesViejos() {
-    const cutoff = Date.now() - 24*60*60*1000;
-    const qOld = query(chatRef, where("createdAt", "<", cutoff));
-    const oldSnap = await getDocs(qOld);
-    for (const d of oldSnap.docs) {
-      await deleteDoc(d.ref);
-    }
-  }
-  limpiarMensajesViejos();
-
-  // --- EFECTOS CSS ---
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(20, 60, 140, 0.6); }
-      70% { box-shadow: 0 0 0 10px rgba(20, 60, 140, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(20, 60, 140, 0); }
-    }
-  `;
-  document.head.appendChild(style);
-</script>
-
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
