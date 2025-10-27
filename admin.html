@@ -508,6 +508,24 @@
   </script>
 <!-- 🚀 Bloque de prueba del chat interno -->
 <script type="module">
+  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+// Configuración de Firebase (usa la misma que tu archivo principal)
+const firebaseConfig = {
+  apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+  authDomain: "lunatrack-95199.firebaseapp.com",
+  projectId: "lunatrack-95199",
+  storageBucket: "lunatrack-95199.firebasestorage.app",
+  messagingSenderId: "82970120947",
+  appId: "1:82970120947:web:2d7b70d052816802c05d86",
+  measurementId: "G-QCYKV5DXKD"
+};
+
+// 🔹 Inicializa Firebase y Firestore
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 import { addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where } 
 from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
