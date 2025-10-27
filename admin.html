@@ -236,6 +236,7 @@
 let currentUser = null;
 let isAdmin = false;
 
+// ----- Login y permisos -----
 window.login = function() {
   const u = document.getElementById("usuario").value.trim();
   const p = document.getElementById("pin").value.trim();
@@ -249,25 +250,25 @@ window.login = function() {
   };
 
   if (valid[u] && valid[u] === p) {
-    // Guardar usuario actual en localStorage para el chat interno
+    // Guardar usuario para chat y permisos
     localStorage.setItem("usuarioActual", u);
     localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
 
     currentUser = u;
     isAdmin = (u === "Alexs");
 
-    // Mostrar panel y ocultar login
+    // Ocultar login, mostrar panel
     document.getElementById("login").style.display = "none";
     document.getElementById("panel").style.display = "block";
     document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
 
-    // Cargar envíos y chat
     cargarEnvios();
-    initChat(); // 🔹 Inicializa el chat con el nombre del usuario correcto
+    initChat(); // ✅ Inicializa el chat con el usuario correcto
   } else {
     document.getElementById("loginError").style.display = "block";
   }
 };
+
 
 window.cerrarSesion = function() {
   // 🔹 Limpia sesión y chat
