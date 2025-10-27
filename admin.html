@@ -565,11 +565,15 @@ async function testChatRealtime() {
     const input = document.getElementById("testChatInput");
     const texto = input.value.trim();
     if (!texto) return;
-    await addDoc(mensajesRef, {
-      user: "Administrador",
-      text: texto,
-      createdAt: Date.now()
-    });
+// Determinar usuario actual desde el login
+const currentUser = localStorage.getItem("usuarioActual") || "Invitado";
+
+await addDoc(mensajesRef, {
+  user: currentUser,
+  text: texto,
+  createdAt: Date.now()
+});
+    
     input.value = "";
   };
 
