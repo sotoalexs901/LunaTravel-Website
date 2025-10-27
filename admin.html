@@ -230,13 +230,6 @@
     let currentUser = "";
     let isAdmin = false;
     let editingDocId = "";  // docId actual (igual al código)
-
-    // ------ Login & permisos ------
-// ----- Login y permisos -----
-let currentUser = null;
-let isAdmin = false;
-
-// ----- Login y permisos -----
 <!-- 🔹 Variables globales y login corregido -->
 <script>
   // --- Variables globales ---
@@ -281,8 +274,6 @@ let isAdmin = false;
     }
   };
 </script>
-
-
 
 window.cerrarSesion = function() {
   // 🔹 Limpia sesión y chat
@@ -547,12 +538,7 @@ window.cerrarSesion = function() {
     };
   </script>
 <!-- 🔹 CHAT INTERNO DEL EQUIPO - LUNA TRAVEL (versión completa con notificación visual + sonido) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { 
-    getFirestore, addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where 
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
+        
   // --- CONFIGURACIÓN FIREBASE ---
   const firebaseConfig = {
     apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
