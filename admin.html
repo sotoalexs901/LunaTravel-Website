@@ -237,37 +237,51 @@ let currentUser = null;
 let isAdmin = false;
 
 // ----- Login y permisos -----
-window.login = function() {
-  const u = document.getElementById("usuario").value.trim();
-  const p = document.getElementById("pin").value.trim();
+<!-- 🔹 Variables globales y login corregido -->
+<script>
+  // --- Variables globales ---
+  window.currentUser = null;
+  window.isAdmin = false;
 
-  const valid = {
-    "Alexs": "2036",
-    "Mela": "2006",
-    "Amisaday": "1994",
-    "Juan": "5304",
-    "Ana": "0503"
+  // --- Login y permisos ---
+  window.login = function() {
+    const u = document.getElementById("usuario").value.trim();
+    const p = document.getElementById("pin").value.trim();
+
+    const valid = {
+      "Alexs": "2036",
+      "Mela": "2006",
+      "Amisaday": "1994",
+      "Juan": "5304",
+      "Ana": "0503"
+    };
+
+    if (valid[u] && valid[u] === p) {
+      // Guardar usuario actual para el chat
+      localStorage.setItem("usuarioActual", u);
+      localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
+
+      window.currentUser = u;
+      window.isAdmin = (u === "Alexs");
+
+      // Mostrar panel, ocultar login
+      document.getElementById("login").style.display = "none";
+      document.getElementById("panel").style.display = "block";
+
+      // Mostrar insignia solo si es admin
+      const badge = document.getElementById("adminBadge");
+      if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
+
+      // Iniciar chat y carga
+      if (typeof initChat === "function") initChat();
+      if (typeof cargarEnvios === "function") cargarEnvios();
+
+    } else {
+      document.getElementById("loginError").style.display = "block";
+    }
   };
+</script>
 
-  if (valid[u] && valid[u] === p) {
-    // Guardar usuario para chat y permisos
-    localStorage.setItem("usuarioActual", u);
-    localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
-
-    currentUser = u;
-    isAdmin = (u === "Alexs");
-
-    // Ocultar login, mostrar panel
-    document.getElementById("login").style.display = "none";
-    document.getElementById("panel").style.display = "block";
-    document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
-
-    cargarEnvios();
-    initChat(); // ✅ Inicializa el chat con el usuario correcto
-  } else {
-    document.getElementById("loginError").style.display = "block";
-  }
-};
 
 
 window.cerrarSesion = function() {
