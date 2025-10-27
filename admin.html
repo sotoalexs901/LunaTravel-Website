@@ -506,6 +506,66 @@
       chatText.value=""; scrollChatBottom();
     };
   </script>
+// === 🔧 BLOQUE DE PRUEBA DEL CHAT INTERNO ===
+
+// Crea la colección si no existe y escucha mensajes en tiempo real
+import {
+  addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+async function testChatRealtime() {
+  const chatBox = document.createElement("div");
+  chatBox.style.cssText = `
+    position:fixed;bottom:10px;right:10px;width:300px;
+    background:white;border:1px solid #ccc;padding:10px;
+    border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.1);
+    font-family:Inter, sans-serif;z-index:9999
+  `;
+  chatBox.innerHTML = `
+    <h4 style="margin:0 0 6px;color:#143c8c;">💬 Chat del Equipo (Prueba)</h4>
+    <div id="testChatMsgs" style="height:160px;overflow:auto;border:1px solid #eee;padding:4px;margin-bottom:6px;font-size:13px;"></div>
+    <input id="testChatInput" placeholder="Escribe un mensaje..." style="width:80%;padding:4px;">
+    <button id="testChatSend" style="padding:4px 8px;background:#143c8c;color:white;border:none;border-radius:4px;cursor:pointer;">Enviar</button>
+  `;
+  document.body.appendChild(chatBox);
+
+  const mensajesRef = collection(db, "chatInterno");
+  const q = query(mensajesRef, orderBy("createdAt", "asc"));
+
+  // Escucha en tiempo real
+  onSnapshot(q, (snap) => {
+    const cont = document.getElementById("testChatMsgs");
+    cont.innerHTML = "";
+    snap.forEach((docSnap) => {
+      const msg = docSnap.data();
+      const fecha = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : "";
+      cont.innerHTML += `<div><strong>${msg.user || "?"}</strong>: ${msg.text || ""} <small style="color:#888">(${fecha})</small></div>`;
+    });
+    cont.scrollTop = cont.scrollHeight;
+  });
+
+  // Enviar mensaje
+  document.getElementById("testChatSend").onclick = async () => {
+    const input = document.getElementById("testChatInput");
+    const texto = input.value.trim();
+    if (!texto) return;
+    await addDoc(mensajesRef, {
+      user: currentUser || "Usuario",
+      text: texto,
+      createdAt: Date.now()
+    });
+    input.value = "";
+  };
+
+  // Limpieza automática de mensajes >24h
+  const cutoff = Date.now() - (24 * 60 * 60 * 1000);
+  const oldMsgs = await getDocs(query(mensajesRef, where("createdAt", "<", cutoff)));
+  for (const docSnap of oldMsgs.docs) {
+    await deleteDoc(docSnap.ref);
+  }
+}
+
+testChatRealtime();
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
