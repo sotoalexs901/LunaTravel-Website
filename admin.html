@@ -506,87 +506,175 @@
       chatText.value=""; scrollChatBottom();
     };
   </script>
-<!-- 🚀 Bloque de prueba del chat interno -->
+<!-- 🔹 CHAT INTERNO DEL EQUIPO - LUNA TRAVEL (versión completa con notificación visual + sonido) -->
 <script type="module">
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { 
+    getFirestore, addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where 
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-// Configuración de Firebase (usa la misma que tu archivo principal)
-const firebaseConfig = {
-  apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-  authDomain: "lunatrack-95199.firebaseapp.com",
-  projectId: "lunatrack-95199",
-  storageBucket: "lunatrack-95199.firebasestorage.app",
-  messagingSenderId: "82970120947",
-  appId: "1:82970120947:web:2d7b70d052816802c05d86",
-  measurementId: "G-QCYKV5DXKD"
-};
+  // --- CONFIGURACIÓN FIREBASE ---
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+    authDomain: "lunatrack-95199.firebaseapp.com",
+    projectId: "lunatrack-95199",
+    storageBucket: "lunatrack-95199.firebasestorage.app",
+    messagingSenderId: "82970120947",
+    appId: "1:82970120947:web:2d7b70d052816802c05d86",
+    measurementId: "G-QCYKV5DXKD"
+  };
 
-// 🔹 Inicializa Firebase y Firestore
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
-import { addDoc, collection, query, orderBy, onSnapshot, deleteDoc, getDocs, where } 
-from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  // --- VARIABLES ---
+  const currentUser = localStorage.getItem("usuarioActual") || "Invitado";
+  const chatRef = collection(db, "chatInterno");
+  let chatVisible = false;
 
-async function testChatRealtime() {
+  // --- AUDIO DE NOTIFICACIÓN ---
+  const notifSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c5f0b7edc.mp3?filename=notification-3-156508.mp3");
+
+  // --- BOTÓN FLOTANTE ---
+  const chatBtn = document.createElement("button");
+  chatBtn.innerHTML = "💬 Chat del Equipo";
+  chatBtn.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px; 
+    background: #143c8c; color: white; font-family: Inter, sans-serif;
+    border: none; border-radius: 40px; padding: 12px 18px; 
+    font-weight: 500; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 9999; transition: 0.3s;
+  `;
+  document.body.appendChild(chatBtn);
+
+  // --- CAJA DE CHAT ---
   const chatBox = document.createElement("div");
   chatBox.style.cssText = `
-    position:fixed;bottom:10px;right:10px;width:300px;
-    background:white;border:1px solid #ccc;padding:10px;
-    border-radius:8px;box-shadow:0 4px 10px rgba(0,0,0,.1);
-    font-family:Inter, sans-serif;z-index:9999;
+    position: fixed; bottom: 80px; right: 20px; width: 320px; height: 400px;
+    background: rgba(255,255,255,0.97); backdrop-filter: blur(6px);
+    border-radius: 14px; box-shadow: 0 6px 15px rgba(0,0,0,0.25);
+    font-family: Inter, sans-serif; display: none; flex-direction: column;
+    overflow: hidden; z-index: 9998;
   `;
   chatBox.innerHTML = `
-    <h4 style="margin:0 0 6px;color:#143c8c;">💬 Chat del Equipo (Prueba)</h4>
-    <div id="testChatMsgs" style="height:160px;overflow:auto;border:1px solid #eee;padding:4px;margin-bottom:6px;font-size:13px;"></div>
-    <input id="testChatInput" placeholder="Escribe un mensaje..." style="width:80%;padding:4px;">
-    <button id="testChatSend" style="padding:4px 8px;background:#143c8c;color:white;border:none;border-radius:4px;cursor:pointer;">Enviar</button>
+    <div style="background:#143c8c; color:white; padding:10px; font-weight:600; text-align:center;">
+      Chat del Equipo Luna Travel 🚀
+      <div id="onlineStatus" style="font-size:11px; color:#d3e3ff; margin-top:2px;"></div>
+    </div>
+    <div id="chatMsgs" style="flex:1; padding:10px; overflow-y:auto; font-size:13px;"></div>
+    <div style="padding:8px; background:#f1f3f6;">
+      <input id="chatInput" type="text" placeholder="Escribe un mensaje..." 
+        style="width:75%; padding:6px; border-radius:6px; border:1px solid #ccc; font-family:Inter;">
+      <button id="chatSend" 
+        style="width:20%; padding:6px; background:#143c8c; color:white; border:none; border-radius:6px; cursor:pointer;">
+        Enviar
+      </button>
+    </div>
   `;
   document.body.appendChild(chatBox);
 
-  const mensajesRef = collection(db, "chatInterno");
-  const q = query(mensajesRef, orderBy("createdAt", "asc"));
+  // --- POP-UP DE NUEVO MENSAJE ---
+  const popup = document.createElement("div");
+  popup.style.cssText = `
+    position: fixed; bottom: 90px; right: 25px; background: white;
+    border-radius: 10px; padding: 10px 14px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    font-family: Inter, sans-serif; font-size: 13px; color: #143c8c;
+    display: none; z-index: 9999;
+  `;
+  document.body.appendChild(popup);
 
-  // Escucha en tiempo real
-  onSnapshot(q, (snap) => {
-    const cont = document.getElementById("testChatMsgs");
-    cont.innerHTML = "";
-    snap.forEach((docSnap) => {
+  function showPopup(user, text) {
+    popup.innerHTML = `💬 <b>${user}</b>: ${text}`;
+    popup.style.display = "block";
+    setTimeout(() => popup.style.display = "none", 4000);
+  }
+
+  // --- FUNCIONES ---
+  chatBtn.onclick = () => {
+    chatVisible = !chatVisible;
+    chatBox.style.display = chatVisible ? "flex" : "none";
+    if (chatVisible) {
+      chatBtn.style.animation = "none";
+      chatBtn.style.background = "#143c8c";
+    }
+  };
+
+  // Estado del usuario
+  const onlineStatus = document.getElementById("onlineStatus");
+  onlineStatus.textContent = `🟢 ${currentUser} en línea`;
+
+  // Escuchar mensajes
+  const msgsDiv = chatBox.querySelector("#chatMsgs");
+  const q = query(chatRef, orderBy("createdAt", "asc"));
+  onSnapshot(q, (snapshot) => {
+    msgsDiv.innerHTML = "";
+    let lastMsg;
+    snapshot.forEach((docSnap) => {
       const msg = docSnap.data();
-      const fecha = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString() : "";
-      cont.innerHTML += `<div><strong>${msg.user || "?"}</strong>: ${msg.text || ""} <small style="color:#888">(${fecha})</small></div>`;
+      lastMsg = msg;
+      const isMine = msg.user === currentUser;
+      const div = document.createElement("div");
+      div.style.margin = "6px 0";
+      div.style.textAlign = isMine ? "right" : "left";
+      div.innerHTML = `
+        <div style="
+          display:inline-block; padding:6px 10px; border-radius:8px; 
+          background:${isMine ? '#143c8c' : '#e9eef7'}; 
+          color:${isMine ? 'white' : '#000'};
+          max-width:80%; word-wrap:break-word;
+        ">
+          <b style="font-size:11px;">${msg.user}</b><br>${msg.text}
+        </div>
+        <div style="font-size:10px; color:#888;">${new Date(msg.createdAt).toLocaleTimeString()}</div>
+      `;
+      msgsDiv.appendChild(div);
     });
-    cont.scrollTop = cont.scrollHeight;
+    msgsDiv.scrollTop = msgsDiv.scrollHeight;
+
+    // --- Notificación ---
+    if (lastMsg && lastMsg.user !== currentUser && !chatVisible) {
+      notifSound.play();
+      chatBtn.style.animation = "pulse 1.2s infinite";
+      showPopup(lastMsg.user, lastMsg.text);
+    }
   });
 
   // Enviar mensaje
-  document.getElementById("testChatSend").onclick = async () => {
-    const input = document.getElementById("testChatInput");
-    const texto = input.value.trim();
-    if (!texto) return;
-// Determinar usuario actual desde el login
-const currentUser = localStorage.getItem("usuarioActual") || "Invitado";
-
-await addDoc(mensajesRef, {
-  user: currentUser,
-  text: texto,
-  createdAt: Date.now()
-});
-    
+  document.getElementById("chatSend").onclick = async () => {
+    const input = document.getElementById("chatInput");
+    const text = input.value.trim();
+    if (!text) return;
+    await addDoc(chatRef, {
+      user: currentUser,
+      text: text,
+      createdAt: Date.now()
+    });
     input.value = "";
   };
 
-  // Limpieza automática de mensajes >24h
-  const cutoff = Date.now() - (24 * 60 * 60 * 1000);
-  const oldMsgs = await getDocs(query(mensajesRef, where("createdAt", "<", cutoff)));
-  for (const docSnap of oldMsgs.docs) {
-    await deleteDoc(docSnap.ref);
+  // Borrar mensajes viejos (24h)
+  async function limpiarMensajesViejos() {
+    const cutoff = Date.now() - 24*60*60*1000;
+    const qOld = query(chatRef, where("createdAt", "<", cutoff));
+    const oldSnap = await getDocs(qOld);
+    for (const d of oldSnap.docs) {
+      await deleteDoc(d.ref);
+    }
   }
-}
+  limpiarMensajesViejos();
 
-testChatRealtime();
+  // --- EFECTOS CSS ---
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(20, 60, 140, 0.6); }
+      70% { box-shadow: 0 0 0 10px rgba(20, 60, 140, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(20, 60, 140, 0); }
+    }
+  `;
+  document.head.appendChild(style);
 </script>
+
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
