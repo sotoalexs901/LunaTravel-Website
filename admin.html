@@ -233,28 +233,49 @@
 
     // ------ Login & permisos ------
     window.login = function(){
-      const u = document.getElementById("usuario").value.trim();
-      const p = document.getElementById("pin").value.trim();
-      const valid = {
-        "Alexs":"2036",
-        "Mela":"2006",
-        "Amisaday":"1994",
-        "Juan":"5304",
-        "Ana":"0503"
-      };
-      if(valid[u] && valid[u]===p){
-        currentUser = u;
-        isAdmin = (u==="Alexs");
-        document.getElementById("login").style.display="none";
-        document.getElementById("panel").style.display="block";
-        document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
-        cargarEnvios();
-        initChat();
-      }else{
-        document.getElementById("loginError").style.display="block";
-      }
-    };
-    window.cerrarSesion = function(){
+  // ------ Login y permisos ------
+window.login = function() {
+  const u = document.getElementById("usuario").value.trim();
+  const p = document.getElementById("pin").value.trim();
+  const valid = {
+    "Alexs": "2036",
+    "Mela": "2006",
+    "Amisaday": "1994",
+    "Juan": "5304",
+    "Ana": "0503"
+  };
+
+  if (valid[u] && valid[u] === p) {
+    // 🔹 Guarda usuario actual en localStorage para el chat interno
+    localStorage.setItem("usuarioActual", u);
+    localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
+
+    currentUser = u;
+    isAdmin = (u === "Alexs");
+
+    document.getElementById("login").style.display = "none";
+    document.getElementById("panel").style.display = "block";
+    document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
+
+    cargarEnvios();
+    initChat(); // 🔹 Inicializa el chat con el nombre correcto
+
+  } else {
+    document.getElementById("loginError").style.display = "block";
+  }
+};
+
+window.cerrarSesion = function() {
+  // 🔹 Limpia sesión y chat
+  localStorage.removeItem("usuarioActual");
+  localStorage.removeItem("rolUsuario");
+  currentUser = "";
+  isAdmin = false;
+
+  document.getElementById("panel").style.display = "none";
+  document.getElementById("login").style.display = "block";
+};
+
       currentUser=""; isAdmin=false;
       document.getElementById("panel").style.display="none";
       document.getElementById("login").style.display="block";
