@@ -213,80 +213,62 @@
                          collection, addDoc, getDocs, onSnapshot, query, orderBy, where };
 </script>
 
-    // ---- CONFIG FIREBASE ----
-    const firebaseConfig = {
-      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-      authDomain: "lunatrack-95199.firebaseapp.com",
-      projectId: "lunatrack-95199",
-      storageBucket: "lunatrack-95199.firebasestorage.app",
-      messagingSenderId: "82970120947",
-      appId: "1:82970120947:web:2d7b70d052816802c05d86",
-      measurementId: "G-QCYKV5DXKD"
-    };
-    const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
+<script>
+  // ✅ Importa lo que guardamos desde el módulo anterior
+  const { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
+          collection, addDoc, getDocs, onSnapshot, query, orderBy, where } = window.firebaseLib;
 
-    // ---- Estado global ----
-    let currentUser = "";
-    let isAdmin = false;
-    let registrosEnvios = [];
-    let registrosFiltrados = [];
-    let codigoActual = "";
-    let editingDocId = "";
+  // ---- CONFIG FIREBASE ----
+  const firebaseConfig = {
+    apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+    authDomain: "lunatrack-95199.firebaseapp.com",
+    projectId: "lunatrack-95199",
+    storageBucket: "lunatrack-95199.firebasestorage.app",
+    messagingSenderId: "82970120947",
+    appId: "1:82970120947:web:2d7b70d052816802c05d86",
+    measurementId: "G-QCYKV5DXKD"
+  };
 
-    // ---- Utiles ----
-    const nowStr = () => new Date().toLocaleString();
-    const genCode = () => `LT-${Math.floor(100000 + Math.random()*900000)}`;
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
 
- /* 🔹 LOGIN UNIVERSAL - COMPATIBLE CON MÓVIL Y ESCRITORIO */
-window.currentUser = null;
-window.isAdmin = false;
+  // ---- Variables globales ----
+  window.currentUser = null;
+  window.isAdmin = false;
 
-window.login = async function() {
-  try {
+  // ---- LOGIN ----
+  window.login = function() {
     const u = document.getElementById("usuario").value.trim();
     const p = document.getElementById("pin").value.trim();
+    const valid = { "Alexs":"2036","Mela":"2006","Amisaday":"1994","Juan":"5304","Ana":"0503" };
 
-    // Usuarios y PIN autorizados
-    const validUsers = {
-      "Alexs": "2036",
-      "Mela": "2006",
-      "Amisaday": "1994",
-      "Juan": "5304",
-      "Ana": "0503"
-    };
-
-    // Validar credenciales
-    if (validUsers[u] && validUsers[u] === p) {
-      // Guardar sesión
+    if(valid[u] && valid[u]===p){
       window.currentUser = u;
-      window.isAdmin = (u === "Alexs");
-
-      // Guardar en localStorage (para el chat)
+      window.isAdmin = (u==="Alexs");
       localStorage.setItem("usuarioActual", u);
-      localStorage.setItem("rolUsuario", isAdmin ? "admin" : "operador");
-
-      // Mostrar panel
-      document.getElementById("login").style.display = "none";
-      document.getElementById("panel").style.display = "block";
-
-      // Mostrar insignia si es admin
-      const badge = document.getElementById("adminBadge");
-      if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
-
-      // Inicializar funciones principales
-      if (typeof cargarEnvios === "function") await cargarEnvios();
-      if (typeof initChat === "function") initChat();
-
-      console.log(`✅ Sesión iniciada como ${u} (${isAdmin ? "admin" : "operador"})`);
+      localStorage.setItem("rolUsuario", isAdmin?"admin":"operador");
+      document.getElementById("login").style.display="none";
+      document.getElementById("panel").style.display="block";
+      const badge=document.getElementById("adminBadge");
+      if(badge) badge.style.display=isAdmin?"inline-flex":"none";
+      if(typeof cargarEnvios==="function") cargarEnvios();
+      if(typeof initChat==="function") initChat();
     } else {
-      document.getElementById("loginError").style.display = "block";
-      console.warn("❌ Usuario o PIN incorrectos");
+      document.getElementById("loginError").style.display="block";
     }
-  } catch (err) {
-    console.error("Error durante el login:", err);
-  }
-};
+  };
+
+  // ---- CERRAR SESIÓN ----
+  window.cerrarSesion = function(){
+    localStorage.removeItem("usuarioActual");
+    localStorage.removeItem("rolUsuario");
+    window.currentUser=null;
+    window.isAdmin=false;
+    document.getElementById("panel").style.display="none";
+    document.getElementById("login").style.display="block";
+  };
+</script>
+
 
 /* 🔹 CERRAR SESIÓN */
 window.cerrarSesion = function() {
