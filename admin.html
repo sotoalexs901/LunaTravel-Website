@@ -530,33 +530,30 @@
       w.document.close(); w.focus(); w.print(); w.close();
     };
 
-    /* ===========================
-       9) Chat del Equipo (dock)
-       =========================== */
-<script type="module">
+ <script type="module">
 import { getFirestore, collection, addDoc, getDocs, deleteDoc, query, orderBy, onSnapshot, where }
   from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const db = getFirestore();
 
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   const chatFab = document.getElementById("chatFab");
   const chatDock = document.getElementById("chatDock");
+  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
   const chatBadge = document.getElementById("chatBadge");
   const chatMsgs = document.getElementById("chatMessages");
   const chatText = document.getElementById("chatText");
-  const sendBtn = chatDock?.querySelector("button");
+  const chatSend = document.getElementById("chatSend");
 
   if (!chatFab || !chatDock) {
-    console.warn("⚠️ Elementos de chat no encontrados en el DOM.");
+    console.error("❌ No se encontraron los elementos del chat (chatFab / chatDock).");
     return;
   }
 
-  let chatOpen = false;
   const currentUser = localStorage.getItem("usuarioActual") || "Invitado";
-  const notifSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c5f0b7edc.mp3?filename=notification-3-156508.mp3");
+  let chatOpen = false;
 
-  // 🔹 Mostrar solo si el usuario inició sesión
+  // 🔹 Mostrar solo después de login
   if (currentUser === "Invitado") {
     chatFab.style.display = "none";
     chatDock.style.display = "none";
@@ -567,78 +564,55 @@ window.addEventListener("load", () => {
   }
 
   // 🔹 Abrir / cerrar chat
-  function toggleChat() {
+  const toggleChat = () => {
     chatOpen = !chatOpen;
+    chatDock.classList.toggle("open", chatOpen);
     if (chatOpen) {
-      chatDock.classList.add("open");
       chatBadge.style.display = "none";
-      scrollToBottom();
-    } else {
-      chatDock.classList.remove("open");
+      scrollBottom();
     }
-  }
+  };
 
-  // 🔹 Asociar evento de clic (reparado)
-  chatFab.onclick = toggleChat;
+  chatFab.addEventListener("click", toggleChat);
+  cerrarChatBtn.addEventListener("click", toggleChat);
 
   // 🔹 Enviar mensaje
-  async function enviarMensaje() {
+  const enviarMensaje = async () => {
     const text = chatText.value.trim();
     if (!text) return;
     await addDoc(collection(db, "chatInterno"), {
       user: currentUser,
       text,
-      createdAt: Date.now(),
+      createdAt: Date.now()
     });
     chatText.value = "";
-    scrollToBottom();
-  }
+    scrollBottom();
+  };
 
-  if (sendBtn) sendBtn.addEventListener("click", enviarMensaje);
-  chatText.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") enviarMensaje();
-  });
+  chatSend.addEventListener("click", enviarMensaje);
+  chatText.addEventListener("keypress", (e) => { if (e.key === "Enter") enviarMensaje(); });
 
-  // 🔹 Desplazar al final
-  function scrollToBottom() {
+  const scrollBottom = () => {
     chatMsgs.scrollTop = chatMsgs.scrollHeight;
-  }
+  };
 
-  // 🔹 Limpiar mensajes viejos (>24h)
-  async function limpiarMensajesViejos() {
-    const cutoff = Date.now() - 24 * 60 * 60 * 1000;
-    const qOld = query(collection(db, "chatInterno"), where("createdAt", "<", cutoff));
-    const snapOld = await getDocs(qOld);
-    for (const d of snapOld.docs) await deleteDoc(d.ref);
-  }
-  limpiarMensajesViejos();
-
-  // 🔹 Escuchar chat en tiempo real
+  // 🔹 Escuchar mensajes
   const q = query(collection(db, "chatInterno"), orderBy("createdAt", "asc"));
   onSnapshot(q, (snap) => {
     chatMsgs.innerHTML = "";
-    let lastMsg = null;
     snap.forEach((docSnap) => {
       const m = docSnap.data();
       const mine = m.user === currentUser;
-      const msgDiv = document.createElement("div");
-      msgDiv.className = `msg ${mine ? "mine" : "theirs"}`;
-      msgDiv.innerHTML = `
-        <div>${m.text}</div>
-        <div class="meta">${m.user} • ${new Date(m.createdAt).toLocaleTimeString()}</div>
-      `;
-      chatMsgs.appendChild(msgDiv);
-      lastMsg = m;
+      const msg = document.createElement("div");
+      msg.className = `msg ${mine ? "mine" : "theirs"}`;
+      msg.innerHTML = `<div>${m.text}</div><div class="meta">${m.user}</div>`;
+      chatMsgs.appendChild(msg);
     });
-    scrollToBottom();
-
-    // 🔹 Sonido y notificación visual si hay nuevos mensajes
-    if (lastMsg && lastMsg.user !== currentUser && !chatOpen) {
-      chatBadge.style.display = "block";
-      try { notifSound.play(); } catch (e) {}
-    }
+    scrollBottom();
   });
+});
 </script>
+
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
