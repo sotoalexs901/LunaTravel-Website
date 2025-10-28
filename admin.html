@@ -593,9 +593,25 @@
       await addDoc(collection(db,"chatInterno"), { user: currentUser||"Invitado", text:t, createdAt: Date.now() });
       chatText.value=""; scrollChatBottom();
     };
+    <!-- Chat: botón + panel lateral -->
+<button class="chat-fab" id="chatFab" style="display:none">💬<span class="badge" id="chatBadge" style="display:none"></span></button>
+
+<div class="chat-dock" id="chatDock" style="display:none">
+  <div class="chat-header">
+    <strong>💬 Chat del Equipo</strong>
+    <button class="btn btn-muted" id="cerrarChatBtn" type="button">❌</button>
+  </div>
+  <div class="chat-messages" id="chatMessages"></div>
+  <div class="chat-input">
+    <input type="text" id="chatText" placeholder="Escribe un mensaje..." />
+    <button class="btn" id="chatSend" type="button">Enviar</button>
+  </div>
+</div>
+
   </script>
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  
 </body>
 </html>
