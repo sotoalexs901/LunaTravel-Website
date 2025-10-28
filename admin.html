@@ -6,57 +6,48 @@
   <title>Panel de Registro - Luna Travel</title>
 
   <!-- Fuente -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
-  <!-- Estilos base -->
+  <!-- Librerías utilitarias -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
   <style>
     :root{
-      --primary:#213D7A; --primary-dark:#1a3163; --accent:#143c8c;
-      --bg:#f7f9fc; --muted:#6b7280; --green:#1b5e20; --green-bg:#e6f9e6; --danger:#e74c3c;
-      --card:#fff; --border:#e5e7eb; --shadow:0 4px 10px rgba(0,0,0,0.1);
+      --primary:#143c8c; --primary-dark:#0f2f6b; --danger:#e74c3c;
+      --bg:#f7f9fc; --white:#fff; --border:#e5e7eb;
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
-    body{font-family:'Inter',sans-serif;background:var(--bg);margin:0;color:#111}
-    .container{max-width:980px;margin:32px auto;background:var(--card);padding:28px;border-radius:12px;box-shadow:var(--shadow)}
+    body{font-family:'Inter',sans-serif;background:var(--bg);margin:0;color:#111;text-align:center}
+    .container{max-width:980px;margin:32px auto;background:var(--white);padding:28px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);text-align:left}
     h2{margin:0 0 16px;color:var(--primary)}
     input,select,button{font-family:inherit}
-    input,select{padding:10px;border:1px solid var(--border);border-radius:8px;width:100%}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .btn{background:var(--accent);color:#fff;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
-    .btn:hover{background:var(--primary-dark)}
+    input,select{padding:10px;border:1px solid #ccc;border-radius:8px;width:100%;margin:8px 0}
+    button{background:var(--primary);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+    button:hover{background:var(--primary-dark)}
     .btn-danger{background:var(--danger)}
     .btn-muted{background:#6b7280}
-    .toolbar{display:flex;gap:12px;flex-wrap:wrap;justify-content:space-between;align-items:center;margin:16px 0}
-
-    /* Tabla */
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:14px 0}
     #tablaEnvios{width:100%;border-collapse:collapse;margin-top:12px}
-    #tablaEnvios th,#tablaEnvios td{border:1px solid var(--border);padding:8px;text-align:left}
+    #tablaEnvios th,#tablaEnvios td{border:1px solid #ddd;padding:8px;text-align:left}
     #tablaEnvios th{background:var(--primary);color:#fff}
+    .logout-btn{float:right;background:#555}
+    .logout-btn:hover{background:#333}
     #contador{margin:8px 0 0;font-weight:700;color:var(--primary)}
 
-    /* Login */
-    #login{text-align:center}
-
-    /* Badge admin */
-    .admin-badge{display:none;margin-left:8px;padding:3px 8px;border-radius:999px;background:#10b981;color:#fff;font-size:12px;font-weight:700}
-
-    /* Toast Ok */
-    #mensajeConfirmacion{display:none;margin:15px auto;width:100%;padding:12px;background:var(--green-bg);color:var(--green);font-weight:600;border:1px solid #66bb6a;border-radius:8px;animation:fadeInOut 4s forwards;text-align:center}
-    @keyframes fadeInOut{0%{opacity:0}10%{opacity:1}90%{opacity:1}100%{opacity:0}}
-
-    /* Modal edición */
+    /* Modal edición (solo Alexs) */
     .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:9990}
-    .modal{position:fixed;right:50%;top:50%;transform:translate(50%,-50%);background:#fff;border-radius:12px;box-shadow:var(--shadow);width:min(640px,95vw);padding:16px;z-index:9991}
+    .modal{position:fixed;right:50%;top:50%;transform:translate(50%,-50%);background:#fff;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);width:min(640px,95vw);padding:16px;z-index:9991}
     .modal h3{margin:0 0 10px;color:var(--primary)}
     .modal .grid{grid-template-columns:1fr 1fr}
     .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 
-    /* Chat lateral */
-    .chat-fab{display:none;position:fixed;right:20px;bottom:20px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:var(--shadow);cursor:pointer;z-index:9800;font-size:20px}
-    .chat-fab .badge{position:absolute;top:6px;right:6px;background:#3b82f6;border-radius:50%;width:10px;height:10px;display:none}
-    .chat-dock{display:none;position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 16px rgba(0,0,0,.15);z-index:9900;flex-direction:column;transition:right .25s ease}
+    /* Chat Dock */
+    .chat-fab{position:fixed;right:20px;bottom:20px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:none;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.2);cursor:pointer;z-index:9950;font-size:20px}
+    .chat-dock{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 16px rgba(0,0,0,.15);z-index:9900;display:none;flex-direction:column;transition:right .25s ease}
     .chat-dock.open{right:0}
     .chat-header{background:var(--primary);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
     .chat-messages{flex:1;overflow:auto;padding:12px;background:#f8fafc}
@@ -66,33 +57,28 @@
     .msg .meta{font-size:11px;color:#555;margin-top:2px}
     .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
     .chat-input input{flex:1}
-
-    @media (max-width:720px){.grid{grid-template-columns:1fr}.toolbar{flex-direction:column;align-items:stretch}}
   </style>
-
-  <!-- Librerías de exportación y PDF -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body>
   <!-- LOGIN -->
-  <div id="login" class="container">
+  <div id="login" class="container" style="text-align:center;">
     <h2>Acceso Administrador</h2>
-    <div class="grid" style="max-width:520px;margin:0 auto;">
+    <div class="grid" style="max-width:420px;margin:0 auto;">
       <input type="text" id="usuario" placeholder="Usuario (Alexs / Mela / Amisaday / Juan / Ana)">
       <input type="password" id="pin" placeholder="PIN">
     </div>
-    <button class="btn" onclick="login()">Ingresar</button>
+    <button onclick="login()">Ingresar</button>
     <p id="loginError" style="color:#d32f2f;display:none;margin-top:8px;">Usuario o PIN incorrectos.</p>
   </div>
 
   <!-- PANEL -->
   <div id="panel" class="container" style="display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h2 style="display:flex;align-items:center;gap:8px;">Panel de Registro - Luna Travel <span id="adminBadge" class="admin-badge">🔑 Modo Administrador Activo</span></h2>
-      <button class="btn btn-muted" onclick="cerrarSesion()">Cerrar Sesión</button>
+      <h2 style="display:flex;align-items:center;gap:8px;">Panel de Registro - Luna Travel
+        <span id="adminBadge" style="display:none;padding:4px 10px;border-radius:999px;background:#10b981;color:#fff;font-size:12px;font-weight:700">🔑 Admin</span>
+      </h2>
+      <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
     <!-- Registro -->
@@ -108,10 +94,9 @@
         <option>En Reparto</option>
         <option>Entregado</option>
       </select>
-      <input type="text" id="ubicacion" placeholder="Ubicación">
+      <input type="text" id="ubicacion" placeholder="Ubicación (ej. Oficina, Miami, Panamá...)">
     </div>
-    <button class="btn" onclick="guardarEnvio()">Guardar y generar recibo</button>
-
+    <button onclick="guardarEnvio()">Guardar y generar recibo</button>
     <div id="recibo"></div>
 
     <!-- Filtros / Export -->
@@ -130,7 +115,7 @@
       <div style="display:flex;gap:8px;">
         <button class="btn" onclick="exportarExcel()">📤 Exportar Excel</button>
         <button class="btn" style="background:#c62828" onclick="exportarPDF()">🧾 Exportar PDF</button>
-        <button class="btn btn-muted" onclick="imprimirFiltrado()">🖨️ Imprimir lista filtrada</button>
+        <button class="btn btn-muted" onclick="imprimirFiltrado()">🖨️ Imprimir lista</button>
       </div>
     </div>
 
@@ -152,7 +137,7 @@
       <button class="btn" onclick="confirmarActualizacion()">Actualizar</button>
     </div>
 
-    <div id="mensajeConfirmacion">✅ Envío actualizado correctamente.</div>
+    <div id="mensajeConfirmacion" style="display:none;margin:12px 0;padding:10px;border:1px solid #66bb6a;border-radius:8px;background:#e8f7ed;color:#1b5e20;font-weight:600;">✅ Envío actualizado correctamente.</div>
 
     <!-- Tabla -->
     <h3 style="margin:18px 0 6px;">Envíos registrados</h3>
@@ -201,31 +186,29 @@
     </div>
   </div>
 
-  <!-- FAB y Dock del Chat (se muestran después del login) -->
-  <button class="chat-fab" id="chatFab">💬<span class="badge" id="chatBadge"></span></button>
+  <!-- Chat Interno -->
+  <button class="chat-fab" id="chatFab">💬</button>
   <div class="chat-dock" id="chatDock">
     <div class="chat-header">
-      <strong>💬 Chat del Equipo</strong>
-      <button class="btn btn-muted" onclick="toggleChat()">❌</button>
+      <strong>Chat del Equipo</strong>
+      <button class="btn btn-muted" id="cerrarChatBtn" type="button">❌</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
       <input type="text" id="chatText" placeholder="Escribe un mensaje...">
-      <button class="btn" onclick="enviarMensaje()">Enviar</button>
+      <button class="btn" id="chatSend" type="button">Enviar</button>
     </div>
   </div>
 
-  <!-- Firebase + Lógica -->
+  <!-- FIREBASE + Lógica (TODO en un solo módulo) -->
   <script type="module">
-    /* ===========================
-       1) Firebase (única instancia)
-       =========================== */
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import {
-      getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
+      getFirestore, doc, setDoc, getDoc, updateDoc, deleteDoc,
       collection, addDoc, getDocs, onSnapshot, query, orderBy, where
     } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+    // ---- CONFIG FIREBASE ----
     const firebaseConfig = {
       apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
       authDomain: "lunatrack-95199.firebaseapp.com",
@@ -238,117 +221,74 @@
     const app = initializeApp(firebaseConfig);
     const db  = getFirestore(app);
 
-    /* ===========================
-       2) Estado global
-       =========================== */
+    // ---- Estado global ----
+    let currentUser = "";
+    let isAdmin = false;
     let registrosEnvios = [];
     let registrosFiltrados = [];
     let codigoActual = "";
-    let currentUser = "";
-    let isAdmin = false;
     let editingDocId = "";
 
-    /* ===========================
-       3) Login & permisos
-       =========================== */
-    window.login = function(){
+    // ---- Utiles ----
+    const nowStr = () => new Date().toLocaleString();
+    const genCode = () => `LT-${Math.floor(100000 + Math.random()*900000)}`;
+
+    // ---- LOGIN ----
+    window.login = function () {
       const u = document.getElementById("usuario").value.trim();
       const p = document.getElementById("pin").value.trim();
-
-      const valid = {
-        "Alexs": "2036",
-        "Mela": "2006",
-        "Amisaday": "1994",
-        "Juan": "5304",
-        "Ana": "0503"
-      };
-
-      if(valid[u] && valid[u] === p){
-        // Persistimos usuario para chat/reload
-        localStorage.setItem("usuarioActual", u);
-        localStorage.setItem("rolUsuario", u === "Alexs" ? "admin" : "operador");
-
+      const valid = { "Alexs":"2036","Mela":"2006","Amisaday":"1994","Juan":"5304","Ana":"0503" };
+      if (valid[u] && valid[u]===p) {
         currentUser = u;
-        isAdmin     = (u === "Alexs");
-
+        isAdmin = (u==="Alexs");
         document.getElementById("login").style.display = "none";
         document.getElementById("panel").style.display = "block";
-
         const badge = document.getElementById("adminBadge");
-        if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
-
-        // Mostrar chat
-        document.getElementById("chatFab").style.display  = "flex";
-        document.getElementById("chatDock").style.display = "flex";
-
-        initChat();
+        badge.style.display = isAdmin ? "inline-flex" : "none";
+        localStorage.setItem("usuarioActual", u);
         cargarEnvios();
+        iniciarChatInterno(); // chat solo tras login
       } else {
         document.getElementById("loginError").style.display = "block";
       }
     };
 
-    window.cerrarSesion = function(){
-      localStorage.removeItem("usuarioActual");
-      localStorage.removeItem("rolUsuario");
-      currentUser = "";
-      isAdmin = false;
-
-      // Ocultar panel y chat
+    window.cerrarSesion = function () {
       document.getElementById("panel").style.display = "none";
       document.getElementById("login").style.display = "block";
-      document.getElementById("chatFab").style.display  = "none";
+      currentUser = ""; isAdmin = false;
+      localStorage.removeItem("usuarioActual");
+      // Oculta chat
+      document.getElementById("chatFab").style.display = "none";
       document.getElementById("chatDock").style.display = "none";
     };
 
-    // Si el usuario quedó logueado previamente (refresh)
-    (function autoLoginFromStorage(){
-      const u = localStorage.getItem("usuarioActual");
-      const r = localStorage.getItem("rolUsuario");
-      if(u && r){
-        currentUser = u;
-        isAdmin = (r === "admin");
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        const badge = document.getElementById("adminBadge");
-        if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
-        document.getElementById("chatFab").style.display  = "flex";
-        document.getElementById("chatDock").style.display = "flex";
-        initChat();
-        cargarEnvios();
-      }
-    })();
-
-    /* ===========================
-       4) Utilidades
-       =========================== */
-    function generarCodigo(){ return `LT-${Math.floor(100000 + Math.random()*900000)}` }
-    function nowStr(){ return new Date().toLocaleString() }
-
-    /* ===========================
-       5) CRUD + Recibo con barras
-       =========================== */
-    window.guardarEnvio = async function(){
+    // ---- Crear envío + Recibo ----
+    window.guardarEnvio = async function () {
       const cliente = document.getElementById("cliente").value.trim();
       const destinatario = document.getElementById("destinatario").value.trim();
       const destino = document.getElementById("destino").value.trim();
       const estado = document.getElementById("estado").value.trim();
       const ubicacion = document.getElementById("ubicacion").value.trim();
-
-      if(!cliente || !destinatario || !destino || !estado || !ubicacion){
+      if (!cliente || !destinatario || !destino || !estado || !ubicacion) {
         alert("Completa todos los campos."); return;
       }
-      const codigo = generarCodigo();
+      const codigo = genCode();
       const payload = {
         codigo, cliente, destinatario, destino, estado, ubicacion,
-        fecha: nowStr(), actualizadoPor: currentUser || "Sistema", registradoPor: currentUser || "Sistema"
+        fecha: nowStr(), actualizadoPor: currentUser, registradoPor: currentUser
       };
       await setDoc(doc(db,"equipaje",codigo), payload);
+      mostrarRecibo(payload);
+      ["cliente","destinatario","destino","estado","ubicacion"].forEach(id=>document.getElementById(id).value="");
+      await cargarEnvios();
+      alert("✅ Envío registrado correctamente.");
+    };
 
-      // Recibo
+    function mostrarRecibo({codigo, cliente, destinatario, destino, estado, ubicacion}) {
       const reciboDiv = document.getElementById("recibo");
       reciboDiv.innerHTML = `
-        <div class="container" style="margin-top:16px;border:1px solid var(--border)">
+        <div class="container" style="margin-top:16px;border:1px solid ${getComputedStyle(document.documentElement).getPropertyValue('--border')}">
           <h3 style="color:var(--primary);margin-top:0">Recibo de Envío</h3>
           <p><strong>Código:</strong> ${codigo}</p>
           <p><strong>Cliente:</strong> ${cliente}</p>
@@ -360,40 +300,30 @@
           <button class="btn" style="margin-top:10px" onclick="window.print()">🖨️ Imprimir Recibo</button>
         </div>`;
       JsBarcode("#codigoBarras", codigo, {format:"CODE128", width:2, height:60, displayValue:true, fontSize:16});
+    }
 
-      ["cliente","destinatario","destino","estado","ubicacion"].forEach(id => document.getElementById(id).value = "");
-      await cargarEnvios();
-      alert("✅ Envío registrado correctamente.");
-    };
-
-    async function cargarEnvios(){
+    // ---- Cargar / Mostrar envíos ----
+    async function cargarEnvios() {
       const q = query(collection(db,"equipaje"), orderBy("fecha","desc"));
       const qs = await getDocs(q);
       registrosEnvios = [];
-      qs.forEach(docSnap => registrosEnvios.push(docSnap.data()));
+      qs.forEach(s => registrosEnvios.push(s.data()));
       mostrarEnvios(registrosEnvios);
       document.getElementById("contador").textContent = `📦 ${registrosEnvios.length} envíos cargados`;
     }
-
     function renderFila(d){
       const editBtn = isAdmin
         ? `<button class="btn" onclick="abrirEdicion('${d.codigo}')" title="Editar">✏️</button>`
-        : `<button class="btn" onclick="alert('⚠️ No tienes permiso para realizar esta acción.')" title="Editar">✏️</button>`;
+        : `<button class="btn" onclick="alert('⚠️ Solo Alexs puede editar.')" title="Editar">✏️</button>`;
       const delBtn  = `<button class="btn btn-danger" onclick="eliminarRegistro('${d.codigo}')" title="Eliminar">🗑️</button>`;
       return `
         <tr>
-          <td>${d.codigo}</td>
-          <td>${d.cliente||"—"}</td>
-          <td>${d.destinatario||"—"}</td>
-          <td>${d.destino||"—"}</td>
-          <td>${d.estado||"—"}</td>
-          <td>${d.ubicacion||"—"}</td>
-          <td>${d.fecha||"—"}</td>
-          <td>${d.actualizadoPor||d.registradoPor||"—"}</td>
+          <td>${d.codigo}</td><td>${d.cliente||"—"}</td><td>${d.destinatario||"—"}</td>
+          <td>${d.destino||"—"}</td><td>${d.estado||"—"}</td><td>${d.ubicacion||"—"}</td>
+          <td>${d.fecha||"—"}</td><td>${d.actualizadoPor||d.registradoPor||"—"}</td>
           <td>${editBtn} ${delBtn}</td>
         </tr>`;
     }
-
     function mostrarEnvios(lista){
       const body = document.getElementById("tablaBody");
       body.innerHTML = "";
@@ -402,23 +332,80 @@
       document.getElementById("contador").textContent = `📦 ${lista.length} envíos cargados`;
     }
 
+    // ---- Filtro / Export / Imprimir ----
     window.filtrarEnvios = function(){
       const e = document.getElementById("filterEstado").value.toLowerCase();
       const lista = (e==="todos") ? registrosEnvios : registrosEnvios.filter(x => (x.estado||"").toLowerCase()===e);
       mostrarEnvios(lista);
     };
+    window.exportarExcel = function(){
+      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
+      const hoja = XLSX.utils.json_to_sheet(registrosFiltrados);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
+      const fecha = new Date().toISOString().split("T")[0];
+      XLSX.writeFile(libro, `LunaTrack_filtrado_${fecha}.xlsx`);
+    };
+    window.exportarPDF = function(){
+      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
+      const { jsPDF } = window.jspdf;
+      const docPDF = new jsPDF();
+      docPDF.text("LunaTrack - Envíos (filtrados)", 14, 15);
+      const filas = registrosFiltrados.map(d => [d.codigo,d.cliente,d.destinatario,d.destino,d.estado,d.ubicacion,d.fecha,d.actualizadoPor||d.registradoPor||""]);
+      docPDF.autoTable({ head:[["Código","Cliente","Destinatario","Destino","Estado","Ubicación","Fecha","Actualizado por"]], body:filas, startY:25 });
+      const fecha = new Date().toISOString().split("T")[0];
+      docPDF.save(`LunaTrack_filtrado_${fecha}.pdf`);
+    };
+    window.imprimirFiltrado = function(){
+      if(registrosFiltrados.length===0) return alert("No hay registros para imprimir.");
+      let w = window.open("", "PRINT", "height=650,width=900,top=100,left=150");
+      w.document.write(`<html><head><title>Lista filtrada</title><style>
+        body{font-family:'Inter',sans-serif;padding:16px}
+        table{width:100%;border-collapse:collapse}
+        th,td{border:1px solid #ddd;padding:6px;text-align:left}
+        th{background:#143c8c;color:#fff}
+      </style></head><body>`);
+      w.document.write("<h3>Lista filtrada de envíos</h3><table><thead><tr><th>Código</th><th>Cliente</th><th>Destinatario</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th><th>Actualizado por</th></tr></thead><tbody>");
+      registrosFiltrados.forEach(d=>{
+        w.document.write(`<tr><td>${d.codigo}</td><td>${d.cliente||""}</td><td>${d.destinatario||""}</td><td>${d.destino||""}</td><td>${d.estado||""}</td><td>${d.ubicacion||""}</td><td>${d.fecha||""}</td><td>${d.actualizadoPor||d.registradoPor||""}</td></tr>`);
+      });
+      w.document.write("</tbody></table></body></html>");
+      w.document.close(); w.focus(); w.print(); w.close();
+    };
 
+    // ---- Escáner actualización ----
+    const scanInput = document.getElementById("scanInput");
+    scanInput.addEventListener("change", ()=>{
+      codigoActual = scanInput.value.trim();
+      if(!codigoActual) return;
+      document.getElementById("actualizarForm").style.display = "block";
+      scanInput.value="";
+    });
+    window.confirmarActualizacion = async function(){
+      const nuevoEstado = document.getElementById("nuevoEstado").value;
+      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
+      if(!codigoActual) return alert("Escanee un código primero.");
+      if(!nuevoEstado) return alert("Selecciona un estado.");
+      const ref = doc(db,"equipaje",codigoActual);
+      const exists = await getDoc(ref);
+      if(!exists.exists()) return alert("Código no encontrado.");
+      await updateDoc(ref, {estado:nuevoEstado, ubicacion:(nuevaUbicacion||"Sin cambios"), fecha:nowStr(), actualizadoPor:currentUser||"Sistema"});
+      document.getElementById("actualizarForm").style.display="none";
+      const msg = document.getElementById("mensajeConfirmacion");
+      msg.style.display="block"; setTimeout(()=>msg.style.display="none", 3200);
+      cargarEnvios();
+    };
+
+    // ---- Eliminar registro (todos pueden) ----
     window.eliminarRegistro = async function(codigo){
       if(!confirm(`¿Eliminar el envío ${codigo}?`)) return;
       await deleteDoc(doc(db,"equipaje",codigo));
       await cargarEnvios();
     };
 
-    /* ===========================
-       6) Edición (solo Alexs)
-       =========================== */
+    // ---- Modal edición (solo Alexs) ----
     window.abrirEdicion = async function(codigo){
-      if(!isAdmin){ alert("⚠️ No tienes permiso para realizar esta acción."); return; }
+      if(!isAdmin){ alert("⚠️ Solo Alexs puede editar."); return; }
       const ref = doc(db,"equipaje",codigo);
       const snap = await getDoc(ref);
       if(!snap.exists()) return alert("Registro no encontrado.");
@@ -433,9 +420,11 @@
       document.getElementById("editFecha").value = "";
       document.getElementById("modalBackdrop").style.display="block";
     };
-    window.cerrarModal = function(){ document.getElementById("modalBackdrop").style.display="none"; };
+    window.cerrarModal = function(){
+      document.getElementById("modalBackdrop").style.display="none";
+    };
     window.guardarEdicion = async function(){
-      if(!isAdmin){ alert("⚠️ No tienes permiso para realizar esta acción."); return; }
+      if(!isAdmin){ alert("⚠️ Solo Alexs puede editar."); return; }
       const newCode = document.getElementById("editCodigo").value.trim();
       const obj = {
         codigo:newCode,
@@ -444,7 +433,7 @@
         destino:document.getElementById("editDestino").value.trim(),
         estado:document.getElementById("editEstado").value,
         ubicacion:document.getElementById("editUbicacion").value.trim(),
-        fecha: (document.getElementById("editFecha").value.trim() || nowStr()),
+        fecha:(document.getElementById("editFecha").value.trim() || nowStr()),
         actualizadoPor: currentUser || "Alexs"
       };
       if(newCode !== editingDocId){
@@ -457,161 +446,68 @@
       await cargarEnvios();
     };
 
-    /* ===========================
-       7) Escáner de estado
-       =========================== */
-    const scanInput = document.getElementById("scanInput");
-    scanInput.addEventListener("change", ()=>{
-      codigoActual = scanInput.value.trim();
-      if(!codigoActual) return;
-      document.getElementById("actualizarForm").style.display = "block";
-      scanInput.value="";
-    });
-
-    window.confirmarActualizacion = async function(){
-      const nuevoEstado = document.getElementById("nuevoEstado").value;
-      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
-      if(!codigoActual) return alert("Escanee un código primero.");
-      if(!nuevoEstado) return alert("Selecciona un estado.");
-
-      const ref = doc(db,"equipaje",codigoActual);
-      const exists = await getDoc(ref);
-      if(!exists.exists()) return alert("Código no encontrado.");
-
-      await updateDoc(ref, {
-        estado:nuevoEstado,
-        ubicacion:(nuevaUbicacion||"Sin cambios"),
-        fecha:nowStr(),
-        actualizadoPor:currentUser||"Sistema"
-      });
-      document.getElementById("actualizarForm").style.display="none";
-      const msg = document.getElementById("mensajeConfirmacion");
-      msg.style.display="block"; setTimeout(()=>msg.style.display="none", 3200);
-      cargarEnvios();
-    };
-
-    /* ===========================
-       8) Exportar / Imprimir
-       =========================== */
-    window.exportarExcel = function(){
-      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
-      const hoja = XLSX.utils.json_to_sheet(registrosFiltrados);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      const fecha = new Date().toISOString().split("T")[0];
-      XLSX.writeFile(libro, `LunaTrack_filtrado_${fecha}.xlsx`);
-    };
-
-    window.exportarPDF = function(){
-      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
-      const { jsPDF } = window.jspdf;
-      const docPDF = new jsPDF();
-      docPDF.text("LunaTrack - Envíos (filtrados)", 14, 15);
-      const filas = registrosFiltrados.map(d => [d.codigo,d.cliente,d.destinatario,d.destino,d.estado,d.ubicacion,d.fecha,d.actualizadoPor||d.registradoPor||""]);
-      docPDF.autoTable({ head:[["Código","Cliente","Destinatario","Destino","Estado","Ubicación","Fecha","Actualizado por"]], body:filas, startY:25 });
-      const fecha = new Date().toISOString().split("T")[0];
-      docPDF.save(`LunaTrack_filtrado_${fecha}.pdf`);
-    };
-
-    window.imprimirFiltrado = function(){
-      if(registrosFiltrados.length===0) return alert("No hay registros para imprimir.");
-      let w = window.open("", "PRINT", "height=650,width=900,top=100,left=150");
-      w.document.write(`<html><head><title>Lista filtrada</title><style>
-        body{font-family:'Inter',sans-serif;padding:16px}
-        table{width:100%;border-collapse:collapse}
-        th,td{border:1px solid #ddd;padding:6px;text-align:left}
-        th{background:#213D7A;color:#fff}
-      </style></head><body>`);
-      w.document.write("<h3>Lista filtrada de envíos</h3><table><thead><tr><th>Código</th><th>Cliente</th><th>Destinatario</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th><th>Actualizado por</th></tr></thead><tbody>");
-      registrosFiltrados.forEach(d=>{
-        w.document.write(`<tr><td>${d.codigo}</td><td>${d.cliente||""}</td><td>${d.destinatario||""}</td><td>${d.destino||""}</td><td>${d.estado||""}</td><td>${d.ubicacion||""}</td><td>${d.fecha||""}</td><td>${d.actualizadoPor||d.registradoPor||""}</td></tr>`);
-      });
-      w.document.write("</tbody></table></body></html>");
-      w.document.close(); w.focus(); w.print(); w.close();
-    };
-
-    /* ===========================
-       9) Chat del Equipo (dock)
-       =========================== */
-    let chatUnseen = 0;
-    let chatOpen = false;
-    let lastSeenTs = Date.now();
-
+    // ---- Chat Interno (Firebase) ----
     const chatFab   = document.getElementById("chatFab");
     const chatDock  = document.getElementById("chatDock");
-    const chatBadge = document.getElementById("chatBadge");
+    const cerrarChatBtn = document.getElementById("cerrarChatBtn");
     const chatMsgs  = document.getElementById("chatMessages");
     const chatText  = document.getElementById("chatText");
-
+    const chatSend  = document.getElementById("chatSend");
+    let chatOpen = false;
     const notifSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c5f0b7edc.mp3?filename=notification-3-156508.mp3");
 
-    chatFab.addEventListener("click", toggleChat);
-    window.toggleChat = function(){
+    function toggleChat(){
       chatOpen = !chatOpen;
       chatDock.classList.toggle("open", chatOpen);
-      if(chatOpen){
-        chatUnseen = 0;
-        chatBadge.style.display="none";
-        lastSeenTs = Date.now();
-        scrollChatBottom();
-      }
-    };
-    function scrollChatBottom(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }
+      if (chatOpen) chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+    chatFab.addEventListener("click", toggleChat);
+    cerrarChatBtn.addEventListener("click", toggleChat);
 
-    async function initChat(){
-      // Limpieza >24h
-      const cutoff = Date.now() - (24*60*60*1000);
-      const qOld = query(collection(db,"chatInterno"), where("createdAt","<", cutoff));
-      const snapOld = await getDocs(qOld);
-      for(const d of snapOld.docs){ await deleteDoc(d.ref); }
+    async function enviarMensaje(){
+      const text = chatText.value.trim();
+      if(!text) return;
+      await addDoc(collection(db,"chatInterno"), { user: currentUser||localStorage.getItem("usuarioActual")||"Invitado", text, createdAt: Date.now() });
+      chatText.value=""; chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    }
+    chatSend.addEventListener("click", enviarMensaje);
+    chatText.addEventListener("keypress", e => { if(e.key==="Enter") enviarMensaje(); });
 
-      // Realtime
+    window.iniciarChatInterno = async function(){
+      // mostrar UI chat
+      chatFab.style.display = "flex";
+      chatDock.style.display = "flex";
+
+      // limpiar mensajes >24h (si reglas lo permiten)
+      try{
+        const cutoff = Date.now() - 24*60*60*1000;
+        const qOld = query(collection(db,"chatInterno"), where("createdAt","<", cutoff));
+        const oldSnap = await getDocs(qOld);
+        for(const d of oldSnap.docs){ await deleteDoc(d.ref); }
+      }catch(e){ /* ignorar si reglas más estrictas */ }
+
+      // suscripción realtime
       const qChat = query(collection(db,"chatInterno"), orderBy("createdAt","asc"));
       onSnapshot(qChat, (snap)=>{
         chatMsgs.innerHTML = "";
         let lastMsg = null;
         snap.forEach(docSnap=>{
-          const m = docSnap.data();
-          lastMsg = m;
-          const mine = (m.user===currentUser);
+          const m = docSnap.data(); if(!m || !m.text) return;
+          const mine = (m.user === (currentUser||localStorage.getItem("usuarioActual")));
           const div = document.createElement("div");
           div.className = `msg ${mine? 'mine':'theirs'}`;
-          div.innerHTML = `<div>${m.text||""}</div><div class="meta">${m.user||"?"} • ${new Date(m.createdAt||Date.now()).toLocaleTimeString()}</div>`;
-          chatMsgs.appendChild(div);
-          if(!chatOpen && (m.createdAt || 0) > lastSeenTs && m.user !== currentUser){
-            chatUnseen++; chatBadge.style.display="block";
-            try{ notifSound.currentTime = 0; notifSound.play(); }catch(e){}
-          }
+          div.innerHTML = `<div>${m.text}</div><div class="meta">${m.user||"?"} • ${new Date(m.createdAt||Date.now()).toLocaleTimeString()}</div>`;
+          chatMsgs.appendChild(div); lastMsg = m;
         });
-        if(chatOpen) scrollChatBottom();
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+        if (lastMsg && lastMsg.user !== (currentUser||localStorage.getItem("usuarioActual")) && !chatOpen){
+          try{ notifSound.currentTime=0; notifSound.play(); }catch(e){}
+        }
       });
-    }
-
-    window.enviarMensaje = async function(){
-      const t = chatText.value.trim();
-      if(!t) return;
-      await addDoc(collection(db,"chatInterno"), { user: currentUser||"Invitado", text:t, createdAt: Date.now() });
-      chatText.value=""; scrollChatBottom();
     };
-    <!-- Chat: botón + panel lateral -->
-<button class="chat-fab" id="chatFab" style="display:none">💬<span class="badge" id="chatBadge" style="display:none"></span></button>
-
-<div class="chat-dock" id="chatDock" style="display:none">
-  <div class="chat-header">
-    <strong>💬 Chat del Equipo</strong>
-    <button class="btn btn-muted" id="cerrarChatBtn" type="button">❌</button>
-  </div>
-  <div class="chat-messages" id="chatMessages"></div>
-  <div class="chat-input">
-    <input type="text" id="chatText" placeholder="Escribe un mensaje..." />
-    <button class="btn" id="chatSend" type="button">Enviar</button>
-  </div>
-</div>
-
   </script>
 
   <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-  
 </body>
 </html>
