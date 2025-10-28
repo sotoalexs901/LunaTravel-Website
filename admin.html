@@ -583,6 +583,133 @@ document.addEventListener("click", () => {
     chatFab.addEventListener("click", toggleChat);
   }
 </script>
+<!-- 🔹 CHAT INTERNO DEL EQUIPO - OPTIMIZADO PARA MÓVIL -->
+<script>
+  // --- Referencias al DOM ---
+  const chatFab = document.getElementById("chatFab");
+  const chatDock = document.getElementById("chatDock");
+  const chatBadge = document.getElementById("chatBadge");
+  const chatMsgs = document.getElementById("chatMessages");
+  const chatText = document.getElementById("chatText");
+  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
+  const chatSendBtn = document.getElementById("chatSend");
+
+  // --- Variables globales ---
+  let chatOpen = false;
+  let chatUnseen = 0;
+  let lastSeenTs = Date.now();
+  let notifSound = null;
+
+  // ✅ Cargar sonido sólo después de una interacción (compatible con móviles)
+  document.addEventListener("click", () => {
+    if (!notifSound) {
+      notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3");
+    }
+  });
+
+  // --- Función para abrir/cerrar el chat ---
+  window.toggleChat = function () {
+    chatOpen = !chatOpen;
+    chatDock.classList.toggle("open", chatOpen);
+
+    if (chatOpen) {
+      chatBadge.style.display = "none";
+      chatFab.style.animation = "none";
+      chatUnseen = 0;
+      lastSeenTs = Date.now();
+      setTimeout(() => (chatMsgs.scrollTop = chatMsgs.scrollHeight), 200);
+    }
+  };
+
+  // --- Animación visual cuando hay mensajes nuevos ---
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(33,61,122,0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(33,61,122,0); }
+      100% { box-shadow: 0 0 0 0 rgba(33,61,122,0); }
+    }
+
+    @media (max-width: 600px) {
+      .chat-dock {
+        width: 100%;
+        right: -100%;
+      }
+      .chat-dock.open {
+        right: 0;
+      }
+      .chat-fab {
+        bottom: 15px;
+        right: 15px;
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  // --- Listeners de apertura/cierre/envío ---
+  if (chatFab) chatFab.addEventListener("click", toggleChat);
+  if (cerrarChatBtn) cerrarChatBtn.addEventListener("click", toggleChat);
+
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener("click", async () => {
+      const text = chatText.value.trim();
+      if (!text) return;
+
+      try {
+        await addDoc(collection(db, "chatInterno"), {
+          user: localStorage.getItem("usuarioActual") || currentUser || "Usuario",
+          text,
+          createdAt: Date.now(),
+        });
+        chatText.value = "";
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      } catch (err) {
+        console.error("Error al enviar mensaje:", err);
+      }
+    });
+  }
+
+  // --- Escucha en tiempo real del chat ---
+  onSnapshot(query(collection(db, "chatInterno"), orderBy("createdAt", "asc")), (snap) => {
+    chatMsgs.innerHTML = "";
+    let lastMsg = null;
+
+    snap.forEach((docSnap) => {
+      const m = docSnap.data();
+      if (!m.text) return;
+      const mine = m.user === (localStorage.getItem("usuarioActual") || currentUser);
+      const div = document.createElement("div");
+      div.className = `msg ${mine ? "mine" : "theirs"}`;
+      div.innerHTML = `
+        <div>${m.text}</div>
+        <div class="meta">${m.user || "?"} • ${new Date(m.createdAt).toLocaleTimeString()}</div>
+      `;
+      chatMsgs.appendChild(div);
+      lastMsg = m;
+    });
+
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+
+    // 🔔 Notificación si hay mensaje nuevo y el chat está cerrado
+    if (
+      lastMsg &&
+      lastMsg.user !== (localStorage.getItem("usuarioActual") || currentUser) &&
+      !chatOpen
+    ) {
+      chatUnseen++;
+      chatBadge.style.display = "block";
+      chatFab.style.animation = "pulse 1.2s infinite";
+
+      // reproducir sonido si se puede
+      try {
+        if (notifSound) {
+          notifSound.currentTime = 0;
+          notifSound.play();
+        }
+      } catch (e) {}
+    }
+  });
+</script>
 
 <!-- Código de barras -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
