@@ -234,24 +234,75 @@
     const genCode = () => `LT-${Math.floor(100000 + Math.random()*900000)}`;
 
     // ---- LOGIN ----
-    window.login = function () {
-      const u = document.getElementById("usuario").value.trim();
-      const p = document.getElementById("pin").value.trim();
-      const valid = { "Alexs":"2036","Mela":"2006","Amisaday":"1994","Juan":"5304","Ana":"0503" };
-      if (valid[u] && valid[u]===p) {
-        currentUser = u;
-        isAdmin = (u==="Alexs");
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        const badge = document.getElementById("adminBadge");
-        badge.style.display = isAdmin ? "inline-flex" : "none";
-        localStorage.setItem("usuarioActual", u);
-        cargarEnvios();
-        iniciarChatInterno(); // chat solo tras login
-      } else {
-        document.getElementById("loginError").style.display = "block";
-      }
+   /* 🔹 LOGIN UNIVERSAL - COMPATIBLE CON MÓVIL Y ESCRITORIO */
+window.currentUser = null;
+window.isAdmin = false;
+
+window.login = async function() {
+  try {
+    const u = document.getElementById("usuario").value.trim();
+    const p = document.getElementById("pin").value.trim();
+
+    // Usuarios y PIN autorizados
+    const validUsers = {
+      "Alexs": "2036",
+      "Mela": "2006",
+      "Amisaday": "1994",
+      "Juan": "5304",
+      "Ana": "0503"
     };
+
+    // Validar credenciales
+    if (validUsers[u] && validUsers[u] === p) {
+      // Guardar sesión
+      window.currentUser = u;
+      window.isAdmin = (u === "Alexs");
+
+      // Guardar en localStorage (para el chat)
+      localStorage.setItem("usuarioActual", u);
+      localStorage.setItem("rolUsuario", isAdmin ? "admin" : "operador");
+
+      // Mostrar panel
+      document.getElementById("login").style.display = "none";
+      document.getElementById("panel").style.display = "block";
+
+      // Mostrar insignia si es admin
+      const badge = document.getElementById("adminBadge");
+      if (badge) badge.style.display = isAdmin ? "inline-flex" : "none";
+
+      // Inicializar funciones principales
+      if (typeof cargarEnvios === "function") await cargarEnvios();
+      if (typeof initChat === "function") initChat();
+
+      console.log(`✅ Sesión iniciada como ${u} (${isAdmin ? "admin" : "operador"})`);
+    } else {
+      document.getElementById("loginError").style.display = "block";
+      console.warn("❌ Usuario o PIN incorrectos");
+    }
+  } catch (err) {
+    console.error("Error durante el login:", err);
+  }
+};
+
+/* 🔹 CERRAR SESIÓN */
+window.cerrarSesion = function() {
+  try {
+    localStorage.removeItem("usuarioActual");
+    localStorage.removeItem("rolUsuario");
+    window.currentUser = null;
+    window.isAdmin = false;
+
+    document.getElementById("panel").style.display = "none";
+    document.getElementById("login").style.display = "block";
+    document.getElementById("usuario").value = "";
+    document.getElementById("pin").value = "";
+    document.getElementById("loginError").style.display = "none";
+
+    console.log("🚪 Sesión cerrada correctamente");
+  } catch (err) {
+    console.error("Error al cerrar sesión:", err);
+  }
+};
 
     window.cerrarSesion = function () {
       document.getElementById("panel").style.display = "none";
