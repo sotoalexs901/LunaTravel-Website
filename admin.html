@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Panel de Registro - Luna Travel</title>
 
-  <!-- Fuente -->
+  <!-- Fuente principal -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- Librerías -->
@@ -203,7 +203,6 @@
         document.getElementById("panel").style.display = "block";
         localStorage.setItem("usuarioActual", u);
         cargarEnvios();
-        iniciarCrisp(); // 👈 Carga Crisp solo tras login
       } else {
         document.getElementById("loginError").style.display = "block";
       }
@@ -214,7 +213,6 @@
       document.getElementById("login").style.display = "block";
       currentUser = "";
       localStorage.removeItem("usuarioActual");
-      if (window.$crisp) window.$crisp.push(["do", "chat:close"]);
     };
 
     function generarCodigo() {
@@ -279,28 +277,76 @@
       });
     }
 
+    window.filtrarEnvios = async function () {
+      const estadoSel = document.getElementById("filterEstado").value.toLowerCase();
+      const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
+      const snap = await getDocs(q);
+      const body = document.getElementById("tablaBody");
+      body.innerHTML = "";
+      snap.forEach(docSnap => {
+        const d = docSnap.data();
+        if (estadoSel === "todos" || (d.estado || "").toLowerCase() === estadoSel) {
+          body.innerHTML += `
+            <tr>
+              <td>${d.codigo}</td>
+              <td>${d.cliente}</td>
+              <td>${d.destinatario}</td>
+              <td>${d.destino}</td>
+              <td>${d.estado}</td>
+              <td>${d.ubicacion}</td>
+              <td>${d.fecha}</td>
+              <td>${d.actualizadoPor}</td>
+              <td><button class="btn-danger" onclick="eliminarRegistro('${d.codigo}')">Eliminar</button></td>
+            </tr>`;
+        }
+      });
+    };
+
     window.eliminarRegistro = async function (codigo) {
       if (!confirm(`¿Eliminar el envío ${codigo}?`)) return;
       await deleteDoc(doc(db, "equipaje", codigo));
       cargarEnvios();
     };
 
-    // ✅ CRISP SOLO DESPUÉS DE LOGIN
-    function iniciarCrisp() {
-      if (window.$crisp) return;
-      window.$crisp = [];
-      window.CRISP_WEBSITE_ID = "b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
-      (function () {
-        var d = document;
-        var s = d.createElement("script");
-        s.src = "https://client.crisp.chat/l.js";
-        s.async = 1;
-        d.getElementsByTagName("head")[0].appendChild(s);
-      })();
+    window.exportarExcel = async function () {
+      const q = query(collection(db, "equipaje"));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(d => d.data());
+      const hoja = XLSX.utils.json_to_sheet(data);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
+      XLSX.writeFile(libro, "LunaTrack_Envios.xlsx");
+    };
+
+    window.exportarPDF = async function () {
+      const q = query(collection(db, "equipaje"));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(d => d.data());
+      const { jsPDF } = window.jspdf;
+      const docPDF = new jsPDF();
+      docPDF.text("LunaTrack - Envíos", 14, 15);
+      const filas = data.map(d => [d.codigo, d.cliente, d.destinatario, d.destino, d.estado, d.ubicacion, d.fecha, d.actualizadoPor]);
+      docPDF.autoTable({ head: [["Código","Cliente","Destinatario","Destino","Estado","Ubicación","Fecha","Actualizado por"]], body: filas, startY: 25 });
+      docPDF.save("LunaTrack_Envios.pdf");
+    };
+  </script>
+
+  <!-- CRISP CHAT -->
+  <script type="text/javascript">
+    window.$crisp = [];
+    window.CRISP_WEBSITE_ID = "b1b5252d-d1d1-4845-9575-895f7bcdd7ee";
+    (function () {
+      var d = document;
+      var s = d.createElement("script");
+      s.src = "https://client.crisp.chat/l.js";
+      s.async = 1;
+      d.getElementsByTagName("head")[0].appendChild(s);
+    })();
+    window.addEventListener("load", function () {
       setTimeout(() => {
-        window.$crisp.push(["do", "message:show", ["text", `👋 Hola ${currentUser}, bienvenido al panel Luna Travel.`]]);
-      }, 2500);
-    }
+        window.$crisp.push(["do", "message:show", ["text", "👋 Hola, bienvenido a Luna Travel. ¿En qué puedo ayudarte?"]]);
+      }, 2000);
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
