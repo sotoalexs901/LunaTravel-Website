@@ -2,11 +2,11 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Panel de Registro - Luna Travel</title>
 
   <!-- Fuente -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
 
   <!-- Librerías utilitarias -->
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -14,145 +14,121 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    :root {
-      --primary: #143c8c;
-      --primary-dark: #0f2f6b;
-      --danger: #e74c3c;
-      --bg: #f7f9fc;
-      --white: #fff;
-      --border: #e5e7eb;
+    :root{
+      --primary:#143c8c; --primary-dark:#0f2f6b; --danger:#e74c3c;
+      --bg:#f7f9fc; --white:#fff; --border:#e5e7eb;
     }
-    * { box-sizing: border-box; }
-    body {
-      font-family: "Inter", sans-serif;
-      background: var(--bg);
-      margin: 0;
-      color: #111;
-    }
-    .container {
-      max-width: 980px;
-      margin: 32px auto;
-      background: var(--white);
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    h2 { color: var(--primary); margin: 0 0 16px; }
-    input, select, button { font-family: inherit; }
-    input, select {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      width: 100%;
-      margin: 8px 0;
-    }
-    button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover { background: var(--primary-dark); }
-    .btn-danger { background: var(--danger); }
-    .btn-muted { background: #6b7280; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-    .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; margin: 14px 0; gap: 10px; }
+    *{box-sizing:border-box}
+    body{font-family:'Inter',sans-serif;background:var(--bg);margin:0;color:#111}
+    .container{max-width:980px;margin:32px auto;background:var(--white);padding:28px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1)}
+    h2{color:var(--primary);margin:0 0 16px}
+    input,select,button{font-family:inherit}
+    input,select{padding:10px;border:1px solid #ccc;border-radius:8px;width:100%;margin:8px 0}
+    button{background:var(--primary);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
+    button:hover{background:var(--primary-dark)}
+    .btn-danger{background:var(--danger)}
+    .btn-muted{background:#6b7280}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    @media (max-width:720px){.grid{grid-template-columns:1fr}}
+    .toolbar{display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:14px 0}
+    .toolbar-left{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .search-wrap{position:relative}
+    .search-wrap input{padding-left:36px;min-width:260px}
+    .search-wrap .icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:16px;color:#6b7280}
+    #tablaEnvios{width:100%;border-collapse:collapse;margin-top:12px}
+    #tablaEnvios th,#tablaEnvios td{border:1px solid #ddd;padding:8px;text-align:left}
+    #tablaEnvios th{background:var(--primary);color:#fff}
+    .logout-btn{background:#555}
+    .logout-btn:hover{background:#333}
 
-    /* Chat Dock */
-    .chat-fab {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      z-index: 9950;
-      font-size: 20px;
-    }
-    .chat-dock {
-      position: fixed;
-      top: 0;
-      right: -380px;
-      width: 360px;
-      height: 100vh;
-      background: #fff;
-      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      transition: right 0.25s ease;
-      z-index: 9900;
-    }
-    .chat-dock.open { right: 0; }
-    .chat-header {
-      background: var(--primary);
-      color: #fff;
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .chat-messages { flex: 1; overflow: auto; padding: 12px; background: #f8fafc; }
-    .msg { max-width: 80%; margin: 6px 0; padding: 8px 10px; border-radius: 10px; }
-    .msg.mine { margin-left: auto; background: rgba(20, 60, 140, 0.1); border: 1px solid #c7d2fe; }
-    .msg.theirs { margin-right: auto; background: #e5e7eb; }
-    .msg .meta { font-size: 11px; color: #555; margin-top: 2px; }
-    .chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--border); }
-    .chat-input input { flex: 1; }
+    /* Modal edición */
+    .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:9990}
+    .modal{position:fixed;right:50%;top:50%;transform:translate(50%,-50%);background:#fff;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);width:min(640px,95vw);padding:16px;z-index:9991}
+    .modal h3{margin:0 0 10px;color:var(--primary)}
+    .modal .grid{grid-template-columns:1fr 1fr}
+    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
 
-    @media (max-width: 600px) {
-      .chat-dock { width: 100%; right: -100%; }
-      .chat-dock.open { right: 0; }
-      .chat-fab { bottom: 15px; right: 15px; }
+    /* Chat */
+    .chat-fab{position:fixed;right:20px;bottom:20px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:none;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.2);cursor:pointer;z-index:9950;font-size:20px}
+    .chat-dock{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 16px rgba(0,0,0,.15);display:flex;flex-direction:column;transition:right .25s ease;z-index:9900}
+    .chat-dock.open{right:0}
+    .chat-header{background:var(--primary);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
+    .chat-messages{flex:1;overflow:auto;padding:12px;background:#f8fafc}
+    .msg{max-width:80%;margin:6px 0;padding:8px 10px;border-radius:10px}
+    .msg.mine{margin-left:auto;background:rgba(20,60,140,.1);border:1px solid #c7d2fe}
+    .msg.theirs{margin-right:auto;background:#e5e7eb}
+    .msg .meta{font-size:11px;color:#555;margin-top:2px}
+    .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
+    .chat-input input{flex:1}
+    @media (max-width:600px){
+      .chat-dock{width:100%;right:-100%}
+      .chat-dock.open{right:0}
+      .chat-fab{bottom:15px;right:15px}
     }
   </style>
 </head>
 
 <body>
   <!-- LOGIN -->
-  <div id="login" class="container" style="text-align: center;">
+  <div id="login" class="container" style="text-align:center;">
     <h2>Acceso Administrador</h2>
-    <div class="grid" style="max-width: 420px; margin: 0 auto;">
-      <input type="text" id="usuario" placeholder="Usuario" />
-      <input type="password" id="pin" placeholder="PIN" />
+    <div class="grid" style="max-width:420px;margin:0 auto;">
+      <input type="text" id="usuario" placeholder="Usuario (Alexs / Mela / Amisaday / Juan / Ana)">
+      <input type="password" id="pin" placeholder="PIN">
     </div>
     <button onclick="login()">Ingresar</button>
-    <p id="loginError" style="color: #d32f2f; display: none;">Usuario o PIN incorrectos.</p>
+    <p id="loginError" style="color:#d32f2f;display:none;margin-top:8px;">Usuario o PIN incorrectos.</p>
   </div>
 
-  <!-- PANEL PRINCIPAL -->
-  <div id="panel" class="container" style="display: none;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>
-        Panel de Registro - Luna Travel
-        <span id="adminBadge" style="display:none; padding:4px 10px; border-radius:999px; background:#10b981; color:#fff; font-size:12px; font-weight:700">🔑 Admin</span>
+  <!-- PANEL -->
+  <div id="panel" class="container" style="display:none;">
+    <div style="display:flex;align-items:center;justify-content:space-between;">
+      <h2>Panel de Registro - Luna Travel
+        <span id="adminBadge" style="display:none;padding:4px 10px;border-radius:999px;background:#10b981;color:#fff;font-size:12px;font-weight:700">🔑 Admin</span>
       </h2>
-      <button onclick="cerrarSesion()">Cerrar Sesión</button>
+      <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 
-    <!-- Filtros y Export -->
+    <!-- Registro -->
+    <h3 style="margin:8px 0 6px;">Nuevo envío</h3>
+    <div class="grid">
+      <input type="text" id="cliente" placeholder="Cliente">
+      <input type="text" id="destinatario" placeholder="Destinatario (quien recoge)">
+      <input type="text" id="destino" placeholder="Destino">
+      <select id="estado">
+        <option value="">Seleccionar estado...</option>
+        <option>Recibido en la Oficina</option>
+        <option>En Tránsito</option>
+        <option>Procesando para Entrega</option>
+        <option>En Reparto</option>
+        <option>Entregado</option>
+      </select>
+      <input type="text" id="ubicacion" placeholder="Ubicación">
+    </div>
+    <button onclick="guardarEnvio()">Guardar y generar recibo</button>
+    <div id="recibo"></div>
+
+    <!-- Filtros / Buscador / Export -->
     <div class="toolbar">
-      <div>
-        <label for="filterEstado" style="font-weight:700;color:var(--primary);">Filtrar por estado:</label>
-        <select id="filterEstado" onchange="filtrarEnvios()">
-          <option value="todos">Todos</option>
-          <option value="recibido en la oficina">Recibido en la Oficina</option>
-          <option value="en tránsito">En Tránsito</option>
-          <option value="procesando para entrega">Procesando para Entrega</option>
-          <option value="en reparto">En Reparto</option>
-          <option value="entregado">Entregado</option>
-        </select>
+      <div class="toolbar-left">
+        <div>
+          <label for="filterEstado" style="font-weight:700;color:var(--primary);">Estado:</label><br/>
+          <select id="filterEstado" onchange="aplicarFiltros()" style="padding:8px;border-radius:8px;min-width:220px">
+            <option value="todos">Todos</option>
+            <option value="recibido en la oficina">Recibido en la Oficina</option>
+            <option value="en tránsito">En Tránsito</option>
+            <option value="procesando para entrega">Procesando para Entrega</option>
+            <option value="en reparto">En Reparto</option>
+            <option value="entregado">Entregado</option>
+          </select>
+        </div>
+
+        <div class="search-wrap">
+          <span class="icon">🔍</span>
+          <input id="searchInput" type="text" placeholder="Buscar por código, cliente o destinatario" oninput="aplicarFiltros()">
+        </div>
       </div>
+
       <div style="display:flex;gap:8px;">
         <button onclick="exportarExcel()">📤 Excel</button>
         <button style="background:#c62828" onclick="exportarPDF()">🧾 PDF</button>
@@ -160,20 +136,74 @@
       </div>
     </div>
 
+    <!-- Escáner -->
+    <h3 style="margin:8px 0 6px;color:var(--primary)">Actualizar estado con escáner</h3>
+    <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
+    <div id="actualizarForm" style="display:none;margin-top:10px;">
+      <div class="grid">
+        <select id="nuevoEstado">
+          <option value="">Seleccionar nuevo estado...</option>
+          <option>Recibido en la Oficina</option>
+          <option>En Tránsito</option>
+          <option>Procesando para Entrega</option>
+          <option>En Reparto</option>
+          <option>Entregado</option>
+        </select>
+        <input type="text" id="nuevaUbicacion" placeholder="Nueva ubicación (opcional)">
+      </div>
+      <button onclick="confirmarActualizacion()">Actualizar</button>
+    </div>
+
+    <div id="mensajeConfirmacion" style="display:none;margin:12px 0;padding:10px;border:1px solid #66bb6a;border-radius:8px;background:#e8f7ed;color:#1b5e20;font-weight:600;">✅ Envío actualizado correctamente.</div>
+
     <!-- Tabla -->
     <h3 style="margin:18px 0 6px;">Envíos registrados</h3>
     <p id="contador">📦 0 envíos cargados</p>
-    <table id="tablaEnvios" style="width:100%;border-collapse:collapse;">
+    <table id="tablaEnvios">
       <thead>
-        <tr style="background:var(--primary);color:#fff;">
-          <th>Código</th><th>Cliente</th><th>Destinatario</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th><th>Actualizado por</th>
+        <tr>
+          <th>Código</th>
+          <th>Cliente</th>
+          <th>Destinatario</th>
+          <th>Destino</th>
+          <th>Estado</th>
+          <th>Ubicación</th>
+          <th>Fecha</th>
+          <th>Actualizado por</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody id="tablaBody"></tbody>
     </table>
   </div>
 
-  <!-- CHAT -->
+  <!-- Modal edición (solo Alexs) -->
+  <div id="modalBackdrop" class="modal-backdrop">
+    <div class="modal">
+      <h3>Editar envío</h3>
+      <div class="grid">
+        <input type="text" id="editCodigo" placeholder="Código (LT-XXXXXX)">
+        <input type="text" id="editCliente" placeholder="Cliente">
+        <input type="text" id="editDestinatario" placeholder="Destinatario">
+        <input type="text" id="editDestino" placeholder="Destino">
+        <select id="editEstado">
+          <option>Recibido en la Oficina</option>
+          <option>En Tránsito</option>
+          <option>Procesando para Entrega</option>
+          <option>En Reparto</option>
+          <option>Entregado</option>
+        </select>
+        <input type="text" id="editUbicacion" placeholder="Ubicación">
+        <input type="text" id="editFecha" placeholder="Fecha (auto si vacío)">
+      </div>
+      <div class="modal-actions">
+        <button class="btn-muted" onclick="cerrarModal()">Cancelar</button>
+        <button onclick="guardarEdicion()">Guardar cambios</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Chat Interno -->
   <button class="chat-fab" id="chatFab">💬</button>
   <div class="chat-dock" id="chatDock">
     <div class="chat-header">
@@ -182,22 +212,20 @@
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
-      <input type="text" id="chatText" placeholder="Escribe un mensaje..." />
+      <input type="text" id="chatText" placeholder="Escribe un mensaje...">
       <button id="chatSend" type="button">Enviar</button>
     </div>
   </div>
 
-  <!-- FIREBASE: IMPORT -->
+  <!-- Firebase (módulo único) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    window.firebaseLib = { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy };
-  </script>
+    import {
+      getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
+      collection, addDoc, getDocs, onSnapshot, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  <!-- LÓGICA -->
-  <script>
-    const { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy } = window.firebaseLib;
-
+    // --- Config ---
     const firebaseConfig = {
       apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
       authDomain: "lunatrack-95199.firebaseapp.com",
@@ -206,499 +234,322 @@
       messagingSenderId: "82970120947",
       appId: "1:82970120947:web:2d7b70d052816802c05d86"
     };
-
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const db  = getFirestore(app);
 
-    let registrosEnvios = [], registrosFiltrados = [];
+    // --- Estado ---
+    let registrosEnvios = [];
+    let registrosFiltrados = [];
+    let codigoActual = "";
+    let editingDocId = "";
+    window.currentUser = null;
+    window.isAdmin = false;
 
     const nowStr = () => new Date().toLocaleString();
-    const genCode = () => `LT-${Math.floor(100000 + Math.random() * 900000)}`;
+    const genCode = () => `LT-${Math.floor(100000 + Math.random()*900000)}`;
 
-    window.login = function() {
+    /* ===================== LOGIN ===================== */
+    window.login = function(){
       const u = document.getElementById("usuario").value.trim();
       const p = document.getElementById("pin").value.trim();
-      const valid = { "Alexs": "2036", "Mela": "2006", "Amisaday": "1994", "Juan": "5304", "Ana": "0503" };
-
-      if (valid[u] && valid[u] === p) {
+      const valid = { "Alexs":"2036","Mela":"2006","Amisaday":"1994","Juan":"5304","Ana":"0503" };
+      if(valid[u] && valid[u]===p){
+        window.currentUser = u;
+        window.isAdmin = (u==="Alexs");
         localStorage.setItem("usuarioActual", u);
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        document.getElementById("chatFab").style.display = "flex";
-        if (u === "Alexs") document.getElementById("adminBadge").style.display = "inline-flex";
+        document.getElementById("login").style.display="none";
+        document.getElementById("panel").style.display="block";
+        document.getElementById("chatFab").style.display="flex";
+        document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
         cargarEnvios(); initChat();
       } else {
-        document.getElementById("loginError").style.display = "block";
+        document.getElementById("loginError").style.display="block";
       }
     };
 
-    window.cerrarSesion = function() {
-      localStorage.clear();
-      document.getElementById("panel").style.display = "none";
-      document.getElementById("login").style.display = "block";
-      document.getElementById("chatFab").style.display = "none";
+    window.cerrarSesion = function(){
+      localStorage.removeItem("usuarioActual");
+      window.currentUser=null; window.isAdmin=false;
+      document.getElementById("panel").style.display="none";
+      document.getElementById("login").style.display="block";
+      document.getElementById("chatFab").style.display="none";
       document.getElementById("chatDock").classList.remove("open");
     };
 
     // Persistencia
-    window.onload = () => {
-      const user = localStorage.getItem("usuarioActual");
-      if (user) {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        document.getElementById("chatFab").style.display = "flex";
-        if (user === "Alexs") document.getElementById("adminBadge").style.display = "inline-flex";
+    window.addEventListener("load", ()=>{
+      const u = localStorage.getItem("usuarioActual");
+      if(u){
+        window.currentUser=u; window.isAdmin=(u==="Alexs");
+        document.getElementById("login").style.display="none";
+        document.getElementById("panel").style.display="block";
+        document.getElementById("chatFab").style.display="flex";
+        document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
         cargarEnvios(); initChat();
       }
+    });
+
+    /* ========== GUARDAR + RECIBO ========= */
+    window.guardarEnvio = async function(){
+      const cliente = document.getElementById("cliente").value.trim();
+      const destinatario = document.getElementById("destinatario").value.trim();
+      const destino = document.getElementById("destino").value.trim();
+      const estado = document.getElementById("estado").value.trim();
+      const ubicacion = document.getElementById("ubicacion").value.trim();
+      if(!cliente || !destinatario || !destino || !estado || !ubicacion) return alert("Completa todos los campos.");
+      const codigo = genCode();
+      const payload = { codigo, cliente, destinatario, destino, estado, ubicacion, fecha: nowStr(), actualizadoPor: currentUser || "Sistema" };
+      await setDoc(doc(db,"equipaje",codigo), payload);
+      mostrarRecibo(payload); // auto
+      ["cliente","destinatario","destino","estado","ubicacion"].forEach(id=>document.getElementById(id).value="");
+      await cargarEnvios();
+      alert("✅ Envío registrado correctamente.");
     };
 
-    // Cargar envíos
-    async function cargarEnvios() {
-      const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
+    function mostrarRecibo({codigo, cliente, destinatario, destino, estado, ubicacion}){
+      const reciboDiv = document.getElementById("recibo");
+      reciboDiv.innerHTML = `
+        <div class="container" style="margin-top:16px;border:1px solid var(--border)">
+          <h3 style="color:var(--primary);margin-top:0">Recibo de Envío</h3>
+          <p><strong>Código:</strong> ${codigo}</p>
+          <p><strong>Cliente:</strong> ${cliente}</p>
+          <p><strong>Destinatario:</strong> ${destinatario}</p>
+          <p><strong>Destino:</strong> ${destino}</p>
+          <p><strong>Estado:</strong> ${estado}</p>
+          <p><strong>Ubicación:</strong> ${ubicacion}</p>
+          <svg id="codigoBarras"></svg>
+          <button style="margin-top:10px" onclick="window.print()">🖨️ Imprimir Recibo</button>
+        </div>`;
+      JsBarcode("#codigoBarras", codigo, {format:"CODE128", width:2, height:60, displayValue:true, fontSize:16});
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }
+
+    /* ========== TABLA / CARGA ========== */
+    async function cargarEnvios(){
+      const q = query(collection(db,"equipaje"), orderBy("fecha","desc"));
       const qs = await getDocs(q);
       registrosEnvios = [];
-      qs.forEach(s => registrosEnvios.push(s.data()));
-      mostrarEnvios(registrosEnvios);
+      qs.forEach(s=>registrosEnvios.push(s.data()));
+      aplicarFiltros(); // pinta usando filtros activos
       document.getElementById("contador").textContent = `📦 ${registrosEnvios.length} envíos cargados`;
     }
 
-    function mostrarEnvios(lista) {
+    function renderFila(d){
+      const viewBtn = `<button onclick="verRecibo('${d.codigo}')" title="Ver Recibo">🧾</button>`;
+      const editBtn = isAdmin ? `<button onclick="abrirEdicion('${d.codigo}')" title="Editar">✏️</button>` : "";
+      const delBtn  = `<button class="btn-danger" onclick="eliminarRegistro('${d.codigo}')" title="Eliminar">🗑️</button>`;
+      return `<tr>
+        <td>${d.codigo||"—"}</td>
+        <td>${d.cliente||"—"}</td>
+        <td>${d.destinatario||"—"}</td>
+        <td>${d.destino||"—"}</td>
+        <td>${d.estado||"—"}</td>
+        <td>${d.ubicacion||"—"}</td>
+        <td>${d.fecha||"—"}</td>
+        <td>${d.actualizadoPor||"—"}</td>
+        <td>${viewBtn} ${editBtn} ${delBtn}</td>
+      </tr>`;
+    }
+
+    function pintarTabla(lista){
       const body = document.getElementById("tablaBody");
       body.innerHTML = "";
-      lista.forEach(d => {
-        body.innerHTML += `<tr>
-          <td>${d.codigo}</td><td>${d.cliente}</td><td>${d.destinatario}</td>
-          <td>${d.destino}</td><td>${d.estado}</td><td>${d.ubicacion}</td><td>${d.fecha}</td>
-          <td>${d.actualizadoPor || d.registradoPor}</td></tr>`;
+      lista.forEach(d => body.insertAdjacentHTML("beforeend", renderFila(d)));
+      registrosFiltrados = [...lista];
+      document.getElementById("contador").textContent = `📦 ${lista.length} envíos (filtro/búsqueda)`;
+    }
+
+    /* ========== FILTROS + BUSCADOR ========== */
+    window.aplicarFiltros = function(){
+      const estadoSel = document.getElementById("filterEstado").value.toLowerCase();
+      const term = document.getElementById("searchInput").value.trim().toLowerCase();
+
+      let lista = [...registrosEnvios];
+
+      if(estadoSel !== "todos"){
+        lista = lista.filter(x => (x.estado||"").toLowerCase() === estadoSel);
+      }
+
+      if(term){
+        lista = lista.filter(x=>{
+          const codigo = (x.codigo||"").toLowerCase();
+          const cliente = (x.cliente||"").toLowerCase();
+          const destinatario = (x.destinatario||"").toLowerCase();
+          return codigo.includes(term) || cliente.includes(term) || destinatario.includes(term);
+        });
+      }
+      pintarTabla(lista);
+    };
+
+    /* ========== EXPORTAR / IMPRIMIR ========== */
+    window.exportarExcel = function(){
+      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
+      const hoja = XLSX.utils.json_to_sheet(registrosFiltrados);
+      const libro = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
+      const fecha = new Date().toISOString().split("T")[0];
+      XLSX.writeFile(libro, `LunaTrack_filtrado_${fecha}.xlsx`);
+    };
+
+    window.exportarPDF = function(){
+      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
+      const { jsPDF } = window.jspdf;
+      const docPDF = new jsPDF();
+      docPDF.text("LunaTrack - Envíos (filtrados)", 14, 15);
+      const filas = registrosFiltrados.map(d => [d.codigo,d.cliente,d.destinatario,d.destino,d.estado,d.ubicacion,d.fecha,d.actualizadoPor||""]);
+      docPDF.autoTable({ head:[["Código","Cliente","Destinatario","Destino","Estado","Ubicación","Fecha","Actualizado por"]], body:filas, startY:25 });
+      const fecha = new Date().toISOString().split("T")[0];
+      docPDF.save(`LunaTrack_filtrado_${fecha}.pdf`);
+    };
+
+    window.imprimirFiltrado = function(){
+      if(registrosFiltrados.length===0) return alert("No hay registros para imprimir.");
+      let w = window.open("", "PRINT", "height=650,width=900,top=100,left=150");
+      w.document.write(`<html><head><title>Lista filtrada</title><style>
+        body{font-family:'Inter',sans-serif;padding:16px}
+        table{width:100%;border-collapse:collapse}
+        th,td{border:1px solid #ddd;padding:6px;text-align:left}
+        th{background:#143c8c;color:#fff}
+      </style></head><body>`);
+      w.document.write("<h3>Lista filtrada de envíos</h3><table><thead><tr><th>Código</th><th>Cliente</th><th>Destinatario</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th><th>Actualizado por</th></tr></thead><tbody>");
+      registrosFiltrados.forEach(d=>{
+        w.document.write(`<tr><td>${d.codigo||""}</td><td>${d.cliente||""}</td><td>${d.destinatario||""}</td><td>${d.destino||""}</td><td>${d.estado||""}</td><td>${d.ubicacion||""}</td><td>${d.fecha||""}</td><td>${d.actualizadoPor||""}</td></tr>`);
+      });
+      w.document.write("</tbody></table></body></html>");
+      w.document.close(); w.focus(); w.print(); w.close();
+    };
+
+    /* ========== ESCÁNER ========== */
+    const scanInput = document.getElementById("scanInput");
+    if (scanInput){
+      scanInput.addEventListener("change", ()=>{
+        codigoActual = scanInput.value.trim();
+        if(!codigoActual) return;
+        document.getElementById("actualizarForm").style.display="block";
+        scanInput.value="";
       });
     }
 
-    window.filtrarEnvios = function() {
-      const e = document.getElementById("filterEstado").value.toLowerCase();
-      const lista = (e === "todos") ? registrosEnvios : registrosEnvios.filter(x => (x.estado || "").toLowerCase() === e);
-      mostrarEnvios(lista);
+    window.confirmarActualizacion = async function(){
+      const nuevoEstado = document.getElementById("nuevoEstado").value;
+      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
+      if(!codigoActual) return alert("Escanee un código primero.");
+      if(!nuevoEstado) return alert("Selecciona un estado.");
+      const ref = doc(db,"equipaje",codigoActual);
+      const exists = await getDoc(ref);
+      if(!exists.exists()) return alert("Código no encontrado.");
+      await updateDoc(ref, {estado:nuevoEstado, ubicacion:(nuevaUbicacion||"Sin cambios"), fecha:nowStr(), actualizadoPor:currentUser||"Sistema"});
+      document.getElementById("actualizarForm").style.display="none";
+      const msg = document.getElementById("mensajeConfirmacion");
+      msg.style.display="block"; setTimeout(()=>msg.style.display="none", 3200);
+      cargarEnvios();
     };
 
-    // Exportar Excel
-    window.exportarExcel = function() {
-      if (registrosEnvios.length === 0) return alert("No hay registros.");
-      const hoja = XLSX.utils.json_to_sheet(registrosEnvios);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      XLSX.writeFile(libro, "LunaTrack_Export.xlsx");
+    /* ========== VER RECIBO / EDITAR / ELIMINAR ========== */
+    window.verRecibo = async function(codigo){
+      const snap = await getDoc(doc(db,"equipaje",codigo));
+      if(!snap.exists()) return alert("Registro no encontrado.");
+      mostrarRecibo(snap.data());
     };
 
-    // Exportar PDF
-    window.exportarPDF = function() {
-      const { jsPDF } = window.jspdf;
-      const docPDF = new jsPDF();
-      docPDF.text("LunaTrack - Envíos", 14, 15);
-      const filas = registrosEnvios.map(d => [d.codigo, d.cliente, d.destinatario, d.destino, d.estado, d.ubicacion, d.fecha]);
-      docPDF.autoTable({ head: [["Código", "Cliente", "Destinatario", "Destino", "Estado", "Ubicación", "Fecha"]], body: filas, startY: 25 });
-      docPDF.save("LunaTrack_Export.pdf");
+    window.eliminarRegistro = async function(codigo){
+      if(!confirm(`¿Eliminar el envío ${codigo}?`)) return;
+      await deleteDoc(doc(db,"equipaje",codigo));
+      await cargarEnvios();
     };
 
-    // Chat interno
-    function initChat() {
+    window.abrirEdicion = async function(codigo){
+      if(!isAdmin){ alert("⚠️ Solo Alexs puede editar."); return; }
+      const snap = await getDoc(doc(db,"equipaje",codigo));
+      if(!snap.exists()) return alert("Registro no encontrado.");
+      const d = snap.data();
+      editingDocId = codigo;
+      document.getElementById("editCodigo").value = d.codigo||"";
+      document.getElementById("editCliente").value = d.cliente||"";
+      document.getElementById("editDestinatario").value = d.destinatario||"";
+      document.getElementById("editDestino").value = d.destino||"";
+      document.getElementById("editEstado").value = d.estado||"Recibido en la Oficina";
+      document.getElementById("editUbicacion").value = d.ubicacion||"";
+      document.getElementById("editFecha").value = "";
+      document.getElementById("modalBackdrop").style.display="block";
+    };
+
+    window.cerrarModal = function(){
+      document.getElementById("modalBackdrop").style.display="none";
+    };
+
+    window.guardarEdicion = async function(){
+      if(!isAdmin){ alert("⚠️ Solo Alexs puede editar."); return; }
+      const newCode = document.getElementById("editCodigo").value.trim();
+      const obj = {
+        codigo:newCode,
+        cliente:document.getElementById("editCliente").value.trim(),
+        destinatario:document.getElementById("editDestinatario").value.trim(),
+        destino:document.getElementById("editDestino").value.trim(),
+        estado:document.getElementById("editEstado").value,
+        ubicacion:document.getElementById("editUbicacion").value.trim(),
+        fecha:(document.getElementById("editFecha").value.trim() || nowStr()),
+        actualizadoPor: currentUser || "Alexs"
+      };
+      if(newCode !== editingDocId){
+        await setDoc(doc(db,"equipaje",newCode), obj);
+        await deleteDoc(doc(db,"equipaje",editingDocId));
+      }else{
+        await updateDoc(doc(db,"equipaje",editingDocId), obj);
+      }
+      cerrarModal();
+      await cargarEnvios();
+    };
+
+    /* ========== CHAT INTERNO ========== */
+    function initChat(){
       const chatFab = document.getElementById("chatFab");
       const chatDock = document.getElementById("chatDock");
       const chatMsgs = document.getElementById("chatMessages");
       const chatText = document.getElementById("chatText");
       const cerrarChatBtn = document.getElementById("cerrarChatBtn");
       const chatSendBtn = document.getElementById("chatSend");
-      let chatOpen = false;
-      let notifSound = null;
 
-      document.addEventListener("click", () => { if (!notifSound) notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3"); });
+      let chatOpen=false;
+      let notifSound=null;
 
-      window.toggleChat = function() {
-        chatOpen = !chatOpen;
-        chatDock.classList.toggle("open", chatOpen);
-        if (chatOpen) setTimeout(() => chatMsgs.scrollTop = chatMsgs.scrollHeight, 200);
+      document.addEventListener("click",()=>{ if(!notifSound){ notifSound=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3"); }});
+      window.toggleChat=function(){
+        chatOpen=!chatOpen;
+        chatDock.classList.toggle("open",chatOpen);
+        if(chatOpen)setTimeout(()=>chatMsgs.scrollTop=chatMsgs.scrollHeight,200);
+      };
+      chatFab.onclick=toggleChat;
+      cerrarChatBtn.onclick=toggleChat;
+
+      chatSendBtn.onclick=async()=>{
+        const text=chatText.value.trim();
+        if(!text) return;
+        await addDoc(collection(db,"chatInterno"),{ user:localStorage.getItem("usuarioActual")||currentUser||"Usuario", text, createdAt:Date.now() });
+        chatText.value="";
       };
 
-      chatFab.onclick = toggleChat;
-      cerrarChatBtn.onclick = toggleChat;
-
-      chatSendBtn.onclick = async () => {
-        const text = chatText.value.trim();
-        if (!text) return;
-        await addDoc(collection(db, "chatInterno"), { user: localStorage.getItem("usuarioActual"), text, createdAt: Date.now() });
-        chatText.value = "";
-      };
-
-      onSnapshot(query(collection(db, "chatInterno"), orderBy("createdAt", "asc")), snap => {
-        chatMsgs.innerHTML = "";
-        let last = null;
-        snap.forEach(docSnap => {
-          const m = docSnap.data();
-          const mine = m.user === localStorage.getItem("usuarioActual");
-          const div = document.createElement("div");
-          div.className = `msg ${mine ? "mine" : "theirs"}`;
-          div.innerHTML = `<div>${m.text}</div><div class="meta">${m.user} • ${new Date(m.createdAt).toLocaleTimeString()}</div>`;
+      onSnapshot(query(collection(db,"chatInterno"),orderBy("createdAt","asc")),(snap)=>{
+        chatMsgs.innerHTML="";
+        let last=null;
+        snap.forEach(docSnap=>{
+          const m=docSnap.data(); if(!m.text)return;
+          const mine=m.user===(localStorage.getItem("usuarioActual")||currentUser);
+          const div=document.createElement("div");
+          div.className=`msg ${mine?'mine':'theirs'}`;
+          div.innerHTML=`<div>${m.text}</div><div class="meta">${m.user||"?"} • ${new Date(m.createdAt).toLocaleTimeString()}</div>`;
           chatMsgs.appendChild(div);
-          last = m;
+          last=m;
         });
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-        if (last && last.user !== localStorage.getItem("usuarioActual") && !chatOpen) {
-          try { notifSound.currentTime = 0; notifSound.play(); } catch (e) {}
+        chatMsgs.scrollTop=chatMsgs.scrollHeight;
+        if(last && last.user!==(localStorage.getItem("usuarioActual")||currentUser) && !chatOpen){
+          try{ notifSound.currentTime=0; notifSound.play(); }catch(e){}
         }
       });
     }
   </script>
 
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Panel de Registro - Luna Travel</title>
-
-  <!-- Fuente -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-
-  <!-- Librerías utilitarias -->
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
-
-  <style>
-    :root {
-      --primary: #143c8c;
-      --primary-dark: #0f2f6b;
-      --danger: #e74c3c;
-      --bg: #f7f9fc;
-      --white: #fff;
-      --border: #e5e7eb;
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: "Inter", sans-serif;
-      background: var(--bg);
-      margin: 0;
-      color: #111;
-    }
-    .container {
-      max-width: 980px;
-      margin: 32px auto;
-      background: var(--white);
-      padding: 28px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    }
-    h2 { color: var(--primary); margin: 0 0 16px; }
-    input, select, button { font-family: inherit; }
-    input, select {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      width: 100%;
-      margin: 8px 0;
-    }
-    button {
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    button:hover { background: var(--primary-dark); }
-    .btn-danger { background: var(--danger); }
-    .btn-muted { background: #6b7280; }
-    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    @media (max-width: 720px) { .grid { grid-template-columns: 1fr; } }
-    .toolbar { display: flex; flex-wrap: wrap; justify-content: space-between; margin: 14px 0; gap: 10px; }
-
-    /* Chat Dock */
-    .chat-fab {
-      position: fixed;
-      right: 20px;
-      bottom: 20px;
-      background: var(--primary);
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 56px;
-      height: 56px;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-      cursor: pointer;
-      z-index: 9950;
-      font-size: 20px;
-    }
-    .chat-dock {
-      position: fixed;
-      top: 0;
-      right: -380px;
-      width: 360px;
-      height: 100vh;
-      background: #fff;
-      box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
-      display: flex;
-      flex-direction: column;
-      transition: right 0.25s ease;
-      z-index: 9900;
-    }
-    .chat-dock.open { right: 0; }
-    .chat-header {
-      background: var(--primary);
-      color: #fff;
-      padding: 12px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .chat-messages { flex: 1; overflow: auto; padding: 12px; background: #f8fafc; }
-    .msg { max-width: 80%; margin: 6px 0; padding: 8px 10px; border-radius: 10px; }
-    .msg.mine { margin-left: auto; background: rgba(20, 60, 140, 0.1); border: 1px solid #c7d2fe; }
-    .msg.theirs { margin-right: auto; background: #e5e7eb; }
-    .msg .meta { font-size: 11px; color: #555; margin-top: 2px; }
-    .chat-input { display: flex; gap: 8px; padding: 10px; border-top: 1px solid var(--border); }
-    .chat-input input { flex: 1; }
-
-    @media (max-width: 600px) {
-      .chat-dock { width: 100%; right: -100%; }
-      .chat-dock.open { right: 0; }
-      .chat-fab { bottom: 15px; right: 15px; }
-    }
-  </style>
-</head>
-
-<body>
-  <!-- LOGIN -->
-  <div id="login" class="container" style="text-align: center;">
-    <h2>Acceso Administrador</h2>
-    <div class="grid" style="max-width: 420px; margin: 0 auto;">
-      <input type="text" id="usuario" placeholder="Usuario" />
-      <input type="password" id="pin" placeholder="PIN" />
-    </div>
-    <button onclick="login()">Ingresar</button>
-    <p id="loginError" style="color: #d32f2f; display: none;">Usuario o PIN incorrectos.</p>
-  </div>
-
-  <!-- PANEL PRINCIPAL -->
-  <div id="panel" class="container" style="display: none;">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-      <h2>
-        Panel de Registro - Luna Travel
-        <span id="adminBadge" style="display:none; padding:4px 10px; border-radius:999px; background:#10b981; color:#fff; font-size:12px; font-weight:700">🔑 Admin</span>
-      </h2>
-      <button onclick="cerrarSesion()">Cerrar Sesión</button>
-    </div>
-
-    <!-- Filtros y Export -->
-    <div class="toolbar">
-      <div>
-        <label for="filterEstado" style="font-weight:700;color:var(--primary);">Filtrar por estado:</label>
-        <select id="filterEstado" onchange="filtrarEnvios()">
-          <option value="todos">Todos</option>
-          <option value="recibido en la oficina">Recibido en la Oficina</option>
-          <option value="en tránsito">En Tránsito</option>
-          <option value="procesando para entrega">Procesando para Entrega</option>
-          <option value="en reparto">En Reparto</option>
-          <option value="entregado">Entregado</option>
-        </select>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button onclick="exportarExcel()">📤 Excel</button>
-        <button style="background:#c62828" onclick="exportarPDF()">🧾 PDF</button>
-        <button class="btn-muted" onclick="imprimirFiltrado()">🖨️ Imprimir</button>
-      </div>
-    </div>
-
-    <!-- Tabla -->
-    <h3 style="margin:18px 0 6px;">Envíos registrados</h3>
-    <p id="contador">📦 0 envíos cargados</p>
-    <table id="tablaEnvios" style="width:100%;border-collapse:collapse;">
-      <thead>
-        <tr style="background:var(--primary);color:#fff;">
-          <th>Código</th><th>Cliente</th><th>Destinatario</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th><th>Actualizado por</th>
-        </tr>
-      </thead>
-      <tbody id="tablaBody"></tbody>
-    </table>
-  </div>
-
-  <!-- CHAT -->
-  <button class="chat-fab" id="chatFab">💬</button>
-  <div class="chat-dock" id="chatDock">
-    <div class="chat-header">
-      <strong>Chat del Equipo</strong>
-      <button id="cerrarChatBtn" type="button">❌</button>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input">
-      <input type="text" id="chatText" placeholder="Escribe un mensaje..." />
-      <button id="chatSend" type="button">Enviar</button>
-    </div>
-  </div>
-
-  <!-- FIREBASE: IMPORT -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-    window.firebaseLib = { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy };
-  </script>
-
-  <!-- LÓGICA -->
-  <script>
-    const { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc, collection, addDoc, getDocs, onSnapshot, query, orderBy } = window.firebaseLib;
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-      authDomain: "lunatrack-95199.firebaseapp.com",
-      projectId: "lunatrack-95199",
-      storageBucket: "lunatrack-95199.firebasestorage.app",
-      messagingSenderId: "82970120947",
-      appId: "1:82970120947:web:2d7b70d052816802c05d86"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    let registrosEnvios = [], registrosFiltrados = [];
-
-    const nowStr = () => new Date().toLocaleString();
-    const genCode = () => `LT-${Math.floor(100000 + Math.random() * 900000)}`;
-
-    window.login = function() {
-      const u = document.getElementById("usuario").value.trim();
-      const p = document.getElementById("pin").value.trim();
-      const valid = { "Alexs": "2036", "Mela": "2006", "Amisaday": "1994", "Juan": "5304", "Ana": "0503" };
-
-      if (valid[u] && valid[u] === p) {
-        localStorage.setItem("usuarioActual", u);
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        document.getElementById("chatFab").style.display = "flex";
-        if (u === "Alexs") document.getElementById("adminBadge").style.display = "inline-flex";
-        cargarEnvios(); initChat();
-      } else {
-        document.getElementById("loginError").style.display = "block";
-      }
-    };
-
-    window.cerrarSesion = function() {
-      localStorage.clear();
-      document.getElementById("panel").style.display = "none";
-      document.getElementById("login").style.display = "block";
-      document.getElementById("chatFab").style.display = "none";
-      document.getElementById("chatDock").classList.remove("open");
-    };
-
-    // Persistencia
-    window.onload = () => {
-      const user = localStorage.getItem("usuarioActual");
-      if (user) {
-        document.getElementById("login").style.display = "none";
-        document.getElementById("panel").style.display = "block";
-        document.getElementById("chatFab").style.display = "flex";
-        if (user === "Alexs") document.getElementById("adminBadge").style.display = "inline-flex";
-        cargarEnvios(); initChat();
-      }
-    };
-
-    // Cargar envíos
-    async function cargarEnvios() {
-      const q = query(collection(db, "equipaje"), orderBy("fecha", "desc"));
-      const qs = await getDocs(q);
-      registrosEnvios = [];
-      qs.forEach(s => registrosEnvios.push(s.data()));
-      mostrarEnvios(registrosEnvios);
-      document.getElementById("contador").textContent = `📦 ${registrosEnvios.length} envíos cargados`;
-    }
-
-    function mostrarEnvios(lista) {
-      const body = document.getElementById("tablaBody");
-      body.innerHTML = "";
-      lista.forEach(d => {
-        body.innerHTML += `<tr>
-          <td>${d.codigo}</td><td>${d.cliente}</td><td>${d.destinatario}</td>
-          <td>${d.destino}</td><td>${d.estado}</td><td>${d.ubicacion}</td><td>${d.fecha}</td>
-          <td>${d.actualizadoPor || d.registradoPor}</td></tr>`;
-      });
-    }
-
-    window.filtrarEnvios = function() {
-      const e = document.getElementById("filterEstado").value.toLowerCase();
-      const lista = (e === "todos") ? registrosEnvios : registrosEnvios.filter(x => (x.estado || "").toLowerCase() === e);
-      mostrarEnvios(lista);
-    };
-
-    // Exportar Excel
-    window.exportarExcel = function() {
-      if (registrosEnvios.length === 0) return alert("No hay registros.");
-      const hoja = XLSX.utils.json_to_sheet(registrosEnvios);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      XLSX.writeFile(libro, "LunaTrack_Export.xlsx");
-    };
-
-    // Exportar PDF
-    window.exportarPDF = function() {
-      const { jsPDF } = window.jspdf;
-      const docPDF = new jsPDF();
-      docPDF.text("LunaTrack - Envíos", 14, 15);
-      const filas = registrosEnvios.map(d => [d.codigo, d.cliente, d.destinatario, d.destino, d.estado, d.ubicacion, d.fecha]);
-      docPDF.autoTable({ head: [["Código", "Cliente", "Destinatario", "Destino", "Estado", "Ubicación", "Fecha"]], body: filas, startY: 25 });
-      docPDF.save("LunaTrack_Export.pdf");
-    };
-
-    // Chat interno
-    function initChat() {
-      const chatFab = document.getElementById("chatFab");
-      const chatDock = document.getElementById("chatDock");
-      const chatMsgs = document.getElementById("chatMessages");
-      const chatText = document.getElementById("chatText");
-      const cerrarChatBtn = document.getElementById("cerrarChatBtn");
-      const chatSendBtn = document.getElementById("chatSend");
-      let chatOpen = false;
-      let notifSound = null;
-
-      document.addEventListener("click", () => { if (!notifSound) notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3"); });
-
-      window.toggleChat = function() {
-        chatOpen = !chatOpen;
-        chatDock.classList.toggle("open", chatOpen);
-        if (chatOpen) setTimeout(() => chatMsgs.scrollTop = chatMsgs.scrollHeight, 200);
-      };
-
-      chatFab.onclick = toggleChat;
-      cerrarChatBtn.onclick = toggleChat;
-
-      chatSendBtn.onclick = async () => {
-        const text = chatText.value.trim();
-        if (!text) return;
-        await addDoc(collection(db, "chatInterno"), { user: localStorage.getItem("usuarioActual"), text, createdAt: Date.now() });
-        chatText.value = "";
-      };
-
-      onSnapshot(query(collection(db, "chatInterno"), orderBy("createdAt", "asc")), snap => {
-        chatMsgs.innerHTML = "";
-        let last = null;
-        snap.forEach(docSnap => {
-          const m = docSnap.data();
-          const mine = m.user === localStorage.getItem("usuarioActual");
-          const div = document.createElement("div");
-          div.className = `msg ${mine ? "mine" : "theirs"}`;
-          div.innerHTML = `<div>${m.text}</div><div class="meta">${m.user} • ${new Date(m.createdAt).toLocaleTimeString()}</div>`;
-          chatMsgs.appendChild(div);
-          last = m;
-        });
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-        if (last && last.user !== localStorage.getItem("usuarioActual") && !chatOpen) {
-          try { notifSound.currentTime = 0; notifSound.play(); } catch (e) {}
-        }
-      });
-    }
-  </script>
-
+  <!-- Código de barras -->
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
