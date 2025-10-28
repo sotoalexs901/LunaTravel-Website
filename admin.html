@@ -446,66 +446,102 @@
       await cargarEnvios();
     };
 
-    // ---- Chat Interno (Firebase) ----
-    const chatFab   = document.getElementById("chatFab");
-    const chatDock  = document.getElementById("chatDock");
-    const cerrarChatBtn = document.getElementById("cerrarChatBtn");
-    const chatMsgs  = document.getElementById("chatMessages");
-    const chatText  = document.getElementById("chatText");
-    const chatSend  = document.getElementById("chatSend");
-    let chatOpen = false;
-    const notifSound = new Audio("https://cdn.pixabay.com/download/audio/2022/03/15/audio_9c5f0b7edc.mp3?filename=notification-3-156508.mp3");
+    <!-- 🔹 CHAT DEL EQUIPO CON NOTIFICACIONES -->
+<script>
+  const chatFab = document.getElementById("chatFab");
+  const chatDock = document.getElementById("chatDock");
+  const chatBadge = document.getElementById("chatBadge");
+  const chatMsgs = document.getElementById("chatMessages");
+  const chatText = document.getElementById("chatText");
+  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
+  const chatSendBtn = document.getElementById("chatSend");
 
-    function toggleChat(){
-      chatOpen = !chatOpen;
-      chatDock.classList.toggle("open", chatOpen);
-      if (chatOpen) chatMsgs.scrollTop = chatMsgs.scrollHeight;
-    }
-    chatFab.addEventListener("click", toggleChat);
-    cerrarChatBtn.addEventListener("click", toggleChat);
+  let chatOpen = false;
+  let chatUnseen = 0;
+  let lastSeenTs = Date.now();
 
-    async function enviarMensaje(){
-      const text = chatText.value.trim();
-      if(!text) return;
-      await addDoc(collection(db,"chatInterno"), { user: currentUser||localStorage.getItem("usuarioActual")||"Invitado", text, createdAt: Date.now() });
-      chatText.value=""; chatMsgs.scrollTop = chatMsgs.scrollHeight;
-    }
-    chatSend.addEventListener("click", enviarMensaje);
-    chatText.addEventListener("keypress", e => { if(e.key==="Enter") enviarMensaje(); });
+  // 🔔 sonido de notificación
+  const notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3");
 
-    window.iniciarChatInterno = async function(){
-      // mostrar UI chat
-      chatFab.style.display = "flex";
-      chatDock.style.display = "flex";
-
-      // limpiar mensajes >24h (si reglas lo permiten)
-      try{
-        const cutoff = Date.now() - 24*60*60*1000;
-        const qOld = query(collection(db,"chatInterno"), where("createdAt","<", cutoff));
-        const oldSnap = await getDocs(qOld);
-        for(const d of oldSnap.docs){ await deleteDoc(d.ref); }
-      }catch(e){ /* ignorar si reglas más estrictas */ }
-
-      // suscripción realtime
-      const qChat = query(collection(db,"chatInterno"), orderBy("createdAt","asc"));
-      onSnapshot(qChat, (snap)=>{
-        chatMsgs.innerHTML = "";
-        let lastMsg = null;
-        snap.forEach(docSnap=>{
-          const m = docSnap.data(); if(!m || !m.text) return;
-          const mine = (m.user === (currentUser||localStorage.getItem("usuarioActual")));
-          const div = document.createElement("div");
-          div.className = `msg ${mine? 'mine':'theirs'}`;
-          div.innerHTML = `<div>${m.text}</div><div class="meta">${m.user||"?"} • ${new Date(m.createdAt||Date.now()).toLocaleTimeString()}</div>`;
-          chatMsgs.appendChild(div); lastMsg = m;
-        });
+  // ✅ Función de abrir / cerrar chat
+  window.toggleChat = function() {
+    chatOpen = !chatOpen;
+    chatDock.classList.toggle("open", chatOpen);
+    if (chatOpen) {
+      chatBadge.style.display = "none";
+      chatFab.style.animation = "none";
+      chatUnseen = 0;
+      lastSeenTs = Date.now();
+      setTimeout(() => {
         chatMsgs.scrollTop = chatMsgs.scrollHeight;
-        if (lastMsg && lastMsg.user !== (currentUser||localStorage.getItem("usuarioActual")) && !chatOpen){
-          try{ notifSound.currentTime=0; notifSound.play(); }catch(e){}
-        }
-      });
-    };
-  </script>
+      }, 100);
+    }
+  };
+
+  // 🎨 notificación visual (efecto parpadeo en el botón)
+  const style = document.createElement("style");
+  style.textContent = `
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(33,61,122,0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(33,61,122,0); }
+      100% { box-shadow: 0 0 0 0 rgba(33,61,122,0); }
+    }
+  `;
+  document.head.appendChild(style);
+
+  if (cerrarChatBtn) cerrarChatBtn.addEventListener("click", toggleChat);
+  if (chatFab) chatFab.addEventListener("click", toggleChat);
+
+  // 🔹 Función para enviar mensaje (usa Firebase)
+  if (chatSendBtn) {
+    chatSendBtn.addEventListener("click", async () => {
+      const text = chatText.value.trim();
+      if (!text) return;
+      try {
+        await addDoc(collection(db, "chatInterno"), {
+          user: localStorage.getItem("usuarioActual") || currentUser || "Usuario",
+          text,
+          createdAt: Date.now(),
+        });
+        chatText.value = "";
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      } catch (e) {
+        console.error("Error enviando mensaje:", e);
+      }
+    });
+  }
+
+  // 🔹 Escucha de mensajes en tiempo real
+  onSnapshot(query(collection(db, "chatInterno"), orderBy("createdAt", "asc")), (snap) => {
+    chatMsgs.innerHTML = "";
+    let lastMsg = null;
+
+    snap.forEach((docSnap) => {
+      const m = docSnap.data();
+      if (!m.text) return;
+      const mine = (m.user === (localStorage.getItem("usuarioActual") || currentUser));
+      const div = document.createElement("div");
+      div.className = `msg ${mine ? "mine" : "theirs"}`;
+      div.innerHTML = `
+        <div>${m.text}</div>
+        <div class="meta">${m.user || "?"} • ${new Date(m.createdAt).toLocaleTimeString()}</div>
+      `;
+      chatMsgs.appendChild(div);
+      lastMsg = m;
+    });
+
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+
+    // 🔔 Mostrar notificación si llega nuevo mensaje y el chat está cerrado
+    if (lastMsg && lastMsg.user !== (localStorage.getItem("usuarioActual") || currentUser) && !chatOpen) {
+      chatUnseen++;
+      chatBadge.style.display = "block";
+      chatFab.style.animation = "pulse 1.3s infinite";
+      try { notifSound.currentTime = 0; notifSound.play(); } catch (e) {}
+    }
+  });
+</script>
+
 <!-- 🔹 Función toggleChat corregida -->
 <script>
   const chatFab = document.getElementById("chatFab");
