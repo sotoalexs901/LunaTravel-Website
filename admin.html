@@ -14,175 +14,83 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
 
   <style>
-    :root{
+    :root {
       --primary:#143c8c; --primary-dark:#0f2f6b; --danger:#e74c3c;
       --bg:#f7f9fc; --white:#fff; --border:#e5e7eb;
     }
-    *{box-sizing:border-box}
-    body{font-family:'Inter',sans-serif;background:var(--bg);margin:0;color:#111;text-align:center}
-    .container{max-width:980px;margin:32px auto;background:var(--white);padding:28px;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);text-align:left}
-    h2{margin:0 0 16px;color:var(--primary)}
-    input,select,button{font-family:inherit}
-    input,select{padding:10px;border:1px solid #ccc;border-radius:8px;width:100%;margin:8px 0}
-    button{background:var(--primary);color:#fff;border:none;padding:10px 16px;border-radius:8px;cursor:pointer}
-    button:hover{background:var(--primary-dark)}
-    .btn-danger{background:var(--danger)}
-    .btn-muted{background:#6b7280}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    @media (max-width:720px){.grid{grid-template-columns:1fr}}
-    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin:14px 0}
-    #tablaEnvios{width:100%;border-collapse:collapse;margin-top:12px}
-    #tablaEnvios th,#tablaEnvios td{border:1px solid #ddd;padding:8px;text-align:left}
-    #tablaEnvios th{background:var(--primary);color:#fff}
-    .logout-btn{float:right;background:#555}
-    .logout-btn:hover{background:#333}
-    #contador{margin:8px 0 0;font-weight:700;color:var(--primary)}
-
-    /* Modal edición (solo Alexs) */
-    .modal-backdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);z-index:9990}
-    .modal{position:fixed;right:50%;top:50%;transform:translate(50%,-50%);background:#fff;border-radius:12px;box-shadow:0 4px 10px rgba(0,0,0,.1);width:min(640px,95vw);padding:16px;z-index:9991}
-    .modal h3{margin:0 0 10px;color:var(--primary)}
-    .modal .grid{grid-template-columns:1fr 1fr}
-    .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+    body {
+      font-family:'Inter',sans-serif;
+      background:var(--bg);
+      margin:0;
+      color:#111;
+    }
+    .container {
+      max-width:980px;
+      margin:32px auto;
+      background:var(--white);
+      padding:28px;
+      border-radius:12px;
+      box-shadow:0 4px 10px rgba(0,0,0,.1);
+    }
+    h2 { color:var(--primary); margin:0 0 16px; }
+    input,select,button { font-family:inherit; }
+    input,select { padding:10px; border:1px solid #ccc; border-radius:8px; width:100%; margin:8px 0; }
+    button { background:var(--primary); color:#fff; border:none; padding:10px 16px; border-radius:8px; cursor:pointer; }
+    button:hover { background:var(--primary-dark); }
+    .btn-danger { background:var(--danger); }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media (max-width:720px){ .grid { grid-template-columns:1fr; } }
+    .toolbar { display:flex; gap:10px; flex-wrap:wrap; justify-content:space-between; margin:14px 0; }
 
     /* Chat Dock */
-    .chat-fab{position:fixed;right:20px;bottom:20px;background:var(--primary);color:#fff;border:none;border-radius:50%;width:56px;height:56px;display:none;align-items:center;justify-content:center;box-shadow:0 4px 10px rgba(0,0,0,.2);cursor:pointer;z-index:9950;font-size:20px}
-    .chat-dock{position:fixed;top:0;right:-380px;width:360px;height:100vh;background:#fff;box-shadow:-4px 0 16px rgba(0,0,0,.15);z-index:9900;display:none;flex-direction:column;transition:right .25s ease}
-    .chat-dock.open{right:0}
-    .chat-header{background:var(--primary);color:#fff;padding:12px 14px;display:flex;justify-content:space-between;align-items:center}
-    .chat-messages{flex:1;overflow:auto;padding:12px;background:#f8fafc}
-    .msg{max-width:80%;margin:6px 0;padding:8px 10px;border-radius:10px}
-    .msg.mine{margin-left:auto;background:rgba(20,60,140,.1);border:1px solid #c7d2fe}
-    .msg.theirs{margin-right:auto;background:#e5e7eb}
-    .msg .meta{font-size:11px;color:#555;margin-top:2px}
-    .chat-input{display:flex;gap:8px;padding:10px;border-top:1px solid var(--border)}
-    .chat-input input{flex:1}
+    .chat-fab {
+      position:fixed; right:20px; bottom:20px;
+      background:var(--primary); color:#fff;
+      border:none; border-radius:50%; width:56px; height:56px;
+      display:none; align-items:center; justify-content:center;
+      box-shadow:0 4px 10px rgba(0,0,0,.2);
+      cursor:pointer; z-index:9950; font-size:20px;
+    }
+    .chat-dock {
+      position:fixed; top:0; right:-380px; width:360px; height:100vh;
+      background:#fff; box-shadow:-4px 0 16px rgba(0,0,0,.15);
+      display:flex; flex-direction:column; transition:right .25s ease; z-index:9900;
+    }
+    .chat-dock.open { right:0; }
+    .chat-header {
+      background:var(--primary); color:#fff; padding:12px 14px;
+      display:flex; justify-content:space-between; align-items:center;
+    }
+    .chat-messages { flex:1; overflow:auto; padding:12px; background:#f8fafc; }
+    .msg { max-width:80%; margin:6px 0; padding:8px 10px; border-radius:10px; }
+    .msg.mine { margin-left:auto; background:rgba(20,60,140,.1); border:1px solid #c7d2fe; }
+    .msg.theirs { margin-right:auto; background:#e5e7eb; }
+    .msg .meta { font-size:11px; color:#555; margin-top:2px; }
+    .chat-input { display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); }
+    .chat-input input { flex:1; }
   </style>
 </head>
 
 <body>
+
   <!-- LOGIN -->
   <div id="login" class="container" style="text-align:center;">
     <h2>Acceso Administrador</h2>
     <div class="grid" style="max-width:420px;margin:0 auto;">
-      <input type="text" id="usuario" placeholder="Usuario (Alexs / Mela / Amisaday / Juan / Ana)">
+      <input type="text" id="usuario" placeholder="Usuario">
       <input type="password" id="pin" placeholder="PIN">
     </div>
     <button onclick="login()">Ingresar</button>
-    <p id="loginError" style="color:#d32f2f;display:none;margin-top:8px;">Usuario o PIN incorrectos.</p>
+    <p id="loginError" style="color:#d32f2f;display:none;">Usuario o PIN incorrectos.</p>
   </div>
 
   <!-- PANEL -->
   <div id="panel" class="container" style="display:none;">
     <div style="display:flex;align-items:center;justify-content:space-between;">
-      <h2 style="display:flex;align-items:center;gap:8px;">Panel de Registro - Luna Travel
+      <h2>Panel de Registro - Luna Travel
         <span id="adminBadge" style="display:none;padding:4px 10px;border-radius:999px;background:#10b981;color:#fff;font-size:12px;font-weight:700">🔑 Admin</span>
       </h2>
-      <button class="logout-btn" onclick="cerrarSesion()">Cerrar Sesión</button>
-    </div>
-
-    <!-- Registro -->
-    <div class="grid" style="margin-top:12px;">
-      <input type="text" id="cliente" placeholder="Cliente">
-      <input type="text" id="destinatario" placeholder="Destinatario (quien recoge)">
-      <input type="text" id="destino" placeholder="Destino">
-      <select id="estado">
-        <option value="">Seleccionar estado...</option>
-        <option>Recibido en la Oficina</option>
-        <option>En Tránsito</option>
-        <option>Procesando para Entrega</option>
-        <option>En Reparto</option>
-        <option>Entregado</option>
-      </select>
-      <input type="text" id="ubicacion" placeholder="Ubicación (ej. Oficina, Miami, Panamá...)">
-    </div>
-    <button onclick="guardarEnvio()">Guardar y generar recibo</button>
-    <div id="recibo"></div>
-
-    <!-- Filtros / Export -->
-    <div class="toolbar">
-      <div>
-        <label for="filterEstado" style="font-weight:700;color:var(--primary);">Filtrar por estado:</label>
-        <select id="filterEstado" onchange="filtrarEnvios()" style="padding:8px;border-radius:8px;">
-          <option value="todos">Todos</option>
-          <option value="recibido en la oficina">Recibido en la Oficina</option>
-          <option value="en tránsito">En Tránsito</option>
-          <option value="procesando para entrega">Procesando para Entrega</option>
-          <option value="en reparto">En Reparto</option>
-          <option value="entregado">Entregado</option>
-        </select>
-      </div>
-      <div style="display:flex;gap:8px;">
-        <button class="btn" onclick="exportarExcel()">📤 Exportar Excel</button>
-        <button class="btn" style="background:#c62828" onclick="exportarPDF()">🧾 Exportar PDF</button>
-        <button class="btn btn-muted" onclick="imprimirFiltrado()">🖨️ Imprimir lista</button>
-      </div>
-    </div>
-
-    <!-- Escáner -->
-    <h3 style="margin:8px 0 6px;color:var(--primary)">Actualizar estado con escáner</h3>
-    <input type="text" id="scanInput" placeholder="Escanee un código LT..." autofocus>
-    <div id="actualizarForm" style="display:none;margin-top:10px;">
-      <div class="grid">
-        <select id="nuevoEstado">
-          <option value="">Seleccionar nuevo estado...</option>
-          <option>Recibido en la Oficina</option>
-          <option>En Tránsito</option>
-          <option>Procesando para Entrega</option>
-          <option>En Reparto</option>
-          <option>Entregado</option>
-        </select>
-        <input type="text" id="nuevaUbicacion" placeholder="Nueva ubicación (opcional)">
-      </div>
-      <button class="btn" onclick="confirmarActualizacion()">Actualizar</button>
-    </div>
-
-    <div id="mensajeConfirmacion" style="display:none;margin:12px 0;padding:10px;border:1px solid #66bb6a;border-radius:8px;background:#e8f7ed;color:#1b5e20;font-weight:600;">✅ Envío actualizado correctamente.</div>
-
-    <!-- Tabla -->
-    <h3 style="margin:18px 0 6px;">Envíos registrados</h3>
-    <p id="contador">📦 0 envíos cargados</p>
-    <table id="tablaEnvios">
-      <thead>
-        <tr>
-          <th>Código</th>
-          <th>Cliente</th>
-          <th>Destinatario</th>
-          <th>Destino</th>
-          <th>Estado</th>
-          <th>Ubicación</th>
-          <th>Fecha</th>
-          <th>Actualizado por</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody id="tablaBody"></tbody>
-    </table>
-  </div>
-
-  <!-- Modal edición (solo Alexs) -->
-  <div id="modalBackdrop" class="modal-backdrop">
-    <div class="modal">
-      <h3>Editar envío</h3>
-      <div class="grid">
-        <input type="text" id="editCodigo" placeholder="Código (LT-XXXXXX)">
-        <input type="text" id="editCliente" placeholder="Cliente">
-        <input type="text" id="editDestinatario" placeholder="Destinatario">
-        <input type="text" id="editDestino" placeholder="Destino">
-        <select id="editEstado">
-          <option>Recibido en la Oficina</option>
-          <option>En Tránsito</option>
-          <option>Procesando para Entrega</option>
-          <option>En Reparto</option>
-          <option>Entregado</option>
-        </select>
-        <input type="text" id="editUbicacion" placeholder="Ubicación">
-        <input type="text" id="editFecha" placeholder="Fecha (auto si dejas vacío)">
-      </div>
-      <div class="modal-actions">
-        <button class="btn btn-muted" onclick="cerrarModal()">Cancelar</button>
-        <button class="btn" onclick="guardarEdicion()">Guardar cambios</button>
-      </div>
+      <button onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
   </div>
 
@@ -191,564 +99,131 @@
   <div class="chat-dock" id="chatDock">
     <div class="chat-header">
       <strong>Chat del Equipo</strong>
-      <button class="btn btn-muted" id="cerrarChatBtn" type="button">❌</button>
+      <button id="cerrarChatBtn" type="button">❌</button>
     </div>
     <div class="chat-messages" id="chatMessages"></div>
     <div class="chat-input">
       <input type="text" id="chatText" placeholder="Escribe un mensaje...">
-      <button class="btn" id="chatSend" type="button">Enviar</button>
+      <button id="chatSend" type="button">Enviar</button>
     </div>
   </div>
 
-  <!-- FIREBASE + Lógica (TODO en un solo módulo) -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { 
-    getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
-    collection, addDoc, getDocs, onSnapshot, query, orderBy, where 
-  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  <!-- FIREBASE: IMPORTS -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
+      collection, addDoc, getDocs, onSnapshot, query, orderBy
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-  // ✅ Exportamos Firebase a window para usarlo fuera del módulo
-  window.firebaseLib = { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
-                         collection, addDoc, getDocs, onSnapshot, query, orderBy, where };
-</script>
+    window.firebaseLib = { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
+      collection, addDoc, getDocs, onSnapshot, query, orderBy };
+  </script>
 
-<script>
-  // ✅ Importa lo que guardamos desde el módulo anterior
-  const { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
-          collection, addDoc, getDocs, onSnapshot, query, orderBy, where } = window.firebaseLib;
+  <!-- LÓGICA PRINCIPAL -->
+  <script>
+    const { initializeApp, getFirestore, doc, setDoc, updateDoc, deleteDoc, getDoc,
+            collection, addDoc, getDocs, onSnapshot, query, orderBy } = window.firebaseLib;
 
-  // ---- CONFIG FIREBASE ----
-  const firebaseConfig = {
-    apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
-    authDomain: "lunatrack-95199.firebaseapp.com",
-    projectId: "lunatrack-95199",
-    storageBucket: "lunatrack-95199.firebasestorage.app",
-    messagingSenderId: "82970120947",
-    appId: "1:82970120947:web:2d7b70d052816802c05d86",
-    measurementId: "G-QCYKV5DXKD"
-  };
+    // --- Config Firebase ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyBUiJ9u2GyPBovgoaS64r89E1tydCP5Na4",
+      authDomain: "lunatrack-95199.firebaseapp.com",
+      projectId: "lunatrack-95199",
+      storageBucket: "lunatrack-95199.firebasestorage.app",
+      messagingSenderId: "82970120947",
+      appId: "1:82970120947:web:2d7b70d052816802c05d86"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  // ---- Variables globales ----
-  window.currentUser = null;
-  window.isAdmin = false;
-
-  // ---- LOGIN ----
-  window.login = function() {
-    const u = document.getElementById("usuario").value.trim();
-    const p = document.getElementById("pin").value.trim();
-    const valid = { "Alexs":"2036","Mela":"2006","Amisaday":"1994","Juan":"5304","Ana":"0503" };
-
-    if(valid[u] && valid[u]===p){
-      window.currentUser = u;
-      window.isAdmin = (u==="Alexs");
-      localStorage.setItem("usuarioActual", u);
-      localStorage.setItem("rolUsuario", isAdmin?"admin":"operador");
-      document.getElementById("login").style.display="none";
-      document.getElementById("panel").style.display="block";
-      const badge=document.getElementById("adminBadge");
-      if(badge) badge.style.display=isAdmin?"inline-flex":"none";
-      if(typeof cargarEnvios==="function") cargarEnvios();
-      if(typeof initChat==="function") initChat();
-    } else {
-      document.getElementById("loginError").style.display="block";
-    }
-  };
-
-  // ---- CERRAR SESIÓN ----
-  window.cerrarSesion = function(){
-    localStorage.removeItem("usuarioActual");
-    localStorage.removeItem("rolUsuario");
-    window.currentUser=null;
-    window.isAdmin=false;
-    document.getElementById("panel").style.display="none";
-    document.getElementById("login").style.display="block";
-  };
-</script>
-
-
-/* 🔹 CERRAR SESIÓN */
-window.cerrarSesion = function() {
-  try {
-    localStorage.removeItem("usuarioActual");
-    localStorage.removeItem("rolUsuario");
+    // --- Variables globales ---
     window.currentUser = null;
     window.isAdmin = false;
 
-    document.getElementById("panel").style.display = "none";
-    document.getElementById("login").style.display = "block";
-    document.getElementById("usuario").value = "";
-    document.getElementById("pin").value = "";
-    document.getElementById("loginError").style.display = "none";
+    // --- LOGIN ---
+    window.login = function() {
+      const u = document.getElementById("usuario").value.trim();
+      const p = document.getElementById("pin").value.trim();
+      const valid = { "Alexs":"2036","Mela":"2006","Amisaday":"1994","Juan":"5304","Ana":"0503" };
 
-    console.log("🚪 Sesión cerrada correctamente");
-  } catch (err) {
-    console.error("Error al cerrar sesión:", err);
-  }
-};
+      if(valid[u] && valid[u]===p){
+        currentUser = u;
+        isAdmin = (u==="Alexs");
+        localStorage.setItem("usuarioActual", u);
+        document.getElementById("login").style.display="none";
+        document.getElementById("panel").style.display="block";
+        document.getElementById("adminBadge").style.display = isAdmin ? "inline-flex" : "none";
+        document.getElementById("chatFab").style.display="flex";
+        if(typeof initChat==="function") initChat();
+      } else {
+        document.getElementById("loginError").style.display="block";
+      }
+    };
 
-    window.cerrarSesion = function () {
-      document.getElementById("panel").style.display = "none";
-      document.getElementById("login").style.display = "block";
-      currentUser = ""; isAdmin = false;
+    // --- CERRAR SESIÓN ---
+    window.cerrarSesion = function(){
       localStorage.removeItem("usuarioActual");
-      // Oculta chat
-      document.getElementById("chatFab").style.display = "none";
-      document.getElementById("chatDock").style.display = "none";
+      currentUser=null; isAdmin=false;
+      document.getElementById("panel").style.display="none";
+      document.getElementById("login").style.display="block";
+      document.getElementById("chatFab").style.display="none";
+      document.getElementById("chatDock").classList.remove("open");
     };
 
-    // ---- Crear envío + Recibo ----
-    window.guardarEnvio = async function () {
-      const cliente = document.getElementById("cliente").value.trim();
-      const destinatario = document.getElementById("destinatario").value.trim();
-      const destino = document.getElementById("destino").value.trim();
-      const estado = document.getElementById("estado").value.trim();
-      const ubicacion = document.getElementById("ubicacion").value.trim();
-      if (!cliente || !destinatario || !destino || !estado || !ubicacion) {
-        alert("Completa todos los campos."); return;
-      }
-      const codigo = genCode();
-      const payload = {
-        codigo, cliente, destinatario, destino, estado, ubicacion,
-        fecha: nowStr(), actualizadoPor: currentUser, registradoPor: currentUser
+    // --- CHAT DEL EQUIPO ---
+    function initChat(){
+      const chatFab = document.getElementById("chatFab");
+      const chatDock = document.getElementById("chatDock");
+      const chatMsgs = document.getElementById("chatMessages");
+      const chatText = document.getElementById("chatText");
+      const cerrarChatBtn = document.getElementById("cerrarChatBtn");
+      const chatSendBtn = document.getElementById("chatSend");
+
+      let chatOpen=false;
+      let notifSound=null;
+
+      document.addEventListener("click",()=>{ if(!notifSound){ notifSound=new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3"); }});
+
+      window.toggleChat=function(){
+        chatOpen=!chatOpen;
+        chatDock.classList.toggle("open",chatOpen);
+        if(chatOpen)setTimeout(()=>chatMsgs.scrollTop=chatMsgs.scrollHeight,200);
       };
-      await setDoc(doc(db,"equipaje",codigo), payload);
-      mostrarRecibo(payload);
-      ["cliente","destinatario","destino","estado","ubicacion"].forEach(id=>document.getElementById(id).value="");
-      await cargarEnvios();
-      alert("✅ Envío registrado correctamente.");
-    };
 
-    function mostrarRecibo({codigo, cliente, destinatario, destino, estado, ubicacion}) {
-      const reciboDiv = document.getElementById("recibo");
-      reciboDiv.innerHTML = `
-        <div class="container" style="margin-top:16px;border:1px solid ${getComputedStyle(document.documentElement).getPropertyValue('--border')}">
-          <h3 style="color:var(--primary);margin-top:0">Recibo de Envío</h3>
-          <p><strong>Código:</strong> ${codigo}</p>
-          <p><strong>Cliente:</strong> ${cliente}</p>
-          <p><strong>Destinatario:</strong> ${destinatario}</p>
-          <p><strong>Destino:</strong> ${destino}</p>
-          <p><strong>Estado:</strong> ${estado}</p>
-          <p><strong>Ubicación:</strong> ${ubicacion}</p>
-          <svg id="codigoBarras"></svg>
-          <button class="btn" style="margin-top:10px" onclick="window.print()">🖨️ Imprimir Recibo</button>
-        </div>`;
-      JsBarcode("#codigoBarras", codigo, {format:"CODE128", width:2, height:60, displayValue:true, fontSize:16});
-    }
+      chatFab.onclick=toggleChat;
+      cerrarChatBtn.onclick=toggleChat;
 
-    // ---- Cargar / Mostrar envíos ----
-    async function cargarEnvios() {
-      const q = query(collection(db,"equipaje"), orderBy("fecha","desc"));
-      const qs = await getDocs(q);
-      registrosEnvios = [];
-      qs.forEach(s => registrosEnvios.push(s.data()));
-      mostrarEnvios(registrosEnvios);
-      document.getElementById("contador").textContent = `📦 ${registrosEnvios.length} envíos cargados`;
-    }
-    function renderFila(d){
-      const editBtn = isAdmin
-        ? `<button class="btn" onclick="abrirEdicion('${d.codigo}')" title="Editar">✏️</button>`
-        : `<button class="btn" onclick="alert('⚠️ Solo Alexs puede editar.')" title="Editar">✏️</button>`;
-      const delBtn  = `<button class="btn btn-danger" onclick="eliminarRegistro('${d.codigo}')" title="Eliminar">🗑️</button>`;
-      return `
-        <tr>
-          <td>${d.codigo}</td><td>${d.cliente||"—"}</td><td>${d.destinatario||"—"}</td>
-          <td>${d.destino||"—"}</td><td>${d.estado||"—"}</td><td>${d.ubicacion||"—"}</td>
-          <td>${d.fecha||"—"}</td><td>${d.actualizadoPor||d.registradoPor||"—"}</td>
-          <td>${editBtn} ${delBtn}</td>
-        </tr>`;
-    }
-    function mostrarEnvios(lista){
-      const body = document.getElementById("tablaBody");
-      body.innerHTML = "";
-      lista.forEach(d => body.insertAdjacentHTML("beforeend", renderFila(d)));
-      registrosFiltrados = [...lista];
-      document.getElementById("contador").textContent = `📦 ${lista.length} envíos cargados`;
-    }
-
-    // ---- Filtro / Export / Imprimir ----
-    window.filtrarEnvios = function(){
-      const e = document.getElementById("filterEstado").value.toLowerCase();
-      const lista = (e==="todos") ? registrosEnvios : registrosEnvios.filter(x => (x.estado||"").toLowerCase()===e);
-      mostrarEnvios(lista);
-    };
-    window.exportarExcel = function(){
-      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
-      const hoja = XLSX.utils.json_to_sheet(registrosFiltrados);
-      const libro = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(libro, hoja, "Envíos");
-      const fecha = new Date().toISOString().split("T")[0];
-      XLSX.writeFile(libro, `LunaTrack_filtrado_${fecha}.xlsx`);
-    };
-    window.exportarPDF = function(){
-      if(registrosFiltrados.length===0) return alert("No hay registros para exportar.");
-      const { jsPDF } = window.jspdf;
-      const docPDF = new jsPDF();
-      docPDF.text("LunaTrack - Envíos (filtrados)", 14, 15);
-      const filas = registrosFiltrados.map(d => [d.codigo,d.cliente,d.destinatario,d.destino,d.estado,d.ubicacion,d.fecha,d.actualizadoPor||d.registradoPor||""]);
-      docPDF.autoTable({ head:[["Código","Cliente","Destinatario","Destino","Estado","Ubicación","Fecha","Actualizado por"]], body:filas, startY:25 });
-      const fecha = new Date().toISOString().split("T")[0];
-      docPDF.save(`LunaTrack_filtrado_${fecha}.pdf`);
-    };
-    window.imprimirFiltrado = function(){
-      if(registrosFiltrados.length===0) return alert("No hay registros para imprimir.");
-      let w = window.open("", "PRINT", "height=650,width=900,top=100,left=150");
-      w.document.write(`<html><head><title>Lista filtrada</title><style>
-        body{font-family:'Inter',sans-serif;padding:16px}
-        table{width:100%;border-collapse:collapse}
-        th,td{border:1px solid #ddd;padding:6px;text-align:left}
-        th{background:#143c8c;color:#fff}
-      </style></head><body>`);
-      w.document.write("<h3>Lista filtrada de envíos</h3><table><thead><tr><th>Código</th><th>Cliente</th><th>Destinatario</th><th>Destino</th><th>Estado</th><th>Ubicación</th><th>Fecha</th><th>Actualizado por</th></tr></thead><tbody>");
-      registrosFiltrados.forEach(d=>{
-        w.document.write(`<tr><td>${d.codigo}</td><td>${d.cliente||""}</td><td>${d.destinatario||""}</td><td>${d.destino||""}</td><td>${d.estado||""}</td><td>${d.ubicacion||""}</td><td>${d.fecha||""}</td><td>${d.actualizadoPor||d.registradoPor||""}</td></tr>`);
-      });
-      w.document.write("</tbody></table></body></html>");
-      w.document.close(); w.focus(); w.print(); w.close();
-    };
-
-    // ---- Escáner actualización ----
-    const scanInput = document.getElementById("scanInput");
-    scanInput.addEventListener("change", ()=>{
-      codigoActual = scanInput.value.trim();
-      if(!codigoActual) return;
-      document.getElementById("actualizarForm").style.display = "block";
-      scanInput.value="";
-    });
-    window.confirmarActualizacion = async function(){
-      const nuevoEstado = document.getElementById("nuevoEstado").value;
-      const nuevaUbicacion = document.getElementById("nuevaUbicacion").value;
-      if(!codigoActual) return alert("Escanee un código primero.");
-      if(!nuevoEstado) return alert("Selecciona un estado.");
-      const ref = doc(db,"equipaje",codigoActual);
-      const exists = await getDoc(ref);
-      if(!exists.exists()) return alert("Código no encontrado.");
-      await updateDoc(ref, {estado:nuevoEstado, ubicacion:(nuevaUbicacion||"Sin cambios"), fecha:nowStr(), actualizadoPor:currentUser||"Sistema"});
-      document.getElementById("actualizarForm").style.display="none";
-      const msg = document.getElementById("mensajeConfirmacion");
-      msg.style.display="block"; setTimeout(()=>msg.style.display="none", 3200);
-      cargarEnvios();
-    };
-
-    // ---- Eliminar registro (todos pueden) ----
-    window.eliminarRegistro = async function(codigo){
-      if(!confirm(`¿Eliminar el envío ${codigo}?`)) return;
-      await deleteDoc(doc(db,"equipaje",codigo));
-      await cargarEnvios();
-    };
-
-    // ---- Modal edición (solo Alexs) ----
-    window.abrirEdicion = async function(codigo){
-      if(!isAdmin){ alert("⚠️ Solo Alexs puede editar."); return; }
-      const ref = doc(db,"equipaje",codigo);
-      const snap = await getDoc(ref);
-      if(!snap.exists()) return alert("Registro no encontrado.");
-      const d = snap.data();
-      editingDocId = codigo;
-      document.getElementById("editCodigo").value = d.codigo||"";
-      document.getElementById("editCliente").value = d.cliente||"";
-      document.getElementById("editDestinatario").value = d.destinatario||"";
-      document.getElementById("editDestino").value = d.destino||"";
-      document.getElementById("editEstado").value = d.estado||"Recibido en la Oficina";
-      document.getElementById("editUbicacion").value = d.ubicacion||"";
-      document.getElementById("editFecha").value = "";
-      document.getElementById("modalBackdrop").style.display="block";
-    };
-    window.cerrarModal = function(){
-      document.getElementById("modalBackdrop").style.display="none";
-    };
-    window.guardarEdicion = async function(){
-      if(!isAdmin){ alert("⚠️ Solo Alexs puede editar."); return; }
-      const newCode = document.getElementById("editCodigo").value.trim();
-      const obj = {
-        codigo:newCode,
-        cliente:document.getElementById("editCliente").value.trim(),
-        destinatario:document.getElementById("editDestinatario").value.trim(),
-        destino:document.getElementById("editDestino").value.trim(),
-        estado:document.getElementById("editEstado").value,
-        ubicacion:document.getElementById("editUbicacion").value.trim(),
-        fecha:(document.getElementById("editFecha").value.trim() || nowStr()),
-        actualizadoPor: currentUser || "Alexs"
+      chatSendBtn.onclick=async()=>{
+        const text=chatText.value.trim();
+        if(!text)return;
+        await addDoc(collection(db,"chatInterno"),{
+          user:localStorage.getItem("usuarioActual")||currentUser||"Usuario",
+          text,createdAt:Date.now()
+        });
+        chatText.value="";
       };
-      if(newCode !== editingDocId){
-        await setDoc(doc(db,"equipaje",newCode), obj);
-        await deleteDoc(doc(db,"equipaje",editingDocId));
-      }else{
-        await updateDoc(doc(db,"equipaje",editingDocId), obj);
-      }
-      cerrarModal();
-      await cargarEnvios();
-    };
 
-    <!-- 🔹 CHAT DEL EQUIPO CON NOTIFICACIONES -->
-<script>
-  const chatFab = document.getElementById("chatFab");
-  const chatDock = document.getElementById("chatDock");
-  const chatBadge = document.getElementById("chatBadge");
-  const chatMsgs = document.getElementById("chatMessages");
-  const chatText = document.getElementById("chatText");
-  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
-  const chatSendBtn = document.getElementById("chatSend");
-
-  let chatOpen = false;
-  let chatUnseen = 0;
-  let lastSeenTs = Date.now();
-
-  // 🔔 sonido de notificación
-let notifSound;
-document.addEventListener("click", () => {
-  if (!notifSound) {
-    notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3");
-  }
-});
-
-
-  // ✅ Función de abrir / cerrar chat
-  window.toggleChat = function() {
-    chatOpen = !chatOpen;
-    chatDock.classList.toggle("open", chatOpen);
-    if (chatOpen) {
-      chatBadge.style.display = "none";
-      chatFab.style.animation = "none";
-      chatUnseen = 0;
-      lastSeenTs = Date.now();
-      setTimeout(() => {
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-      }, 100);
-    }
-  };
-
-  // 🎨 notificación visual (efecto parpadeo en el botón)
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(33,61,122,0.7); }
-      70% { box-shadow: 0 0 0 12px rgba(33,61,122,0); }
-      100% { box-shadow: 0 0 0 0 rgba(33,61,122,0); }
-    }
-  `;
-  document.head.appendChild(style);
-
-  if (cerrarChatBtn) cerrarChatBtn.addEventListener("click", toggleChat);
-  if (chatFab) chatFab.addEventListener("click", toggleChat);
-
-  // 🔹 Función para enviar mensaje (usa Firebase)
-  if (chatSendBtn) {
-    chatSendBtn.addEventListener("click", async () => {
-      const text = chatText.value.trim();
-      if (!text) return;
-      try {
-        await addDoc(collection(db, "chatInterno"), {
-          user: localStorage.getItem("usuarioActual") || currentUser || "Usuario",
-          text,
-          createdAt: Date.now(),
+      onSnapshot(query(collection(db,"chatInterno"),orderBy("createdAt","asc")),(snap)=>{
+        chatMsgs.innerHTML="";
+        let last=null;
+        snap.forEach(docSnap=>{
+          const m=docSnap.data(); if(!m.text)return;
+          const mine=m.user===(localStorage.getItem("usuarioActual")||currentUser);
+          const div=document.createElement("div");
+          div.className=`msg ${mine?"mine":"theirs"}`;
+          div.innerHTML=`<div>${m.text}</div><div class="meta">${m.user} • ${new Date(m.createdAt).toLocaleTimeString()}</div>`;
+          chatMsgs.appendChild(div);
+          last=m;
         });
-        chatText.value = "";
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-      } catch (e) {
-        console.error("Error enviando mensaje:", e);
-      }
-    });
-  }
-
-  // 🔹 Escucha de mensajes en tiempo real
-  onSnapshot(query(collection(db, "chatInterno"), orderBy("createdAt", "asc")), (snap) => {
-    chatMsgs.innerHTML = "";
-    let lastMsg = null;
-
-    snap.forEach((docSnap) => {
-      const m = docSnap.data();
-      if (!m.text) return;
-      const mine = (m.user === (localStorage.getItem("usuarioActual") || currentUser));
-      const div = document.createElement("div");
-      div.className = `msg ${mine ? "mine" : "theirs"}`;
-      div.innerHTML = `
-        <div>${m.text}</div>
-        <div class="meta">${m.user || "?"} • ${new Date(m.createdAt).toLocaleTimeString()}</div>
-      `;
-      chatMsgs.appendChild(div);
-      lastMsg = m;
-    });
-
-    chatMsgs.scrollTop = chatMsgs.scrollHeight;
-
-    // 🔔 Mostrar notificación si llega nuevo mensaje y el chat está cerrado
-    if (lastMsg && lastMsg.user !== (localStorage.getItem("usuarioActual") || currentUser) && !chatOpen) {
-      chatUnseen++;
-      chatBadge.style.display = "block";
-      chatFab.style.animation = "pulse 1.3s infinite";
-      try { notifSound.currentTime = 0; notifSound.play(); } catch (e) {}
-    }
-  });
-</script>
-
-<!-- 🔹 Función toggleChat corregida -->
-<script>
-  const chatFab = document.getElementById("chatFab");
-  const chatDock = document.getElementById("chatDock");
-  const chatBadge = document.getElementById("chatBadge");
-  const chatMsgs = document.getElementById("chatMessages");
-  const chatText = document.getElementById("chatText");
-  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
-
-  let chatOpen = false;
-  let chatUnseen = 0;
-
-  // ✅ Esta función faltaba (causaba el error)
-  window.toggleChat = function() {
-    chatOpen = !chatOpen;
-    chatDock.classList.toggle("open", chatOpen);
-    if (chatOpen) {
-      chatBadge.style.display = "none";
-      chatUnseen = 0;
-      setTimeout(() => {
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-      }, 100);
-    }
-  };
-
-  // Cerrar chat con el botón ❌
-  if (cerrarChatBtn) {
-    cerrarChatBtn.addEventListener("click", toggleChat);
-  }
-
-  // Abrir chat con la burbuja 💬
-  if (chatFab) {
-    chatFab.addEventListener("click", toggleChat);
-  }
-</script>
-<!-- 🔹 CHAT INTERNO DEL EQUIPO - OPTIMIZADO PARA MÓVIL -->
-<script>
-  // --- Referencias al DOM ---
-  const chatFab = document.getElementById("chatFab");
-  const chatDock = document.getElementById("chatDock");
-  const chatBadge = document.getElementById("chatBadge");
-  const chatMsgs = document.getElementById("chatMessages");
-  const chatText = document.getElementById("chatText");
-  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
-  const chatSendBtn = document.getElementById("chatSend");
-
-  // --- Variables globales ---
-  let chatOpen = false;
-  let chatUnseen = 0;
-  let lastSeenTs = Date.now();
-  let notifSound = null;
-
-  // ✅ Cargar sonido sólo después de una interacción (compatible con móviles)
-  document.addEventListener("click", () => {
-    if (!notifSound) {
-      notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3");
-    }
-  });
-
-  // --- Función para abrir/cerrar el chat ---
-  window.toggleChat = function () {
-    chatOpen = !chatOpen;
-    chatDock.classList.toggle("open", chatOpen);
-
-    if (chatOpen) {
-      chatBadge.style.display = "none";
-      chatFab.style.animation = "none";
-      chatUnseen = 0;
-      lastSeenTs = Date.now();
-      setTimeout(() => (chatMsgs.scrollTop = chatMsgs.scrollHeight), 200);
-    }
-  };
-
-  // --- Animación visual cuando hay mensajes nuevos ---
-  const style = document.createElement("style");
-  style.textContent = `
-    @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(33,61,122,0.7); }
-      70% { box-shadow: 0 0 0 12px rgba(33,61,122,0); }
-      100% { box-shadow: 0 0 0 0 rgba(33,61,122,0); }
-    }
-
-    @media (max-width: 600px) {
-      .chat-dock {
-        width: 100%;
-        right: -100%;
-      }
-      .chat-dock.open {
-        right: 0;
-      }
-      .chat-fab {
-        bottom: 15px;
-        right: 15px;
-      }
-    }
-  `;
-  document.head.appendChild(style);
-
-  // --- Listeners de apertura/cierre/envío ---
-  if (chatFab) chatFab.addEventListener("click", toggleChat);
-  if (cerrarChatBtn) cerrarChatBtn.addEventListener("click", toggleChat);
-
-  if (chatSendBtn) {
-    chatSendBtn.addEventListener("click", async () => {
-      const text = chatText.value.trim();
-      if (!text) return;
-
-      try {
-        await addDoc(collection(db, "chatInterno"), {
-          user: localStorage.getItem("usuarioActual") || currentUser || "Usuario",
-          text,
-          createdAt: Date.now(),
-        });
-        chatText.value = "";
-        chatMsgs.scrollTop = chatMsgs.scrollHeight;
-      } catch (err) {
-        console.error("Error al enviar mensaje:", err);
-      }
-    });
-  }
-
-  // --- Escucha en tiempo real del chat ---
-  onSnapshot(query(collection(db, "chatInterno"), orderBy("createdAt", "asc")), (snap) => {
-    chatMsgs.innerHTML = "";
-    let lastMsg = null;
-
-    snap.forEach((docSnap) => {
-      const m = docSnap.data();
-      if (!m.text) return;
-      const mine = m.user === (localStorage.getItem("usuarioActual") || currentUser);
-      const div = document.createElement("div");
-      div.className = `msg ${mine ? "mine" : "theirs"}`;
-      div.innerHTML = `
-        <div>${m.text}</div>
-        <div class="meta">${m.user || "?"} • ${new Date(m.createdAt).toLocaleTimeString()}</div>
-      `;
-      chatMsgs.appendChild(div);
-      lastMsg = m;
-    });
-
-    chatMsgs.scrollTop = chatMsgs.scrollHeight;
-
-    // 🔔 Notificación si hay mensaje nuevo y el chat está cerrado
-    if (
-      lastMsg &&
-      lastMsg.user !== (localStorage.getItem("usuarioActual") || currentUser) &&
-      !chatOpen
-    ) {
-      chatUnseen++;
-      chatBadge.style.display = "block";
-      chatFab.style.animation = "pulse 1.2s infinite";
-
-      // reproducir sonido si se puede
-      try {
-        if (notifSound) {
-          notifSound.currentTime = 0;
-          notifSound.play();
+        chatMsgs.scrollTop=chatMsgs.scrollHeight;
+        if(last && last.user!==(localStorage.getItem("usuarioActual")||currentUser) && !chatOpen){
+          try{notifSound.currentTime=0;notifSound.play();}catch(e){}
         }
-      } catch (e) {}
+      });
     }
-  });
-</script>
+  </script>
 
-<!-- Código de barras -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
