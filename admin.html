@@ -461,7 +461,13 @@
   let lastSeenTs = Date.now();
 
   // 🔔 sonido de notificación
-  const notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3");
+let notifSound;
+document.addEventListener("click", () => {
+  if (!notifSound) {
+    notifSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-notification-bell-590.mp3");
+  }
+});
+
 
   // ✅ Función de abrir / cerrar chat
   window.toggleChat = function() {
