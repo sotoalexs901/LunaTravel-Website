@@ -506,8 +506,43 @@
       });
     };
   </script>
+<!-- 🔹 Función toggleChat corregida -->
+<script>
+  const chatFab = document.getElementById("chatFab");
+  const chatDock = document.getElementById("chatDock");
+  const chatBadge = document.getElementById("chatBadge");
+  const chatMsgs = document.getElementById("chatMessages");
+  const chatText = document.getElementById("chatText");
+  const cerrarChatBtn = document.getElementById("cerrarChatBtn");
 
-  <!-- Código de barras -->
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  let chatOpen = false;
+  let chatUnseen = 0;
+
+  // ✅ Esta función faltaba (causaba el error)
+  window.toggleChat = function() {
+    chatOpen = !chatOpen;
+    chatDock.classList.toggle("open", chatOpen);
+    if (chatOpen) {
+      chatBadge.style.display = "none";
+      chatUnseen = 0;
+      setTimeout(() => {
+        chatMsgs.scrollTop = chatMsgs.scrollHeight;
+      }, 100);
+    }
+  };
+
+  // Cerrar chat con el botón ❌
+  if (cerrarChatBtn) {
+    cerrarChatBtn.addEventListener("click", toggleChat);
+  }
+
+  // Abrir chat con la burbuja 💬
+  if (chatFab) {
+    chatFab.addEventListener("click", toggleChat);
+  }
+</script>
+
+<!-- Código de barras -->
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
 </body>
 </html>
