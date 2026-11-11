@@ -2,8 +2,8 @@
   publish = "."
   command = ""
 
-[build.environment]
-  NETLIFY_SECRETS_SCAN_ENABLED = "false"
-  NETLIFY_DISABLE_SECRET_SCAN = "true"
-  SECRETS_SCAN_SMART_DETECTION_ENABLED = "false"
-  SECRETS_SCAN_OMIT_KEYS = "true"
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
