@@ -31,6 +31,10 @@
 <section class="card"><h3>Cleaning history</h3><div class="empty">Completed service records will appear here when service tracking is enabled.</div></section>
 <section class="card"><h3>Photos & reports</h3><div class="empty">Service photos and reports will appear here when this feature is enabled.</div></section>
 </div>
+<section class="card" style="margin-top:16px">
+  <h3>Upcoming visits & service photos</h3>
+  <div id="serviceVisits"><div class="empty">Loading your service schedule...</div></div>
+</section>
 <h2 class="section-heading">Billing and support</h2>
 <div class="details">
 <section class="card"><h3>Invoices & payments</h3><div class="empty">Online invoices and payment history are coming soon. No payment is requested on this page.</div></section>
@@ -67,7 +71,49 @@ function renderNextVisit(profile){
 }
 $('logout').onclick=async()=>{await signOut(auth);location.replace('/client-login.html')};
 async function call(action){const user=auth.currentUser;if(!user)throw Error('Sign in required');const token=await user.getIdToken();const response=await fetch('/.netlify/functions/customer-actions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({action})});const data=await response.json();if(!response.ok)throw Error(data.error||'Unable to load customer profile');return data}
+async function serviceCall(action){
+ const user=auth.currentUser;if(!user)throw Error('Sign in required');
+ const token=await user.getIdToken();
+ const response=await fetch('/.netlify/functions/service-operations',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({action})});
+ const data=await response.json();if(!response.ok)throw Error(data.error||'Unable to load service schedule');return data;
+}
+function escHtml(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function visitDateTime(v){
+ const d=String(v?.date||'');const t=String(v?.startTime||'');
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(d)||!/^\d{2}:\d{2}$/.test(t))return null;
+ const dt=new Date(`${d}T${t}:00`);return Number.isNaN(dt.getTime())?null:dt;
+}
+function syncNextVisitFromSchedule(visits){
+ const upcoming=(visits||[]).filter(v=>String(v.status||'scheduled').toLowerCase()!=='completed').map(v=>({v,dt:visitDateTime(v)})).filter(x=>x.dt&&x.dt.getTime()>=Date.now()-3600000).sort((a,b)=>a.dt-b.dt)[0];
+ if(!upcoming)return;
+ const {v,dt}=upcoming;
+ const dateText=new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(dt);
+ const start=new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(dt);
+ let range=start;
+ if(v.endTime&&/^\d{2}:\d{2}$/.test(v.endTime)){
+   const end=new Date(`${v.date}T${v.endTime}:00`);
+   if(!Number.isNaN(end.getTime()))range+=` – ${new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(end)}`;
+ }
+ $('nextVisitSummary').textContent=dateText;
+ $('nextVisitSummaryTime').textContent='Arrival: '+start;
+ $('nextVisitDate').textContent=dateText;
+ $('nextVisitTime').textContent='Scheduled: '+range;
+ $('nextVisitStatus').textContent=v.assignedStaffName?'FreshBorn team: '+v.assignedStaffName:'Confirmed by FreshBorn';
+}
+function renderServiceVisits(visits){
+ const el=document.getElementById('serviceVisits');if(!el)return;
+ if(!Array.isArray(visits)||!visits.length){el.innerHTML='<div class="empty">No cleaning visits are scheduled yet.</div>';return;}
+ const rows=[...visits].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.startTime||'').localeCompare(String(a.startTime||'')));
+ el.innerHTML=rows.map(v=>{
+   const photos=Array.isArray(v.photos)?v.photos:[];
+   const photoHtml=photos.length?'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">'+photos.map(p=>`<a href="${escHtml(p.url)}" target="_blank" rel="noopener"><img src="${escHtml(p.url)}" alt="Service photo" style="width:110px;height:80px;object-fit:cover;border-radius:9px;border:1px solid #dce6ee"></a>`).join('')+'</div>':'';
+   const status=escHtml(v.status||'scheduled');
+   const staff=v.assignedStaffName?`<br><span class="muted">FreshBorn team: ${escHtml(v.assignedStaffName)}</span>`:'';
+   return `<div style="padding:14px 0;border-bottom:1px solid #edf1f4"><strong>${escHtml(v.date||'')} ${escHtml(v.startTime||'')}${v.endTime?' – '+escHtml(v.endTime):''}</strong><br><span class="muted">Status: ${status}</span>${staff}${photoHtml}</div>`;
+ }).join('');
+ syncNextVisitFromSchedule(visits);
+}
 function set(id,value){$(id).textContent=String(value??'—')}
 function render(profile){set('welcome',`Welcome back, ${String(profile.name||'').trim().split(/\s+/)[0]||'Customer'}!`);set('customerNumber',profile.customerNumber);set('accountStatus',profile.accountStatus==='active'?'Active':'Pending');set('price',profile.quotePrice==null?'Pending':'$'+Number(profile.quotePrice).toFixed(2));set('frequency',profile.frequency||'Frequency not specified');set('contract',profile.contractTerm==='none'?'Flexible':profile.contractTerm?profile.contractTerm+' months':'—');set('accepted',profile.acceptedAt?'Accepted '+new Date(profile.acceptedAt).toLocaleDateString():'Acceptance date unavailable');set('property',profile.propertyType);set('zip',profile.zip);set('serviceFrequency',profile.frequency);set('deepCleaning',profile.monthlyDeepCleaningIncluded?'Included':'Not included');set('services',profile.quoteServices);loadWeather(profile.zip).then(()=>renderNextVisit(profile));renderNextVisit(profile);$('dashboard').classList.remove('hide')}
-onAuthStateChanged(auth,async user=>{if(!user||user.isAnonymous){location.replace('/client-login.html');return}try{const data=await call('customer-profile');if(!Array.isArray(data.profiles)||!data.profiles.length){$('status').textContent='No activated customer profile is linked to this login. Please use your welcome invitation or contact FreshBorn.';return}render(data.profiles[0]);$('status').textContent=data.profiles.length>1?`Showing your first linked customer account (${data.profiles.length} accounts linked).`:''}catch(error){$('status').textContent='Unable to load your account: '+error.message}});
+onAuthStateChanged(auth,async user=>{if(!user||user.isAnonymous){location.replace('/client-login.html');return}try{const data=await call('customer-profile');if(!Array.isArray(data.profiles)||!data.profiles.length){$('status').textContent='No activated customer profile is linked to this login. Please use your welcome invitation or contact FreshBorn.';return}render(data.profiles[0]);serviceCall('client-service-dashboard').then(x=>renderServiceVisits(x.visits||[])).catch(error=>{const el=document.getElementById('serviceVisits');if(el)el.innerHTML='<div class="empty">Service schedule is not available yet.</div>';console.warn('Service schedule:',error.message)});$('status').textContent=data.profiles.length>1?`Showing your first linked customer account (${data.profiles.length} accounts linked).`:''}catch(error){$('status').textContent='Unable to load your account: '+error.message}});
 </script></body></html>
