@@ -1,5 +1,5 @@
 export const firebaseConfig = {
-  apiKey: "AIzaSyC2KvKXib9Hfdt7mYLpDKoLcLGwRPZGLSI",
+  apiKey: "AIzaSyC2KvKXib9Hfdt7mYLnDKoLcLGwRPZGLSI",
   authDomain: "freshborn-cleaning.firebaseapp.com",
   projectId: "freshborn-cleaning",
   storageBucket: "freshborn-cleaning.firebasestorage.app",
