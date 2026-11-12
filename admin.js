@@ -44,3 +44,13 @@ $('fbRefreshMessages').onclick=fbLoadMessages;
 $('fbSendReply').onclick=async()=>{const message=$('fbReplyText').value.trim();if(!message)return;$('fbSendReply').disabled=true;$('fbMessageStatus').textContent='Sending...';try{await fbRequest('reply-message',{message});$('fbReplyText').value='';await fbLoadMessages();$('fbMessageStatus').textContent='Reply sent.'}catch(e){$('fbMessageStatus').textContent='Not sent: '+e.message}finally{$('fbSendReply').disabled=false}};
 const originalOpenCustomer=openCustomer;
 openCustomer=function(id,scroll=true){originalOpenCustomer(id,scroll);fbLoadMessages()};
+
+// Customer acceptance and secure account invitation controls.
+const fbInviteBar=document.createElement('div');
+fbInviteBar.style.cssText='padding:16px;margin:14px 0;border:1px solid #b8c9d9;border-radius:12px;background:#fff;color:#12304a';
+fbInviteBar.innerHTML='<strong>Customer acceptance & account</strong><p id="fbAccountState" style="margin:8px 0"></p><button id="fbInviteCustomer" type="button" style="background:#116ba5;color:white;border:0;border-radius:8px;padding:10px 16px;cursor:pointer">Send welcome / account invitation</button><p id="fbInviteStatus" role="status"></p>';
+$('customerPanel').prepend(fbInviteBar);
+function fbUpdateAccountUI(){const r=records.find(x=>x.id===selectedId);if(!r)return;const accepted=r.status==='vip';$('fbAccountState').textContent=accepted?('Quote accepted: '+fmt(r.acceptedAt)+' · Customer '+(r.customerNumber||customerNumber(r))+' · Account: '+(r.customerAccountStatus||'not invited')):'Quote not yet accepted. Invitation becomes available after acceptance.';$('fbInviteCustomer').disabled=!accepted||!!r.customerAuthUid;}
+const fbPrevOpenCustomer=openCustomer;
+openCustomer=function(id,scroll=true){fbPrevOpenCustomer(id,scroll);fbUpdateAccountUI()};
+$('fbInviteCustomer').onclick=async()=>{const r=records.find(x=>x.id===selectedId);if(!r||r.status!=='vip')return;if(!confirm('Send account activation invitation to '+r.email+'?'))return;const b=$('fbInviteCustomer');b.disabled=true;$('fbInviteStatus').textContent='Sending invitation...';try{await fbRequest('send-welcome-invite');$('fbInviteStatus').textContent='Invitation sent.';await load()}catch(e){$('fbInviteStatus').textContent='Invitation failed: '+e.message}finally{fbUpdateAccountUI()}};
