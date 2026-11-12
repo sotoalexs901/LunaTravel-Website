@@ -24,7 +24,46 @@ exports.handler=async(event)=>{if(event.httpMethod!=='POST')return reply(405,{er
 try{const action=body.action;
 if(action==='accept'){const token=String(body.token||'');if(!/^[a-f0-9]{64}$/.test(token))return reply(400,{error:'Invalid acceptance link'});if(body.agree!==true)return reply(400,{error:'Acceptance confirmation required'});const id=String(body.id||'');if(!/^[A-Za-z0-9]{10,40}$/.test(id))return reply(400,{error:'Invalid reference'});const ref=db.collection('quoteRequests').doc(id);let accepted=null;await db.runTransaction(async tx=>{const s=await tx.get(ref);if(!s.exists)throw Error('Quote not found');const d=s.data();if(d.status==='vip')throw Error('This quote was already accepted');if(d.status!=='quoted'||d.quoteStatus!=='sent'||d.acceptTokenHash!==hash(token)||!d.acceptExpiresAt||d.acceptExpiresAt.toMillis()<Date.now())throw Error('Quote link expired or invalid');accepted={...d,customerNumber:d.customerNumber||number(id,d)};tx.update(ref,{status:'vip',customerTier:'vip',priority:'high',acceptedAt:admin.firestore.FieldValue.serverTimestamp(),acceptTokenHash:admin.firestore.FieldValue.delete(),acceptExpiresAt:admin.firestore.FieldValue.delete(),customerNumber:accepted.customerNumber})});
 let mailSent=true;try{await send(accepted.email,'Welcome to FreshBorn VIP',`<p>Hello ${esc(accepted.name)},</p><p>We received your acceptance of quote <strong>${esc(accepted.customerNumber)}</strong>.</p><p>Your VIP customer record is active. Our team will contact you to confirm the service start date and finalize the full service agreement.</p><p>FreshBorn Cleaning Services</p>`,inboxAddress(id))}catch(e){mailSent=false;console.error('VIP welcome email failed',e)}return reply(200,{ok:true,customerNumber:accepted.customerNumber,confirmationEmailSent:mailSent})}
+// Customer self-service endpoints: Firebase Auth token required; customer records stay server-side.
+if(['activate-account','customer-profile'].includes(action)){
+ const bearer=(event.headers.authorization||event.headers.Authorization||'').match(/^Bearer (.+)$/);
+ if(!bearer)return reply(401,{error:'Please sign in'});
+ const decoded=await admin.auth().verifyIdToken(bearer[1]);
+ if(!decoded.email)return reply(403,{error:'Email required'});
+ if(action==='activate-account'){
+  const id=String(body.id||''),token=String(body.token||'');
+  if(!/^[A-Za-z0-9]{10,40}$/.test(id)||!/^[a-f0-9]{64}$/.test(token))return reply(400,{error:'Invalid invitation'});
+  const ref=db.collection('quoteRequests').doc(id);
+  let customerNumber;
+  await db.runTransaction(async tx=>{
+   const snap=await tx.get(ref);if(!snap.exists)throw Error('Invitation not found');
+   const d=snap.data();
+   if(d.status!=='vip'||d.inviteTokenHash!==hash(token)||!d.inviteExpiresAt||d.inviteExpiresAt.toMillis()<Date.now())throw Error('Invitation expired or invalid');
+   if(String(d.email||'').trim().toLowerCase()!==decoded.email.trim().toLowerCase())throw Error('Use the email address that received the invitation');
+   if(d.customerAuthUid&&d.customerAuthUid!==decoded.uid)throw Error('This account is already linked');
+   customerNumber=d.customerNumber||number(id,d);
+   tx.update(ref,{customerAuthUid:decoded.uid,customerAccountStatus:'active',customerAccountActivatedAt:admin.firestore.FieldValue.serverTimestamp(),customerNumber,inviteTokenHash:admin.firestore.FieldValue.delete(),inviteExpiresAt:admin.firestore.FieldValue.delete()});
+  });
+  return reply(200,{ok:true,customerNumber});
+ }
+ const snap=await db.collection('quoteRequests').where('customerAuthUid','==',decoded.uid).limit(10).get();
+ const profiles=snap.docs.filter(s=>String(s.data().email||'').toLowerCase()===decoded.email.toLowerCase()&&s.data().status==='vip').map(s=>{
+  const d=s.data();return {customerNumber:d.customerNumber||number(s.id,d),name:d.name,email:d.email,phone:d.phone,propertyType:d.propertyType,zip:d.zip,frequency:d.frequency,quotePrice:d.quotePrice,contractTerm:d.contractTerm,quoteServices:d.quoteServices,monthlyDeepCleaningIncluded:!!d.monthlyDeepCleaningIncluded,acceptedAt:d.acceptedAt?.toDate?.()?.toISOString()||null,accountStatus:d.customerAccountStatus||'active'};
+ });
+ return reply(200,{ok:true,profiles});
+}
 const bearer=(event.headers.authorization||event.headers.Authorization||'').match(/^Bearer (.+)$/);if(!bearer)return reply(401,{error:'Sign in required'});const decoded=await admin.auth().verifyIdToken(bearer[1]);const user=await db.collection('users').doc(decoded.uid).get();if(!user.exists||user.data().role!=='super_admin'||user.data().status!=='active')return reply(403,{error:'Administrator only'});const id=String(body.id||'');if(!/^[A-Za-z0-9]{10,40}$/.test(id))return reply(400,{error:'Invalid request ID'});const ref=db.collection('quoteRequests').doc(id),snap=await ref.get();if(!snap.exists)return reply(404,{error:'Request not found'});const d=snap.data();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(d.email||''))return reply(400,{error:'Customer email invalid'});const cid=d.customerNumber||number(id,d);
+if(action==='send-welcome-invite'){
+ if(d.status!=='vip')return reply(409,{error:'Customer has not accepted the quote'});
+ if(d.customerAuthUid)return reply(409,{error:'Customer account already activated'});
+ const token=crypto.randomBytes(32).toString('hex');
+ const url=`${origin()}/client-register.html?id=${encodeURIComponent(id)}&token=${token}`;
+ // Save invitation before sending so a successfully delivered link is always redeemable.
+ await ref.update({customerNumber:cid,customerAccountStatus:'invited',inviteTokenHash:hash(token),inviteExpiresAt:admin.firestore.Timestamp.fromMillis(Date.now()+7*86400000),invitedAt:admin.firestore.FieldValue.serverTimestamp()});
+ await send(d.email,'Activate your FreshBorn client account',`<p>Hello ${esc(d.name)},</p><p>Welcome to FreshBorn! Your customer number is <strong>${esc(cid)}</strong>.</p><p><a href="${esc(url)}">Create your private client account</a></p><p>This invitation expires in 7 days. Use the same email address that received this invitation.</p><p>FreshBorn Cleaning Services</p>`,inboxAddress(id));
+ await storeMessage(id,{direction:'outbound',to:d.email,subject:'Activate your FreshBorn client account',text:'Secure client account invitation sent.'});
+ return reply(200,{ok:true});
+}
 if(action==='list-messages')return reply(200,{ok:true,messages:await listMessages(id)});
 if(action==='reply-message'){const message=String(body.message||'').trim();if(!message||message.length>5000)return reply(400,{error:'Message must be 1-5000 characters'});const subject='Re: FreshBorn request '+cid;const sent=await send(d.email,subject,`<p>${esc(message).replace(/\n/g,'<br>')}</p><p>FreshBorn Cleaning Services</p>`,inboxAddress(id));await storeMessage(id,{direction:'outbound',from:process.env.FRESHBORN_FROM_EMAIL,to:d.email,subject,text:message,resendEmailId:sent.id||null});return reply(200,{ok:true})}
 if(action==='send-processing'){if(d.status==='vip')return reply(409,{error:'Already VIP'});await send(d.email,'FreshBorn received your cleaning request',`<p>Hello ${esc(d.name)},</p><p>Thank you for contacting FreshBorn Cleaning Services. We are reviewing your request <strong>${esc(cid)}</strong> and will contact you with the next steps.</p><p>Reply to this email if you need to add details.</p>`,inboxAddress(id));await storeMessage(id,{direction:'outbound',to:d.email,subject:'FreshBorn received your cleaning request',text:'Thank you for contacting FreshBorn Cleaning Services. We are reviewing your request.'});await ref.update({status:'reviewing',customerNumber:cid,processingEmailSentAt:admin.firestore.FieldValue.serverTimestamp()});return reply(200,{ok:true})}
