@@ -2,7 +2,7 @@
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#092a4c"><title>Customer Dashboard | FreshBorn</title>
 <style>
 :root{--navy:#092a4c;--blue:#153e64;--gold:#dca318;--bg:#edf4f8;--muted:#62758a;--border:#dce6ee}*{box-sizing:border-box}body{margin:0;font:16px system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--navy)}a{color:#125d96}button{font:inherit;cursor:pointer}header{background:var(--navy);color:white;padding:17px max(20px,calc((100vw - 1160px)/2));display:flex;justify-content:space-between;align-items:center;gap:12px}header a{color:#fff;text-decoration:none}.brand{font-size:22px;font-weight:800;letter-spacing:-.5px}.brand span{color:#f0c350}.header-actions{display:flex;align-items:center;gap:18px}.signout{border:1px solid #ffffff75;color:white;background:transparent;border-radius:9px;padding:9px 13px}main{max-width:1160px;margin:0 auto;padding:28px 20px 55px}.hero{background:linear-gradient(115deg,#0b3157,#19547b);color:white;border-radius:20px;padding:30px;display:flex;justify-content:space-between;gap:18px;align-items:center}.hero h1{font-size:clamp(25px,4vw,38px);margin:7px 0}.hero p{margin:0;color:#e0edf7}.eyebrow{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:#eac46c;font-weight:800}.id{border:1px solid #ffffff70;border-radius:12px;padding:14px 18px;min-width:210px}.id small{display:block;color:#d7e6f0;margin-bottom:7px}.id strong{font-size:19px;overflow-wrap:anywhere}.status{margin:18px 0;color:#536b7f;min-height:20px}.section-heading{font-size:20px;margin:28px 0 14px}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}.card{background:white;border:1px solid var(--border);border-radius:16px;padding:21px;box-shadow:0 4px 14px #0c33500a;min-width:0}.card h3{margin:0 0 14px;font-size:17px}.card .value{font-size:25px;font-weight:800}.muted{color:var(--muted)}.pill{display:inline-block;border-radius:30px;padding:5px 11px;font-size:12px;font-weight:800;background:#e9f6ed;color:#217444}.pill.pending{background:#f3f5f7;color:#657688}.details{display:grid;grid-template-columns:1fr 1fr;gap:16px}.detail-row{display:flex;justify-content:space-between;gap:16px;border-bottom:1px solid #edf1f4;padding:11px 0}.detail-row:last-child{border:0}.detail-row span:first-child{color:var(--muted)}.detail-row strong{text-align:right;overflow-wrap:anywhere}.services{line-height:1.7;white-space:pre-wrap;overflow-wrap:anywhere}.empty{background:#f5f8fa;border:1px dashed #c7d5e0;border-radius:12px;padding:17px;color:#62758a}.footer{padding:24px;text-align:center;color:#647b8e;font-size:13px}.hide{display:none!important}@media(max-width:760px){.hero{display:block}.id{margin-top:20px;display:inline-block}.grid,.details{grid-template-columns:1fr}.hero{padding:24px}.card{padding:18px}header{padding:16px 20px}.header-actions{gap:10px}.brand{font-size:19px}}
-.welcome-widgets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.welcome-widget{background:#ffffff12;border:1px solid #ffffff45;border-radius:14px;padding:16px;min-width:0}.welcome-widget small{display:block;color:#d7e6f0;margin-bottom:8px}.welcome-widget strong{display:block;font-size:23px;overflow-wrap:anywhere}.welcome-widget .sub{display:block;font-size:12px;color:#d7e6f0;margin-top:5px}.next-visit-card{border-left:5px solid var(--gold)}.next-visit-time{font-size:27px;font-weight:800;margin:10px 0}.next-visit-meta{color:var(--muted)}@media(max-width:760px){.welcome-widgets{grid-template-columns:1fr}.welcome-widget strong{font-size:21px}}
+.welcome-widgets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:18px}.welcome-widget{background:#ffffff12;border:1px solid #ffffff45;border-radius:14px;padding:16px;min-width:0}.welcome-widget small{display:block;color:#d7e6f0;margin-bottom:8px}.welcome-widget strong{display:block;font-size:23px;overflow-wrap:anywhere}.welcome-widget .sub{display:block;font-size:12px;color:#d7e6f0;margin-top:5px}.next-visit-card{border-left:5px solid var(--gold)}.next-visit-time{font-size:27px;font-weight:800;margin:10px 0}.next-visit-meta{color:var(--muted)}.priority-support{border:1px solid #e4c56d;background:linear-gradient(135deg,#fffdf7,#fff8df)}.priority-support .priority-badge{display:inline-block;background:#fff0bd;color:#7b5700;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;margin-bottom:10px}.chat-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:10px;background:var(--navy);color:#fff;padding:12px 16px;font-weight:800;text-decoration:none}.chat-btn:hover{background:#123f68}.chat-note{font-size:12px;color:var(--muted);margin-top:10px}@media(max-width:760px){.welcome-widgets{grid-template-columns:1fr}.welcome-widget strong{font-size:21px}}
 </style></head><body>
 <header><a class="brand" href="/">Fresh<span>Born</span></a><div class="header-actions"><a href="/">Home</a><button id="logout" class="signout" type="button">Sign Out</button></div></header>
 <main>
@@ -38,10 +38,11 @@
 <h2 class="section-heading">Billing and support</h2>
 <div class="details">
 <section class="card"><h3>Invoices & payments</h3><div class="empty">Online invoices and payment history are coming soon. No payment is requested on this page.</div></section>
-<section class="card"><h3>Need help?</h3><p class="muted">Questions about your cleaning services or agreement? Contact our team.</p><a href="/">Visit FreshBorn Cleaning Services</a></section>
+<section class="card priority-support"><span class="priority-badge">VIP PRIORITY SUPPORT</span><h3>Need help or last-minute attention?</h3><p class="muted">Chat directly with the FreshBorn team from your VIP account. Your conversation will be identified as priority support.</p><button id="priorityChat" class="chat-btn" type="button">💬 Open Priority VIP Chat</button><p class="chat-note">For urgent or last-minute cleaning requests, please include the requested date and time in your message.</p></section>
 </div>
 </div>
 </main><footer class="footer">© <span id="year"></span> FreshBorn Cleaning Services · A Fresh Start for Every Space</footer>
+<script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="4ffab1b0-f43f-4ae3-91d7-782d838fd6a2";(function(){var d=document;var s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
 <script type="module">
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
@@ -69,7 +70,7 @@ function renderNextVisit(profile){
  $('nextVisitSummary').textContent=dateText;$('nextVisitSummaryTime').textContent='Arrival: '+timeText;
  $('nextVisitDate').textContent=dateText;$('nextVisitTime').textContent='Scheduled arrival: '+timeText;$('nextVisitStatus').textContent='Confirmed by FreshBorn';
 }
-$('logout').onclick=async()=>{await signOut(auth);location.replace('/client-login.html')};
+$('logout').onclick=async()=>{try{window.$crisp=window.$crisp||[];window.$crisp.push(['do','session:reset']);}catch{}await signOut(auth);location.replace('/client-login.html')};
 async function call(action){const user=auth.currentUser;if(!user)throw Error('Sign in required');const token=await user.getIdToken();const response=await fetch('/.netlify/functions/customer-actions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({action})});const data=await response.json();if(!response.ok)throw Error(data.error||'Unable to load customer profile');return data}
 async function serviceCall(action){
  const user=auth.currentUser;if(!user)throw Error('Sign in required');
@@ -113,7 +114,34 @@ function renderServiceVisits(visits){
  }).join('');
  syncNextVisitFromSchedule(visits);
 }
+function configureVipChat(profile){
+ window.$crisp=window.$crisp||[];
+ const name=String(profile?.name||'FreshBorn VIP Customer').trim();
+ const email=String(profile?.email||auth.currentUser?.email||'').trim();
+ const customerNumber=String(profile?.customerNumber||'').trim();
+ if(name)window.$crisp.push(['set','user:nickname',[name]]);
+ if(email)window.$crisp.push(['set','user:email',[email]]);
+ window.$crisp.push(['set','session:segments',[['vip_client']]]);
+ window.$crisp.push(['set','session:data',[[
+   ['support_channel','VIP Client Portal'],
+   ['customer_number',customerNumber||'Unavailable'],
+   ['account_status',String(profile?.accountStatus||'active')]
+ ]]]);
+ const btn=$('priorityChat');
+ if(btn&&!btn.dataset.bound){
+   btn.dataset.bound='1';
+   btn.addEventListener('click',()=>{
+     window.$crisp.push(['set','session:segments',[['vip_client','priority_support','last_min_ready']]]);
+     window.$crisp.push(['set','session:data',[[
+       ['support_channel','VIP Priority Support'],
+       ['customer_number',customerNumber||'Unavailable'],
+       ['priority_request','yes']
+     ]]]);
+     window.$crisp.push(['do','chat:open']);
+   });
+ }
+}
 function set(id,value){$(id).textContent=String(value??'—')}
-function render(profile){set('welcome',`Welcome back, ${String(profile.name||'').trim().split(/\s+/)[0]||'Customer'}!`);set('customerNumber',profile.customerNumber);set('accountStatus',profile.accountStatus==='active'?'Active':'Pending');set('price',profile.quotePrice==null?'Pending':'$'+Number(profile.quotePrice).toFixed(2));set('frequency',profile.frequency||'Frequency not specified');set('contract',profile.contractTerm==='none'?'Flexible':profile.contractTerm?profile.contractTerm+' months':'—');set('accepted',profile.acceptedAt?'Accepted '+new Date(profile.acceptedAt).toLocaleDateString():'Acceptance date unavailable');set('property',profile.propertyType);set('zip',profile.zip);set('serviceFrequency',profile.frequency);set('deepCleaning',profile.monthlyDeepCleaningIncluded?'Included':'Not included');set('services',profile.quoteServices);loadWeather(profile.zip).then(()=>renderNextVisit(profile));renderNextVisit(profile);$('dashboard').classList.remove('hide')}
+function render(profile){set('welcome',`Welcome back, ${String(profile.name||'').trim().split(/\s+/)[0]||'Customer'}!`);set('customerNumber',profile.customerNumber);set('accountStatus',profile.accountStatus==='active'?'Active':'Pending');set('price',profile.quotePrice==null?'Pending':'$'+Number(profile.quotePrice).toFixed(2));set('frequency',profile.frequency||'Frequency not specified');set('contract',profile.contractTerm==='none'?'Flexible':profile.contractTerm?profile.contractTerm+' months':'—');set('accepted',profile.acceptedAt?'Accepted '+new Date(profile.acceptedAt).toLocaleDateString():'Acceptance date unavailable');set('property',profile.propertyType);set('zip',profile.zip);set('serviceFrequency',profile.frequency);set('deepCleaning',profile.monthlyDeepCleaningIncluded?'Included':'Not included');set('services',profile.quoteServices);configureVipChat(profile);loadWeather(profile.zip).then(()=>renderNextVisit(profile));renderNextVisit(profile);$('dashboard').classList.remove('hide')}
 onAuthStateChanged(auth,async user=>{if(!user||user.isAnonymous){location.replace('/client-login.html');return}try{const data=await call('customer-profile');if(!Array.isArray(data.profiles)||!data.profiles.length){$('status').textContent='No activated customer profile is linked to this login. Please use your welcome invitation or contact FreshBorn.';return}render(data.profiles[0]);serviceCall('client-service-dashboard').then(x=>renderServiceVisits(x.visits||[])).catch(error=>{const el=document.getElementById('serviceVisits');if(el)el.innerHTML='<div class="empty">Service schedule is not available yet.</div>';console.warn('Service schedule:',error.message)});$('status').textContent=data.profiles.length>1?`Showing your first linked customer account (${data.profiles.length} accounts linked).`:''}catch(error){$('status').textContent='Unable to load your account: '+error.message}});
 </script></body></html>
