@@ -45,12 +45,50 @@ $('fbSendReply').onclick=async()=>{const message=$('fbReplyText').value.trim();i
 const originalOpenCustomer=openCustomer;
 openCustomer=function(id,scroll=true){originalOpenCustomer(id,scroll);fbLoadMessages()};
 
-// Customer acceptance and secure account invitation controls.
-const fbInviteBar=document.createElement('div');
-fbInviteBar.style.cssText='padding:16px;margin:14px 0;border:1px solid #b8c9d9;border-radius:12px;background:#fff;color:#12304a';
-fbInviteBar.innerHTML='<strong>Customer acceptance & account</strong><p id="fbAccountState" style="margin:8px 0"></p><button id="fbInviteCustomer" type="button" style="background:#116ba5;color:white;border:0;border-radius:8px;padding:10px 16px;cursor:pointer">Send welcome / account invitation</button><p id="fbInviteStatus" role="status"></p>';
-$('customerPanel').prepend(fbInviteBar);
-function fbUpdateAccountUI(){const r=records.find(x=>x.id===selectedId);if(!r)return;const accepted=r.status==='vip';$('fbAccountState').textContent=accepted?('Quote accepted: '+fmt(r.acceptedAt)+' · Customer '+(r.customerNumber||customerNumber(r))+' · Account: '+(r.customerAccountStatus||'not invited')):'Quote not yet accepted. Invitation becomes available after acceptance.';$('fbInviteCustomer').disabled=!accepted||!!r.customerAuthUid;}
-const fbPrevOpenCustomer=openCustomer;
-openCustomer=function(id,scroll=true){fbPrevOpenCustomer(id,scroll);fbUpdateAccountUI()};
-$('fbInviteCustomer').onclick=async()=>{const r=records.find(x=>x.id===selectedId);if(!r||r.status!=='vip')return;if(!confirm('Send account activation invitation to '+r.email+'?'))return;const b=$('fbInviteCustomer');b.disabled=true;$('fbInviteStatus').textContent='Sending invitation...';try{await fbRequest('send-welcome-invite');$('fbInviteStatus').textContent='Invitation sent.';await load()}catch(e){$('fbInviteStatus').textContent='Invitation failed: '+e.message}finally{fbUpdateAccountUI()}};
+
+// FreshBorn Business Tools + Self-Quote analytics integration.
+(function installFreshBornBusinessTools(){
+  const dashboard=document.getElementById('dashboard');
+  if(!dashboard||document.getElementById('fbBusinessTools')) return;
+  const panel=document.createElement('section');
+  panel.id='fbBusinessTools';
+  panel.className='card';
+  panel.style.cssText='margin:18px 0;padding:20px;border-radius:16px;background:#fff;border:1px solid #d9e4ec';
+  panel.innerHTML=`
+    <div style="display:flex;justify-content:space-between;gap:16px;align-items:flex-start;flex-wrap:wrap">
+      <div><small style="font-weight:800;letter-spacing:1.2px;color:#b17a00">FRESHBORN BUSINESS TOOLS</small><h2 style="margin:6px 0 4px">Operations & Growth</h2><p style="margin:0;color:#66788a">Self-Quote pricing, staff scheduling, public content and website activity.</p></div>
+      <a href="/self-quote.html" target="_blank" rel="noopener" style="text-decoration:none;padding:10px 14px;border:1px solid #b8c9d9;border-radius:9px;color:#092a4c">View Public Self-Quote</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-top:18px">
+      <a href="/self-quote-admin.html" style="text-decoration:none;color:#092a4c;border:1px solid #d9e4ec;border-radius:13px;padding:16px;background:#f8fbfd"><strong style="display:block;font-size:17px">🧮 Self-Quote & Analytics</strong><span style="display:block;margin-top:6px;color:#66788a">Pricing, estimated leads and website activity</span></a>
+      <a href="/staff-management.html" style="text-decoration:none;color:#092a4c;border:1px solid #d9e4ec;border-radius:13px;padding:16px;background:#f8fbfd"><strong style="display:block;font-size:17px">👥 Staff Management</strong><span style="display:block;margin-top:6px;color:#66788a">Invitations, assignments and schedules</span></a>
+      <a href="/content-manager.html" style="text-decoration:none;color:#092a4c;border:1px solid #d9e4ec;border-radius:13px;padding:16px;background:#f8fbfd"><strong style="display:block;font-size:17px">📸 Photos & Offers</strong><span style="display:block;margin-top:6px;color:#66788a">Manage public photos and promotions</span></a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px" id="fbAnalyticsGrid">
+      <div style="padding:14px;border-radius:12px;background:#eef5f9"><small>Visitors today</small><strong id="fbAdminVisitors" style="display:block;font-size:26px;margin-top:4px">—</strong></div>
+      <div style="padding:14px;border-radius:12px;background:#eef5f9"><small>Page views today</small><strong id="fbAdminPageViews" style="display:block;font-size:26px;margin-top:4px">—</strong></div>
+      <div style="padding:14px;border-radius:12px;background:#eef5f9"><small>Self-Quote leads</small><strong id="fbAdminSelfQuoteLeads" style="display:block;font-size:26px;margin-top:4px">—</strong></div>
+    </div>
+    <p id="fbAdminAnalyticsStatus" style="color:#66788a;margin:10px 0 0"></p>`;
+  const heading=dashboard.querySelector('.heading');
+  if(heading&&heading.nextSibling) dashboard.insertBefore(panel,heading.nextSibling); else dashboard.prepend(panel);
+})();
+
+async function fbLoadAdminAnalytics(){
+  const visitors=document.getElementById('fbAdminVisitors');
+  if(!visitors||!auth.currentUser) return;
+  const status=document.getElementById('fbAdminAnalyticsStatus');
+  try{
+    status.textContent='Loading website activity...';
+    const token=await auth.currentUser.getIdToken();
+    const response=await fetch('/.netlify/functions/self-quote-actions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({action:'admin-analytics'})});
+    const data=await response.json();
+    if(!response.ok) throw Error(data.error||'Analytics unavailable');
+    visitors.textContent=Number(data.uniqueVisitors||0);
+    document.getElementById('fbAdminPageViews').textContent=Number(data.pageViews||0);
+    document.getElementById('fbAdminSelfQuoteLeads').textContent=Array.isArray(data.leads)?data.leads.length:0;
+    status.textContent='';
+  }catch(e){status.textContent='Self-Quote analytics unavailable: '+e.message}
+}
+
+onAuthStateChanged(auth,u=>{if(u&&!u.isAnonymous)setTimeout(fbLoadAdminAnalytics,250)});
