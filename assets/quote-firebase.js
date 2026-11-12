@@ -2,30 +2,61 @@ import { initializeApp, getApps } from 'https://www.gstatic.com/firebasejs/11.10
 import { getAuth, signInAnonymously } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import { getFirestore, addDoc, collection, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
 import { firebaseConfig } from './firebase-config.js';
+
 const app = getApps()[0] || initializeApp(firebaseConfig);
-const auth = getAuth(app), db = getFirestore(app);
-const form = document.getElementById('quoteForm'), status = document.getElementById('quoteStatus');
-form?.addEventListener('submit', async (e) => {
-  e.preventDefault();
+const auth = getAuth(app);
+const db = getFirestore(app);
+const form = document.getElementById('quoteForm');
+const status = document.getElementById('quoteStatus');
+
+form?.addEventListener('submit', async (event) => {
+  event.preventDefault();
   if (!form.reportValidity()) return;
-  const btn = form.querySelector('[type="submit"]');
-  btn.disabled = true;
-  status.textContent = 'Submitting your request / Enviando solicitud...';
+  const button = form.querySelector('[type="submit"]');
+  if (button) button.disabled = true;
+  if (status) status.textContent = 'Submitting / Enviando...';
+
   try {
+    // Public visitors use Firebase Anonymous Authentication.
+    // Never replace this with public Firestore write permissions.
     if (!auth.currentUser) await signInAnonymously(auth);
-    const val = (id) => document.getElementById(id).value.trim();
+
+    const val = (id) => document.getElementById(id)?.value?.trim() ?? '';
+    const propertyMap = {
+      'House': 'House',
+      'Apartment': 'Apartment',
+      'Apartment / Condo': 'Apartment',
+      'Office': 'Office',
+      'Office / Commercial': 'Office',
+      'Other': 'Other'
+    };
+    const propertyType = propertyMap[val('type')];
+    if (!propertyType) throw new Error('invalid-property-type');
+
     const data = {
-      name: val('name'), email: val('email'), phone: val('phone'),
-      propertyType: val('type'), frequency: val('frequency'),
-      sizeSqFt: val('size'), zip: val('zip'), preferredDate: val('date'),
-      details: val('details'), status: 'new', source: 'website',
+      name: val('name'),
+      email: val('email'),
+      phone: val('phone'),
+      propertyType,
+      frequency: val('frequency'),
+      sizeSqFt: val('size'),
+      zip: val('zip'),
+      preferredDate: val('date'),
+      details: val('details'),
+      status: 'new',
+      source: 'website',
       createdAt: serverTimestamp()
     };
+
     await addDoc(collection(db, 'quoteRequests'), data);
     form.reset();
-    status.textContent = 'Request received! We will contact you soon. / ¡Solicitud recibida! Te contactaremos pronto.';
-  } catch (err) {
-    console.error('FreshBorn quote submission:', err.code || err.message);
-    status.textContent = 'Unable to submit right now. Please use our live chat. / No se pudo enviar. Utiliza el chat.';
-  } finally { btn.disabled = false; }
+    if (status) status.textContent = 'Request received! / ¡Solicitud recibida!';
+  } catch (error) {
+    const code = error?.code || error?.message || 'unknown-error';
+    console.error('FreshBorn quote submission failed:', code, error);
+    // Temporary diagnostic message. Remove the error code from the public page after debugging.
+    if (status) status.textContent = `Unable to submit / No se pudo enviar. Error: ${code}`;
+  } finally {
+    if (button) button.disabled = false;
+  }
 });
