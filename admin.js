@@ -18,3 +18,29 @@ async function action(kind){if(!selectedId)return;const r=records.find(x=>x.id==
 $('sendProcessing').onclick=()=>action('send-processing');$('sendQuote').onclick=()=>action('send-quote');
 onAuthStateChanged(auth,async u=>{if(!u||u.isAnonymous){$('loginPanel').hidden=false;$('dashboard').hidden=true;return}try{const s=await getDoc(doc(db,'users',u.uid));if(!s.exists()||s.data().role!=='super_admin'||s.data().status!=='active')throw Error('Not authorized');$('loginPanel').hidden=true;$('dashboard').hidden=false;await load()}catch(e){text('loginError',e.message);await signOut(auth)}});
 $('loginForm').onsubmit=async e=>{e.preventDefault();try{await signInWithEmailAndPassword(auth,$('adminEmail').value.trim(),$('adminPassword').value)}catch(e){text('loginError','Sign-in failed: '+(e.code||e.message))}};$('logout').onclick=()=>signOut(auth);$('refresh').onclick=load;$('search').oninput=render;$('closeCustomer').onclick=()=>{$('customerPanel').hidden=true;selectedId=null};document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;render()});
+
+
+// FreshBorn customer correspondence panel (injected into existing admin.html).
+const commPanel=document.createElement('section');
+commPanel.id='freshbornMessages';
+commPanel.style.cssText='margin:24px 0;padding:18px;border:1px solid #cad8e3;border-radius:14px;background:#fff;color:#14304a';
+commPanel.innerHTML=`<h3 style="margin:0 0 12px">Customer Inbox</h3><div id="fbMessageList" style="max-height:360px;overflow:auto;display:grid;gap:10px;margin-bottom:12px" aria-live="polite"></div><label for="fbReplyText" style="display:block;font-weight:600;margin-bottom:6px">Reply to customer</label><textarea id="fbReplyText" rows="4" maxlength="5000" style="box-sizing:border-box;width:100%;padding:12px;border:1px solid #b8c9d9;border-radius:8px"></textarea><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px"><button type="button" id="fbSendReply" style="padding:10px 18px;border:0;border-radius:8px;background:#116ba5;color:#fff;cursor:pointer">Send reply</button><button type="button" id="fbRefreshMessages" style="padding:10px 18px;border:1px solid #b8c9d9;border-radius:8px;background:white;cursor:pointer">Refresh messages</button><span id="fbMessageStatus" role="status"></span></div>`;
+$('customerPanel').append(commPanel);
+async function fbRequest(action,extra={}){
+  const user=auth.currentUser;if(!user||!selectedId)throw Error('Open a customer and sign in first');
+  const token=await user.getIdToken();
+  const response=await fetch('/.netlify/functions/customer-actions',{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+token},body:JSON.stringify({action,id:selectedId,...extra})});
+  const data=await response.json();if(!response.ok)throw Error(data.error||'Request failed');return data;
+}
+async function fbLoadMessages(){
+  if(!selectedId)return;const activeId=selectedId;const list=$('fbMessageList');$('fbMessageStatus').textContent='Loading messages...';
+  try{const data=await fbRequest('list-messages');if(selectedId!==activeId)return;list.replaceChildren();
+    if(!data.messages.length){list.textContent='No messages yet.';}
+    for(const m of data.messages){const item=document.createElement('div');item.style.cssText='padding:12px;border-radius:10px;white-space:pre-wrap;overflow-wrap:anywhere;background:'+(m.direction==='inbound'?'#e8f4ff':'#f1f5f9');const label=document.createElement('strong');label.textContent=(m.direction==='inbound'?'Customer':'FreshBorn')+' · '+(m.createdAt?new Date(m.createdAt).toLocaleString():'');const msg=document.createElement('div');msg.textContent=m.text||'(No text content)';item.append(label,msg);list.append(item)}
+    $('fbMessageStatus').textContent='';
+  }catch(e){$('fbMessageStatus').textContent='Messages unavailable: '+e.message}
+}
+$('fbRefreshMessages').onclick=fbLoadMessages;
+$('fbSendReply').onclick=async()=>{const message=$('fbReplyText').value.trim();if(!message)return;$('fbSendReply').disabled=true;$('fbMessageStatus').textContent='Sending...';try{await fbRequest('reply-message',{message});$('fbReplyText').value='';await fbLoadMessages();$('fbMessageStatus').textContent='Reply sent.'}catch(e){$('fbMessageStatus').textContent='Not sent: '+e.message}finally{$('fbSendReply').disabled=false}};
+const originalOpenCustomer=openCustomer;
+openCustomer=function(id,scroll=true){originalOpenCustomer(id,scroll);fbLoadMessages()};
