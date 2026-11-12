@@ -1,7 +1,7 @@
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {getFirestore,doc,getDoc,collection,getDocs,query,orderBy,limit,updateDoc,serverTimestamp} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js';
-import {firebaseConfig} from './firebase-config.js';
+import {firebaseConfig} from './assets/firebase-config.js';
 const app=getApps()[0]||initializeApp(firebaseConfig),auth=getAuth(app),db=getFirestore(app),$=id=>document.getElementById(id);
 let records=[],selectedId=null,tab='leads';
 const customerNumber=r=>'FB-'+(r.createdAt?.toDate?.()?.getFullYear()||new Date().getFullYear())+'-'+r.id.slice(0,8).toUpperCase();
