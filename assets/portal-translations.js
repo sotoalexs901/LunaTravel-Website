@@ -388,5 +388,9 @@ export const spanish = {
   "Complete the service before submitting the report.": "Completa el servicio antes de enviar el reporte.",
   "This visit was updated elsewhere. Reload before saving.": "Esta visita se actualizó desde otra sesión. Actualiza antes de guardar.",
   "This visit was updated elsewhere. Reload and check the latest report.": "Esta visita se actualizó desde otra sesión. Actualiza y revisa el reporte más reciente.",
-  "Notes must be 3,000 characters or fewer": "Las notas deben tener 3,000 caracteres o menos"
+  "Notes must be 3,000 characters or fewer": "Las notas deben tener 3,000 caracteres o menos",
+  "Client-facing service summary (optional)": "Resumen del servicio para el cliente (opcional)",
+  "You can submit photos without writing a summary. Add photos or a summary before submitting.": "Puedes enviar fotos sin escribir un resumen. Agrega fotos o un resumen antes de enviar.",
+  "Add at least one photo or a service summary before submitting.": "Agrega al menos una foto o un resumen del servicio antes de enviar.",
+  "Select at least one photo or add a client summary before sharing.": "Selecciona al menos una foto o agrega un resumen para el cliente antes de compartir."
 };
