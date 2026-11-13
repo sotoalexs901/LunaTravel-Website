@@ -1,1 +1,14 @@
-/admin/*  /admin/index.html  200
+# Retired travel pages now lead to the corresponding FreshBorn experience.
+/servicios           /#services           301
+/servicios.html      /#services           301
+/precios             /self-quote.html     301
+/precios.html        /self-quote.html     301
+/contacto            /#quote              301
+/contacto.html       /#quote              301
+/tracking            /client-login.html   301
+/tracking.html       /client-login.html   301
+/tracking-mobile     /client-login.html   301
+/tracking-mobile.html /client-login.html  301
+/admin               /admin.html          301
+/admin/              /admin.html          301
+/admin/index.html    /admin.html          301

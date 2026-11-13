@@ -1,2 +1,3 @@
 User-agent: *
 Allow: /
+Sitemap: https://freshborncleaning.com/sitemap.xml
