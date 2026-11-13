@@ -32,3 +32,13 @@ The obsolete travel website pages, static travel data and unused Netlify CMS con
 ## Portal languages
 
 Staff and customer pages offer an English/Español selector. The device remembers the preference in `freshborn-lang`; changes apply without reloading or replacing open forms. `assets/portal-i18n.js` manages the selector and reversible interface translations, with Spanish strings in `assets/portal-translations.js`. User-authored names, addresses, reports, notes and captions retain their original text. App notification text follows the device language after the service worker update is applied.
+
+## Administrator finance
+
+`admin-finance.html` records received customer payments, expenses and outgoing investments through the administrator-only `admin-finance` Netlify function. Data lives under `adminFinance/freshborn/entries`; voids and name changes retain an audit trail. Entries are idempotent and money is stored in integer USD cents. No bank transfer or payment collection is performed.
+
+The requested internal formula is receipts minus all recorded expenses and investments. Shared costs (including website/insurance when entered) are deducted once and allocated among customers by their proportion of receipts in that selected period. If the period has no receipts, shared costs stay unallocated and reduce the overall result. Four people each have a 25% share of positive net profit for the selected period; customer-level losses offset gains before the period distribution. These settings do not change quote prices or contracts.
+
+Each entry is dated once; recurring costs must be recorded for each month. Only posted cash receipts count, not scheduled services or unpaid quotes. No existing financial amounts or names are preloaded. Rounding preserves every cent; a one-cent difference among shares is possible. The API refuses more than 500 entries in a selected period or 500 customer records rather than showing partial financial totals.
+
+Finance opens with all recorded dates so initial investments and prior losses are included in the cumulative result. A selected-month view is available separately; its distribution is that month's result only.
