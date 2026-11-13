@@ -1,0 +1,18 @@
+const admin=require('firebase-admin');
+if(!admin.apps.length)admin.initializeApp({credential:admin.credential.cert(JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON||'{}')),storageBucket:process.env.FIREBASE_STORAGE_BUCKET});
+const db=admin.firestore(),{digest,configured}=require('../lib/notifications');
+const reply=(status,body)=>({statusCode:status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(body)});
+const fail=(message,status=400)=>Object.assign(Error(message),{status});
+async function context(event){const m=(event.headers.authorization||event.headers.Authorization||'').match(/^Bearer (.+)$/);if(!m)throw fail('Sign in required',401);const user=await admin.auth().verifyIdToken(m[1]);const s=await db.collection('users').doc(user.uid).get();return {uid:user.uid,user:s.exists?s.data():null};}
+function staff(ctx){if(ctx.user?.role!=='staff'||ctx.user?.status!=='active')throw fail('Active staff account required',403);}
+function token(value){const t=String(value||'');if(!/^[A-Za-z0-9:_-]{20,4096}$/.test(t))throw fail('Invalid notification registration');return t;}
+exports.handler=async event=>{if(event.httpMethod!=='POST')return reply(405,{error:'POST required'});try{const body=JSON.parse(event.body||'{}'),ctx=await context(event),action=String(body.action||'');
+ if(action==='profile'){let role=ctx.user?.status==='active'?ctx.user.role:null;if(!role){const c=await db.collection('quoteRequests').where('customerAuthUid','==',ctx.uid).limit(1).get();if(!c.empty&&c.docs[0].data().status==='vip')role='client';}return reply(200,{ok:true,role:role||'unlinked',pushConfigured:configured(),vapidKey:configured()?process.env.FIREBASE_WEB_PUSH_PUBLIC_KEY:'',staffPush:role==='staff'});}
+ // Sign-out cleanup is allowed even after an administrator disables the staff account.
+ if(action==='unregister-device'){const ref=db.collection('pushDevices').doc(digest(token(body.token)));await db.runTransaction(async tx=>{const s=await tx.get(ref);if(s.exists&&s.data().uid===ctx.uid)tx.update(ref,{active:false,updatedAt:admin.firestore.FieldValue.serverTimestamp()});});return reply(200,{ok:true});}
+ staff(ctx);
+ if(action==='register-device'){if(!configured())throw fail('FreshBorn notifications are not configured yet',503);const t=token(body.token),ref=db.collection('pushDevices').doc(digest(t));await ref.set({uid:ctx.uid,token:t,active:true,deviceLabel:String(body.deviceLabel||'Browser').slice(0,100),updatedAt:admin.firestore.FieldValue.serverTimestamp()},{merge:true});return reply(200,{ok:true});}
+ if(action==='list'){const q=await db.collection('users').doc(ctx.uid).collection('notifications').orderBy('createdAt','desc').limit(50).get();const items=q.docs.map(s=>{const d=s.data();return {id:s.id,title:d.title,body:d.body,url:d.url,type:d.type,createdAt:d.createdAt?.toDate?.()?.toISOString()||null,readAt:d.readAt?.toDate?.()?.toISOString()||null};});return reply(200,{ok:true,items,unread:items.filter(x=>!x.readAt).length});}
+ if(action==='mark-read'){const id=String(body.id||'');if(!/^[A-Za-z0-9_-]{1,120}$/.test(id))throw fail('Invalid notification');const ref=db.collection('users').doc(ctx.uid).collection('notifications').doc(id);await db.runTransaction(async tx=>{const s=await tx.get(ref);if(!s.exists)throw fail('Notification not found',404);if(!s.data().readAt)tx.update(ref,{readAt:admin.firestore.FieldValue.serverTimestamp()});});return reply(200,{ok:true});}
+ return reply(400,{error:'Unsupported action'});
+}catch(e){return reply(e.status||400,{error:e.status?e.message:'Unable to process notification request'});}};
