@@ -6,20 +6,11 @@ Messages refresh while the page is visible (5-second polling), and on focus or i
 
 ## Required before production activation
 
-Review the **existing deployed Firestore rules**, preserving current portal rules. All direct client reads and writes to these new collections must be denied; the authenticated Netlify function uses Firebase Admin SDK:
+The complete rules supplied by the project owner on November 13, 2026 were reviewed against this implementation. They grant access only to `/users/{uid}` and `/quoteRequests/{id}` and contain no recursive wildcard allow. Therefore direct client access to `teamChats`, its `messages` and `reads` subcollections, `teamChatLimits`, `notificationOutbox`, and `pushDevices` is denied by default. The `/users/{uid}` match does not grant access to its `notifications` subcollection. No Firestore rule change is needed for chat with the supplied rules. This is a review of the supplied text, not an authenticated inspection of the deployed Firebase project.
 
-```text
-match /teamChats/{document=**} {
-  allow read, write: if false;
-}
-match /teamChatLimits/{document=**} {
-  allow read, write: if false;
-}
-```
+The Netlify functions use Firebase Admin SDK, which bypasses Firestore client rules; the chat endpoint independently verifies the signed-in user, active staff/admin role, and conversation membership. Keep the existing rules in place. Do not add direct client access to the chat collections.
 
-Firestore allow rules are additive: these denies do not override an existing broad allow. If existing rules grant authenticated users access to all collections, narrow those grants to the intended collections before enabling chat. The repository does not contain the deployed rules, so they have not been verified or modified by this change. Existing `users/*/notifications`, `notificationOutbox`, and `pushDevices` protection remains necessary.
-
-After rules are verified, set `TEAM_CHAT_ENABLED=true` in Netlify (Functions scope) and redeploy. Without that variable the chat endpoint returns a setup-pending response and never accesses chat data. Existing assignment alerts keep working.
+To activate, merge the chat pull request, set `TEAM_CHAT_ENABLED=true` in Netlify (Functions scope, Production deploy context), and redeploy. Without that variable the chat endpoint returns a setup-pending response and never accesses chat data. Existing assignment alerts keep working.
 
 Existing `FIREBASE_SERVICE_ACCOUNT_JSON` and `FIREBASE_WEB_PUSH_PUBLIC_KEY` are reused. Admins enable alerts on each device just like staff. On iPhone/iPad use the installed FreshBorn home-screen app and allow notifications. Delivery remains subject to device settings and connectivity. Failed provider sends remain in the existing retry outbox.
 
