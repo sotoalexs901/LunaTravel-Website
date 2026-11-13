@@ -28,3 +28,7 @@ See `README_MOBILE_APP.txt` for app installation, Firebase Web Push setup and de
 ## Retired pages
 
 The obsolete travel website pages, static travel data and unused Netlify CMS configuration have been removed. `_redirects` preserves former service, pricing, contact, tracking and CMS entry URLs by directing them to FreshBorn pages. The repository retains its existing GitHub name; no hosting or GitHub connection is renamed.
+
+## Portal languages
+
+Staff and customer pages offer an English/Español selector. The device remembers the preference in `freshborn-lang`; changes apply without reloading or replacing open forms. `assets/portal-i18n.js` manages the selector and reversible interface translations, with Spanish strings in `assets/portal-translations.js`. User-authored names, addresses, reports, notes and captions retain their original text. App notification text follows the device language after the service worker update is applied.
