@@ -379,5 +379,14 @@ export const spanish = {
   "Weekly": "Semanal",
   "Biweekly": "Cada dos semanas",
   "Monthly": "Mensual",
-  "One-time": "Una vez"
+  "One-time": "Una vez",
+  "Client-facing service summary (required)": "Resumen del servicio para el cliente (obligatorio)",
+  "Add a short description of the work completed before submitting. Your uploaded photos stay saved as a draft.": "Agrega una descripción breve del trabajo realizado antes de enviar. Las fotos que subiste permanecen guardadas como borrador.",
+  "Write a short service summary before submitting. Your photos are already saved.": "Escribe un resumen breve del servicio antes de enviar. Tus fotos ya están guardadas.",
+  "Sending report for administrator review…": "Enviando reporte a revisión del administrador…",
+  "Write and save a client summary before submitting.": "Escribe y guarda un resumen del servicio para el cliente antes de enviar.",
+  "Complete the service before submitting the report.": "Completa el servicio antes de enviar el reporte.",
+  "This visit was updated elsewhere. Reload before saving.": "Esta visita se actualizó desde otra sesión. Actualiza antes de guardar.",
+  "This visit was updated elsewhere. Reload and check the latest report.": "Esta visita se actualizó desde otra sesión. Actualiza y revisa el reporte más reciente.",
+  "Notes must be 3,000 characters or fewer": "Las notas deben tener 3,000 caracteres o menos"
 };
