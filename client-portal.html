@@ -6,7 +6,7 @@
 </style><link rel="manifest" href="/manifest.webmanifest"><link rel="apple-touch-icon" sizes="180x180" href="/assets/app-icon-180.png"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="FreshBorn"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="stylesheet" href="/css/mobile.css"></head><body>
 <header><a class="brand" href="/">Fresh<span>Born</span></a><div class="header-actions"><a href="/">Home</a><button id="logout" class="signout" type="button">Sign Out</button></div></header>
 <main>
-<section class="hero"><div><div class="eyebrow">FreshBorn Client Portal</div><h1 id="welcome">Welcome back!</h1><p>Your cleaning service, all in one place.</p></div><div class="id"><small>Your customer number</small><strong id="customerNumber">Loading...</strong></div></section>
+<section class="hero"><div><div class="eyebrow">FreshBorn Client Portal</div><h1 id="welcome">Welcome back!</h1><p>Your cleaning service, all in one place.</p></div><div class="id"><small>Your customer number</small><strong translate="no" id="customerNumber">Loading...</strong></div></section>
 <section class="welcome-widgets" aria-label="Local time, weather and upcoming cleaning">
  <div class="welcome-widget" style="background:#153e64;color:white"><small>🕒 Local time</small><strong id="localClock">--:--</strong><span class="sub" id="localDate">Loading date...</span></div>
  <div class="welcome-widget" style="background:#153e64;color:white"><small>☀️ Weather at your property</small><strong id="weatherTemp">Loading...</strong><span class="sub" id="weatherDescription">Waiting for your ZIP code</span></div>
@@ -22,8 +22,8 @@
 </div>
 <h2 class="section-heading">Your cleaning services</h2>
 <div class="details">
-<section class="card"><h3>Service details</h3><div class="detail-row"><span>Property</span><strong id="property">—</strong></div><div class="detail-row"><span>ZIP code</span><strong id="zip">—</strong></div><div class="detail-row"><span>Cleaning frequency</span><strong id="serviceFrequency">—</strong></div><div class="detail-row"><span>Monthly deep cleaning</span><strong id="deepCleaning">—</strong></div></section>
-<section class="card"><h3>Included services</h3><div id="services" class="services">—</div></section>
+<section class="card"><h3>Service details</h3><div class="detail-row"><span>Property</span><strong id="property">—</strong></div><div class="detail-row"><span>ZIP code</span><strong translate="no" id="zip">—</strong></div><div class="detail-row"><span>Cleaning frequency</span><strong id="serviceFrequency">—</strong></div><div class="detail-row"><span>Monthly deep cleaning</span><strong id="deepCleaning">—</strong></div></section>
+<section class="card"><h3>Included services</h3><div translate="no" id="services" class="services">—</div></section>
 </div>
 <h2 class="section-heading">Appointments and service history</h2>
 <div class="grid">
@@ -43,7 +43,7 @@
 </div>
 </main><footer class="footer">© <span id="year"></span> FreshBorn Cleaning Services · A Fresh Start for Every Space</footer>
 <script type="text/javascript">window.$crisp=[];window.CRISP_WEBSITE_ID="4ffab1b0-f43f-4ae3-91d7-782d838fd6a2";(function(){var d=document;var s=d.createElement("script");s.src="https://client.crisp.chat/l.js";s.async=1;d.getElementsByTagName("head")[0].appendChild(s);})();</script>
-<script type="module">
+<script type="module">import{locale}from'/assets/portal-i18n.js';
 import {initializeApp,getApps} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js';
 import {getAuth,onAuthStateChanged,signOut} from 'https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js';
 import {firebaseConfig} from '/assets/firebase-config.js';
@@ -51,8 +51,8 @@ const app=getApps()[0]||initializeApp(firebaseConfig),auth=getAuth(app),$=id=>do
 $('year').textContent=new Date().getFullYear();
 // Clock uses the property's timezone once the ZIP has been resolved; fallback: America/New_York.
 let propertyTimeZone='America/New_York';
-function updateClock(){const now=new Date();const opts={timeZone:propertyTimeZone};$('localClock').textContent=new Intl.DateTimeFormat('en-US',{...opts,hour:'numeric',minute:'2-digit',hour12:true}).format(now);$('localDate').textContent=new Intl.DateTimeFormat('en-US',{...opts,weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(now)}
-updateClock();setInterval(updateClock,30000);
+function updateClock(){const now=new Date();const opts={timeZone:propertyTimeZone};$('localClock').textContent=new Intl.DateTimeFormat(locale(),{...opts,hour:'numeric',minute:'2-digit',hour12:true}).format(now);$('localDate').textContent=new Intl.DateTimeFormat(locale(),{...opts,weekday:'long',month:'long',day:'numeric',year:'numeric'}).format(now)}
+updateClock();setInterval(updateClock,30000);window.addEventListener('freshborn:language',updateClock);
 const weatherNames={0:'Clear sky',1:'Mainly clear',2:'Partly cloudy',3:'Cloudy',45:'Fog',48:'Freezing fog',51:'Light drizzle',53:'Drizzle',55:'Heavy drizzle',61:'Light rain',63:'Rain',65:'Heavy rain',71:'Light snow',73:'Snow',75:'Heavy snow',80:'Rain showers',81:'Rain showers',82:'Heavy showers',95:'Thunderstorms',96:'Thunderstorms',99:'Thunderstorms'};
 async function loadWeather(zip){const clean=String(zip||'').trim();if(!/^\d{5}$/.test(clean)){$('weatherTemp').textContent='Unavailable';$('weatherDescription').textContent='Valid property ZIP required';return}
  try{const geoResponse=await fetch('https://api.zippopotam.us/us/'+encodeURIComponent(clean));if(!geoResponse.ok)throw Error('ZIP not found');const geo=await geoResponse.json();const place=geo.places?.[0];if(!place)throw Error('ZIP not found');const lat=Number(place.latitude),lon=Number(place.longitude);if(!Number.isFinite(lat)||!Number.isFinite(lon))throw Error('Coordinates unavailable');const url='https://api.open-meteo.com/v1/forecast?latitude='+lat+'&longitude='+lon+'&current=temperature_2m,weather_code&temperature_unit=fahrenheit&timezone=auto';const response=await fetch(url);if(!response.ok)throw Error('Weather unavailable');const data=await response.json();if(data.timezone){propertyTimeZone=data.timezone;updateClock()}const temp=data.current?.temperature_2m;const code=data.current?.weather_code;if(!Number.isFinite(temp))throw Error('Weather unavailable');$('weatherTemp').textContent=Math.round(temp)+'°F';$('weatherDescription').textContent=(weatherNames[code]||'Current conditions')+' · '+(place['place name']||'Property area')+', '+(place['state abbreviation']||'');}
@@ -65,8 +65,8 @@ function renderNextVisit(profile){
  const date=parseVisit(raw);
  const status=visit&&typeof visit==='object'?String(visit.status||'').toLowerCase():String(profile.nextVisitStatus||'').toLowerCase();
  if(!date||!['confirmed','scheduled'].includes(status)||date.getTime()<Date.now())return;
- const dateText=new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(date);
- const timeText=new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(date);
+ const dateText=new Intl.DateTimeFormat(locale(),{timeZone:propertyTimeZone,weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(date);
+ const timeText=new Intl.DateTimeFormat(locale(),{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(date);
  $('nextVisitSummary').textContent=dateText;$('nextVisitSummaryTime').textContent='Arrival: '+timeText;
  $('nextVisitDate').textContent=dateText;$('nextVisitTime').textContent='Scheduled arrival: '+timeText;$('nextVisitStatus').textContent='Confirmed by FreshBorn';
 }
@@ -88,12 +88,12 @@ function syncNextVisitFromSchedule(visits){
  const upcoming=(visits||[]).filter(v=>String(v.status||'scheduled').toLowerCase()!=='completed').map(v=>({v,dt:visitDateTime(v)})).filter(x=>x.dt&&x.dt.getTime()>=Date.now()-3600000).sort((a,b)=>a.dt-b.dt)[0];
  if(!upcoming)return;
  const {v,dt}=upcoming;
- const dateText=new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(dt);
- const start=new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(dt);
+ const dateText=new Intl.DateTimeFormat(locale(),{timeZone:propertyTimeZone,weekday:'short',month:'short',day:'numeric',year:'numeric'}).format(dt);
+ const start=new Intl.DateTimeFormat(locale(),{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(dt);
  let range=start;
  if(v.endTime&&/^\d{2}:\d{2}$/.test(v.endTime)){
    const end=new Date(`${v.date}T${v.endTime}:00`);
-   if(!Number.isNaN(end.getTime()))range+=` – ${new Intl.DateTimeFormat('en-US',{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(end)}`;
+   if(!Number.isNaN(end.getTime()))range+=` – ${new Intl.DateTimeFormat(locale(),{timeZone:propertyTimeZone,hour:'numeric',minute:'2-digit'}).format(end)}`;
  }
  $('nextVisitSummary').textContent=dateText;
  $('nextVisitSummaryTime').textContent='Arrival: '+start;
@@ -105,15 +105,15 @@ function renderServiceVisits(visits){
  const el=document.getElementById('serviceVisits');if(!el)return;
  if(!Array.isArray(visits)||!visits.length){el.innerHTML='<div class="empty">No cleaning visits are scheduled yet.</div>';return;}
  const labels={scheduled:'Scheduled',en_route:'On the way',arrived:'Arrived',in_progress:'Cleaning in progress',completed:'Service completed',cancelled:'Cancelled'};
- const time=value=>value?new Date(value).toLocaleString('en-US',{timeZone:propertyTimeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';
+ const time=value=>value?new Date(value).toLocaleString(locale(),{timeZone:propertyTimeZone,month:'short',day:'numeric',hour:'numeric',minute:'2-digit'}):'—';
  const rows=[...visits].sort((a,b)=>String(b.date||'').localeCompare(String(a.date||''))||String(b.startTime||'').localeCompare(String(a.startTime||'')));
  el.innerHTML=rows.map(v=>{
   const photos=v.reportStatus==='approved'&&Array.isArray(v.photos)?v.photos:[];
-  const photoHtml=photos.length?'<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">'+photos.filter(p=>p.url).map(p=>`<a href="${escHtml(p.url)}" target="_blank" rel="noopener noreferrer"><img src="${escHtml(p.url)}" loading="lazy" alt="${escHtml(p.caption||'Approved service photo')}" style="width:140px;height:105px;object-fit:cover;border-radius:10px;border:1px solid #dce6ee"></a>`).join('')+'</div>':'';
+  const photoHtml=photos.length?'<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">'+photos.filter(p=>p.url).map(p=>`<a href="${escHtml(p.url)}" target="_blank" rel="noopener noreferrer"><img translate="no" src="${escHtml(p.url)}" loading="lazy" alt="${escHtml(p.caption||'Approved service photo')}" style="width:140px;height:105px;object-fit:cover;border-radius:10px;border:1px solid #dce6ee"></a>`).join('')+'</div>':'';
   const events=[['enRouteAt','On the way'],['arrivedAt','Arrived'],['serviceStartedAt','Service started'],['completedAt','Completed']].filter(([key])=>v[key]);
   const timeline=events.length?'<div style="display:flex;flex-wrap:wrap;gap:8px;margin:12px 0">'+events.map(([key,label])=>'<div style="padding:9px 12px;background:#eef6f2;border-radius:9px;font-size:13px"><b>'+label+'</b><br>'+escHtml(time(v[key]))+'</div>').join('')+'</div>':'';
-  const report=v.reportStatus==='approved'&&v.report?'<div class="services" style="margin-top:12px"><b>Service report approved by FreshBorn</b><p>'+escHtml(v.report.summary)+'</p></div>':'<p class="muted">Service photos and the report appear after FreshBorn reviews and shares them.</p>';
-  const staff=v.assignedStaffName?`<br><span class="muted">FreshBorn team: ${escHtml(v.assignedStaffName)}</span>`:'';
+  const report=v.reportStatus==='approved'&&v.report?'<div class="services" style="margin-top:12px"><b>Service report approved by FreshBorn</b><p translate="no">'+escHtml(v.report.summary)+'</p></div>':'<p class="muted">Service photos and the report appear after FreshBorn reviews and shares them.</p>';
+  const staff=v.assignedStaffName?`<br><span class="muted">FreshBorn team: <span translate="no">${escHtml(v.assignedStaffName)}</span></span>`:'';
   return `<div style="padding:18px 0;border-bottom:1px solid #edf1f4"><strong>${escHtml(v.date||'')} ${escHtml(v.startTime||'')}${v.endTime?' – '+escHtml(v.endTime):''}</strong><br><span class="pill">${escHtml(labels[v.status]||v.status||'Scheduled')}</span>${staff}${timeline}${report}${photoHtml}</div>`;
  }).join('');
  const completed=visits.filter(v=>v.status==='completed').length,shared=visits.filter(v=>v.reportStatus==='approved').length;
