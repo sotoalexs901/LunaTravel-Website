@@ -1,5 +1,5 @@
 import {spanish} from '/assets/portal-translations.js';
-const routes=new Set(['/app.html','/notifications.html','/staff-login.html','/staff-register.html','/staff-portal.html','/staff-sms-consent.html','/client-login.html','/client-register.html','/client-portal.html','/client-service.html']);
+const routes=new Set(['/admin-finance.html','/app.html','/notifications.html','/staff-login.html','/staff-register.html','/staff-portal.html','/staff-sms-consent.html','/client-login.html','/client-register.html','/client-portal.html','/client-service.html']);
 const enabled=routes.has(location.pathname);
 let language='en';try{language=localStorage.getItem('freshborn-lang')==='es'?'es':'en';}catch{}
 const records=new WeakMap(),attributeRecords=new WeakMap();
