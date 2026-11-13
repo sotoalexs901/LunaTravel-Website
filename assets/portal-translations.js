@@ -368,5 +368,16 @@ export const spanish = {
   "Punch in before updating a visit.": "Registra tu entrada antes de actualizar una visita.",
   "No active shift. Refresh your attendance.": "No hay un turno activo. Actualiza tu asistencia.",
   "Finish the active visit before starting another one.": "Termina la visita activa antes de comenzar otra.",
-  "FreshBorn Cleaning Services · A Fresh Start for Every Space": "FreshBorn Cleaning Services · Un nuevo comienzo para cada espacio"
+  "FreshBorn Cleaning Services · A Fresh Start for Every Space": "FreshBorn Cleaning Services · Un nuevo comienzo para cada espacio",
+  "home": "Casa",
+  "house": "Casa",
+  "apartment": "Apartamento / Condominio",
+  "office": "Oficina / Comercial",
+  "other": "Otro",
+  "once": "Una vez",
+  "one_time": "Una vez",
+  "Weekly": "Semanal",
+  "Biweekly": "Cada dos semanas",
+  "Monthly": "Mensual",
+  "One-time": "Una vez"
 };
