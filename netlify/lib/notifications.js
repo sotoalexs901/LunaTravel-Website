@@ -5,11 +5,11 @@ const now=()=>admin.firestore.FieldValue.serverTimestamp();
 const digest=s=>crypto.createHash('sha256').update(s).digest('hex');
 const configured=()=>/^[A-Za-z0-9_-]{80,120}$/.test(process.env.FIREBASE_WEB_PUSH_PUBLIC_KEY||'');
 // Called in the same transaction as the assignment so the inbox cannot lose an event.
-function enqueue(tx,{uid,id,type,visitId='',customerId=''}){
- const title=type==='service_assigned'?'New cleaning service':'Customer assigned';
- const body=type==='service_assigned'?'A cleaning visit has been assigned to you. Open FreshBorn to review your schedule.':'A customer has been assigned to you. Open FreshBorn for the details.';
- const url=visitId?'/staff-portal.html?visit='+encodeURIComponent(visitId):'/staff-portal.html';
- const event={title,body,url,type,visitId,customerId,createdAt:now(),readAt:null};
+function enqueue(tx,{uid,id,type,visitId='',customerId='',chatRoomId=''}){
+ const title=type==='chat_message'?'New team message':type==='service_assigned'?'New cleaning service':'Customer assigned';
+ const body=type==='chat_message'?'You have a new team message. Open FreshBorn to read it.':type==='service_assigned'?'A cleaning visit has been assigned to you. Open FreshBorn to review your schedule.':'A customer has been assigned to you. Open FreshBorn for the details.';
+ const url=type==='chat_message'?'/messages.html?room='+encodeURIComponent(chatRoomId):visitId?'/staff-portal.html?visit='+encodeURIComponent(visitId):'/staff-portal.html';
+ const event={title,body,url,type,visitId,customerId,chatRoomId,createdAt:now(),readAt:null};
  tx.set(db().collection('users').doc(uid).collection('notifications').doc(id),event);
  tx.set(db().collection('notificationOutbox').doc(id),{uid,id,...event,status:'pending',attempts:0,deliveredDevices:[],nextAttemptAt:admin.firestore.Timestamp.fromMillis(Date.now()),expiresAt:admin.firestore.Timestamp.fromMillis(Date.now()+86400000)});
 }
@@ -19,7 +19,7 @@ async function deliver(id){
  if(!job)return {queued:true};
  try{
   const user=await db().collection('users').doc(job.uid).get();
-  if(!user.exists||user.data().role!=='staff'||user.data().status!=='active'){await ref.update({status:'expired',lastError:'inactive_recipient'});return {skipped:true};}
+  if(!user.exists||!['staff','super_admin'].includes(user.data().role)||user.data().status!=='active'){await ref.update({status:'expired',lastError:'inactive_recipient'});return {skipped:true};}
   const all=await db().collection('pushDevices').where('uid','==',job.uid).limit(30).get();
   const devices=all.docs.filter(s=>s.data().active===true&&s.data().token&&!(job.deliveredDevices||[]).includes(s.id));
   if(!devices.length){await ref.update({status:'sent',completedAt:now(),result:'inbox_only_or_already_sent'});return {inboxOnly:true};}

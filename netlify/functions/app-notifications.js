@@ -4,10 +4,10 @@ const db=admin.firestore(),{digest,configured}=require('../lib/notifications');
 const reply=(status,body)=>({statusCode:status,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(body)});
 const fail=(message,status=400)=>Object.assign(Error(message),{status});
 async function context(event){const m=(event.headers.authorization||event.headers.Authorization||'').match(/^Bearer (.+)$/);if(!m)throw fail('Sign in required',401);const user=await admin.auth().verifyIdToken(m[1]);const s=await db.collection('users').doc(user.uid).get();return {uid:user.uid,user:s.exists?s.data():null};}
-function staff(ctx){if(ctx.user?.role!=='staff'||ctx.user?.status!=='active')throw fail('Active staff account required',403);}
+function staff(ctx){if(!['staff','super_admin'].includes(ctx.user?.role)||ctx.user?.status!=='active')throw fail('Active staff account required',403);}
 function token(value){const t=String(value||'');if(!/^[A-Za-z0-9:_-]{20,4096}$/.test(t))throw fail('Invalid notification registration');return t;}
 exports.handler=async event=>{if(event.httpMethod!=='POST')return reply(405,{error:'POST required'});try{const body=JSON.parse(event.body||'{}'),ctx=await context(event),action=String(body.action||'');
- if(action==='profile'){let role=ctx.user?.status==='active'?ctx.user.role:null;if(!role){const c=await db.collection('quoteRequests').where('customerAuthUid','==',ctx.uid).limit(1).get();if(!c.empty&&c.docs[0].data().status==='vip')role='client';}return reply(200,{ok:true,role:role||'unlinked',pushConfigured:configured(),vapidKey:configured()?process.env.FIREBASE_WEB_PUSH_PUBLIC_KEY:'',staffPush:role==='staff'});}
+ if(action==='profile'){let role=ctx.user?.status==='active'?ctx.user.role:null;if(!role){const c=await db.collection('quoteRequests').where('customerAuthUid','==',ctx.uid).limit(1).get();if(!c.empty&&c.docs[0].data().status==='vip')role='client';}return reply(200,{ok:true,role:role||'unlinked',pushConfigured:configured(),vapidKey:configured()?process.env.FIREBASE_WEB_PUSH_PUBLIC_KEY:'',staffPush:['staff','super_admin'].includes(role)});}
  // Sign-out cleanup is allowed even after an administrator disables the staff account.
  if(action==='unregister-device'){const ref=db.collection('pushDevices').doc(digest(token(body.token)));await db.runTransaction(async tx=>{const s=await tx.get(ref);if(s.exists&&s.data().uid===ctx.uid)tx.update(ref,{active:false,updatedAt:admin.firestore.FieldValue.serverTimestamp()});});return reply(200,{ok:true});}
  staff(ctx);
